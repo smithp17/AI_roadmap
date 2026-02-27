@@ -3,228 +3,1446 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Math Refresher for ML Engineers</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Math for ML &amp; AI — Complete Prep Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #08080f;
+  --surface: #0f0f1a;
+  --surface2: #161625;
+  --surface3: #1d1d2e;
+  --border: #252538;
+  --border2: #303048;
+  --text: #e2e2f0;
+  --text2: #9898b8;
+  --muted: #55556a;
+  --gold: #f0c040;
+  --teal: #2dd4bf;
+  --rose: #fb7185;
+  --violet: #a78bfa;
+  --sky: #38bdf8;
+  --green: #4ade80;
+  --orange: #fb923c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: #f1f5f9;
-    line-height: 1.7;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+  line-height: 1.75;
+  min-height: 100vh;
 }
 
-.container {
-    width: 90%;
-    max-width: 1000px;
-    margin: auto;
-    padding: 40px 0;
+/* grid texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(45,212,191,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45,212,191,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-h1 {
-    text-align: center;
-    font-size: 2.8rem;
-    margin-bottom: 40px;
-    background: linear-gradient(90deg, #38bdf8, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(45,212,191,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.section {
-    background: #1e293b;
-    padding: 30px;
-    margin-bottom: 30px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    transition: transform 0.3s ease;
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(8,8,15,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: 54px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 0;
+}
+nav::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: 15px;
+  color: var(--teal);
+  white-space: nowrap;
+  margin-right: 28px;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
 }
 
-.section:hover {
-    transform: translateY(-5px);
+.nav-item {
+  font-size: 10px;
+  color: var(--muted);
+  padding: 0 14px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.nav-item:hover { color: var(--text); }
+.nav-item.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 86px 28px 100px;
+  position: relative;
+  z-index: 1;
 }
 
-.section h2 {
-    color: #38bdf8;
-    margin-bottom: 20px;
+.chapter { display: none; animation: fadeUp 0.4s ease both; }
+.chapter.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.topic {
-    margin-bottom: 25px;
+/* Chapter Header */
+.ch-header {
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
 }
 
-.topic h3 {
-    color: #a78bfa;
-    margin-bottom: 10px;
+.ch-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
-.code {
-    background: #0f172a;
-    padding: 12px;
-    border-radius: 8px;
-    font-family: monospace;
-    color: #38bdf8;
-    margin: 10px 0;
+.ch-num {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-.highlight {
-    background: rgba(56,189,248,0.1);
-    padding: 10px;
-    border-left: 4px solid #38bdf8;
-    border-radius: 8px;
-    margin: 10px 0;
+.ch-tag {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  padding: 2px 8px;
 }
 
-.tradeoff {
-    background: rgba(167,139,250,0.1);
-    padding: 10px;
-    border-left: 4px solid #a78bfa;
-    border-radius: 8px;
-    margin: 10px 0;
+.ch-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(42px, 7vw, 76px);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  margin-bottom: 22px;
+  color: var(--text);
+}
+.ch-title em {
+  font-style: italic;
+  color: var(--teal);
 }
 
-footer {
-    text-align: center;
-    margin-top: 50px;
-    color: #94a3b8;
+.ch-lead {
+  font-size: 14.5px;
+  color: var(--text2);
+  max-width: 580px;
+  line-height: 1.65;
+}
+
+.section { margin-bottom: 64px; }
+
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin-bottom: 18px;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  margin-top: 30px;
+  color: var(--text);
+}
+
+p { margin-bottom: 14px; font-size: 14.5px; color: var(--text2); }
+p strong { color: var(--text); font-weight: 500; }
+p:last-child { margin-bottom: 0; }
+
+/* Q&A */
+.qa {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin: 14px 0;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.qa:hover { border-color: var(--border2); }
+
+.qa-q {
+  padding: 16px 20px;
+  font-size: 13.5px;
+  color: var(--gold);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  border-left: 3px solid var(--gold);
+  transition: background 0.2s;
+  line-height: 1.5;
+}
+.qa-q:hover { background: var(--surface2); }
+.qa-q .toggle-icon { font-size: 20px; flex-shrink: 0; transition: transform 0.3s; line-height: 1; margin-top: 2px; }
+.qa-q.open .toggle-icon { transform: rotate(45deg); }
+
+.qa-a {
+  display: none;
+  padding: 20px 22px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.8;
+  border-left: 3px solid var(--surface3);
+}
+.qa-a strong { color: var(--teal); font-weight: 500; }
+.qa-a code {
+  background: var(--surface3);
+  color: var(--violet);
+  padding: 1px 5px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 7px;
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  margin-right: 6px;
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.tag.rose { border-color: var(--rose); color: var(--rose); }
+.tag.violet { border-color: var(--violet); color: var(--violet); }
+.tag.gold { border-color: var(--gold); color: var(--gold); }
+.tag.sky { border-color: var(--sky); color: var(--sky); }
+
+/* Math formula block */
+.formula {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--violet);
+  padding: 16px 22px;
+  margin: 18px 0;
+  font-size: 13px;
+  color: var(--violet);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 2;
+  letter-spacing: 0.02em;
+}
+
+/* Analogy */
+.analogy {
+  border-left: 3px solid var(--gold);
+  padding: 16px 22px;
+  margin: 22px 0;
+  background: rgba(240,192,64,0.04);
+}
+.analogy-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.analogy p { font-size: 13.5px; color: var(--text2); margin: 0; }
+
+/* Insight */
+.insight {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--teal);
+  padding: 20px 26px;
+  margin: 26px 0;
+}
+.insight-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+.insight p { font-size: 13.5px; margin: 0; }
+.insight strong { color: var(--teal); }
+
+/* Warning */
+.warning {
+  background: rgba(251,113,133,0.05);
+  border: 1px solid rgba(251,113,133,0.2);
+  border-left: 3px solid var(--rose);
+  padding: 18px 22px;
+  margin: 20px 0;
+}
+.warning-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rose); margin-bottom: 7px; }
+.warning p { font-size: 13.5px; margin: 0; color: var(--text2); }
+
+/* Table */
+.tbl-wrap { margin: 22px 0; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  background: var(--surface3);
+  color: var(--muted);
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+  font-weight: 500;
+}
+td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text2);
+  line-height: 1.6;
+}
+tr:last-child td { border-bottom: none; }
+td:first-child { color: var(--text); font-weight: 500; }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 3px 9px;
+  margin-right: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.badge-easy { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+.badge-med  { background: rgba(240,192,64,0.12); color: var(--gold); border: 1px solid rgba(240,192,64,0.3); }
+.badge-hard { background: rgba(251,113,133,0.12); color: var(--rose); border: 1px solid rgba(251,113,133,0.3); }
+
+/* Two-col grid */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.mini-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  font-size: 13px;
+}
+.mini-card h4 { font-size: 11px; color: var(--teal); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.mini-card p { font-size: 13px; color: var(--text2); margin: 0; }
+
+/* Nav buttons */
+.nav-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 60px;
+  padding-top: 30px;
+  border-top: 1px solid var(--border);
+}
+.nbtn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.nbtn:hover { border-color: var(--teal); color: var(--teal); }
+.nbtn.primary { background: var(--teal); color: #000; border-color: var(--teal); font-weight: 500; }
+.nbtn.primary:hover { background: #5eead4; }
+.nbtn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* Progress dots */
+.progress-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 32px;
+  align-items: center;
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border2);
+  transition: background 0.3s;
+  cursor: pointer;
+}
+.dot.active { background: var(--teal); }
+.dot.done { background: var(--muted); }
+
+@media (max-width: 600px) {
+  .two-col { grid-template-columns: 1fr; }
+  .ch-title { font-size: 42px; }
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-<h1>🧮 Math Refresher for ML & AI Engineers</h1>
+<nav>
+  <div class="nav-brand">∑ Math for ML</div>
+  <div class="nav-item active" onclick="goTo(0,this)">① Linear Algebra</div>
+  <div class="nav-item" onclick="goTo(1,this)">② Calculus</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ Probability</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ Statistics</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ Optimization</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ Information Theory</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ Numerical Methods</div>
+  <div class="nav-item" onclick="goTo(7,this)">⑧ Graph &amp; Discrete</div>
+</nav>
 
-<div class="section">
-<h2>Part 1: Linear Algebra</h2>
+<main>
 
-<div class="topic">
-<h3>Vectors & Matrices — The Real Intuition</h3>
-<p>A vector is a point in high-dimensional space. Your data, weights, and embeddings all live here.</p>
-<p>A matrix is a transformation — it rotates, scales, or projects vectors into new spaces.</p>
-<div class="highlight">
-When a neural net computes <span class="code">Wx + b</span>, it is warping the space your data lives in.
-</div>
+<!-- ═══════════════════════════════════ -->
+<!-- CH 1: LINEAR ALGEBRA               -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 01 / 08 — Math for ML &amp; AI</div>
+      <div class="ch-tag">Foundation</div>
+    </div>
+    <div class="ch-title">Linear<br><em>Algebra</em></div>
+    <p class="ch-lead">The language of data. Every dataset is a matrix, every model is a transformation, every embedding is a vector. You cannot escape linear algebra in ML — nor would you want to.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Core Concepts</div>
+    <h2>Why Linear Algebra Runs ML</h2>
+    <p>Neural networks are chains of matrix multiplications. PCA is eigendecomposition. Attention is a dot-product operation on matrices. SVD compresses images and powers recommendation systems. Understanding linear algebra means understanding <strong>why</strong> ML works, not just that it works.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Mental Model</div>
+      <p>Think of matrices as <strong>functions that transform space</strong>. Multiplying by a matrix rotates, stretches, or squishes a coordinate system. When a neural network learns, it's finding the right sequence of spatial transformations that maps inputs to correct outputs.</p>
+    </div>
+
+    <div class="formula">Data matrix X: shape (n_samples × n_features)
+Weight matrix W: shape (n_features × n_outputs)
+
+Forward pass:  Y = X @ W + b
+                 (n × out) = (n × feat) @ (feat × out)
+
+Matrix multiply: O(n³) naive, O(n^2.37) Strassen
+GPU parallelizes thousands of these simultaneously</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is a dot product and why does it measure similarity? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        The <strong>dot product</strong> of two vectors a and b:<br><br>
+        <div class="formula">a · b = Σ aᵢbᵢ = |a||b| cos(θ)
+
+where θ is the angle between them</div>
+        <strong>Why it measures similarity:</strong><br>
+        • If θ = 0° (same direction): cos(0) = 1 → maximum dot product → very similar<br>
+        • If θ = 90° (perpendicular): cos(90) = 0 → zero dot product → unrelated<br>
+        • If θ = 180° (opposite): cos(180) = -1 → minimum dot product → opposite<br><br>
+        <strong>This is why cosine similarity works for embeddings.</strong> The dot product (normalized) tells you how aligned two meaning-vectors are.<br><br>
+        <strong>In neural networks:</strong> Every neuron computes a weighted dot product of its inputs — it's measuring "how much does this input pattern match what I'm looking for?"<br><br>
+        <div class="tag">ML connection</div> Attention scores in transformers are dot products: Q · Kᵀ. High score = query is similar to key = attend more to that position.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What are eigenvalues and eigenvectors? Where do they appear in ML? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        For a square matrix A, vector <strong>v</strong> is an eigenvector with eigenvalue λ if:<br><br>
+        <div class="formula">A · v = λ · v
+
+The matrix transforms v by only SCALING it (by λ)
+It does NOT rotate v — v keeps its direction</div>
+        <strong>Intuition:</strong> Most vectors get rotated AND scaled when multiplied by a matrix. Eigenvectors are special — they only get scaled. λ tells you by how much.<br><br>
+        <strong>Where they appear in ML:</strong><br>
+        • <strong>PCA (Principal Component Analysis):</strong> The eigenvectors of the covariance matrix are the principal components — the directions of maximum variance. Eigenvalues tell you how much variance each direction explains.<br>
+        • <strong>Graph Neural Networks:</strong> Eigenvalues of the graph Laplacian capture structural properties of the graph.<br>
+        • <strong>Understanding training dynamics:</strong> The Hessian's eigenvalues reveal the "sharpness" of the loss landscape — large eigenvalues = sharp = hard to train.<br>
+        • <strong>SVD:</strong> Built from eigendecomposition — powers matrix factorization and dimensionality reduction.<br><br>
+        <div class="tag">Key fact</div> A symmetric matrix (like a covariance matrix) always has real eigenvalues and orthogonal eigenvectors. This is why PCA's components are always perpendicular to each other.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain SVD (Singular Value Decomposition). What is it used for? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        SVD decomposes any matrix M into three matrices:<br><br>
+        <div class="formula">M = U · Σ · Vᵀ
+
+M: (m × n) original matrix
+U: (m × m) left singular vectors (orthogonal)
+Σ: (m × n) diagonal matrix of singular values (σ₁ ≥ σ₂ ≥ ... ≥ 0)
+V: (n × n) right singular vectors (orthogonal)
+
+Low-rank approximation (keep top k singular values):
+M ≈ Uₖ · Σₖ · Vₖᵀ   (best rank-k approximation by Eckart-Young theorem)</div>
+        <strong>Intuition:</strong> SVD finds the "most important directions" in your data, ranked by how much they matter (singular values = importance scores).<br><br>
+        <strong>Applications in ML:</strong><br>
+        • <strong>Dimensionality reduction:</strong> Keep top-k singular values → compress data with minimal information loss (this IS what PCA does under the hood)<br>
+        • <strong>Recommendation systems:</strong> Matrix factorization (users × items matrix) → U = user preferences, V = item features<br>
+        • <strong>Image compression:</strong> Keep top-k singular values → reconstruct image with k × (m+n) numbers instead of m×n<br>
+        • <strong>LoRA fine-tuning:</strong> Weight updates decomposed as low-rank matrices — directly inspired by SVD<br>
+        • <strong>Pseudoinverse:</strong> Solve least-squares problems even when matrix is not invertible<br><br>
+        <div class="tag violet">Complexity</div> Full SVD: O(min(m,n) × m × n). Randomized SVD (used in sklearn): much faster for large matrices.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the rank of a matrix? Why does it matter for ML? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Rank</strong> = the number of linearly independent rows (or columns) in a matrix. Also = the number of non-zero singular values in SVD.<br><br>
+        <div class="formula">rank(A) = dim(column space of A) = dim(row space of A)
+
+Full rank: rank = min(m, n)  →  no redundant information
+Rank deficient: rank < min(m, n)  →  some dimensions are redundant</div>
+        <strong>Why it matters for ML:</strong><br>
+        • <strong>Invertibility:</strong> A square matrix is only invertible if it's full rank. Singular (rank-deficient) matrices can't be inverted — gradient descent breaks, solving normal equations fails.<br>
+        • <strong>Overfitting and redundancy:</strong> If your feature matrix is rank-deficient, features are linearly dependent → your model has unnecessary parameters → prone to overfitting.<br>
+        • <strong>LoRA's core insight:</strong> Fine-tuning weight updates tend to be low-rank. Instead of updating a 4096×4096 (rank 4096) matrix, approximate with two small matrices (rank 8). Same expressiveness, 250× fewer parameters.<br>
+        • <strong>Expressiveness of networks:</strong> A linear network (no activation functions) with multiple layers is equivalent to a single layer — because multiplying matrices can't increase rank. Non-linearities break this.<br><br>
+        <div class="tag rose">Gotcha</div> Adding noise to a dataset can increase the effective rank of your feature matrix — sometimes this helps regularize (prevents learning spurious low-rank structure).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the matrix calculus behind backpropagation? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        Backpropagation is just the <strong>chain rule applied to matrix-valued functions</strong>.<br><br>
+        <div class="formula">Forward:   Z = X @ W,   A = relu(Z),   L = loss(A, y)
+
+Backward (chain rule):
+∂L/∂W = Xᵀ @ ∂L/∂Z        (transpose of input × upstream gradient)
+∂L/∂X = ∂L/∂Z @ Wᵀ        (upstream gradient × transpose of weights)
+∂L/∂b = sum(∂L/∂Z, axis=0) (sum over batch dimension)
+
+Key rule: if Z = X @ W, then
+  ∂L/∂W has same shape as W
+  ∂L/∂X has same shape as X</div>
+        <strong>The three things to remember:</strong><br>
+        1. Gradient of a loss w.r.t. a weight = (input to that layer)ᵀ × (upstream gradient)<br>
+        2. Gradient flowing backwards through a linear layer multiplies by the weight transpose<br>
+        3. Shapes must be consistent — this is the biggest source of bugs in implementing backprop from scratch<br><br>
+        <div class="tag">Why transposes?</div> Because we need ∂L/∂W to have the same shape as W. The transpose is what makes the matrix dimensions work out in the chain rule.
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-label">⚡ Interview Signal</div>
+    <p>Interviewers testing linear algebra want to know if you can <strong>connect math to intuition</strong>. Don't just state formulas — explain what operations mean geometrically. "Multiplying by a matrix transforms the space" beats reciting A·v=λv without context.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Calculus →</button>
+  </div>
 </div>
 
-<div class="topic">
-<h3>Matrix Multiplication — Why It's Everywhere</h3>
-<div class="code">Wx + b</div>
-<p>You are projecting input onto new axes defined by rows of W.</p>
-<div class="tradeoff">
-Matrix multiplication is O(n²·m). This is why Transformer attention is expensive at O(n²).
-</div>
+<!-- ═══════════════════════════════════ -->
+<!-- CH 2: CALCULUS                     -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 02 / 08</div>
+      <div class="ch-tag">Core</div>
+    </div>
+    <div class="ch-title">Calculus &amp;<br><em>Gradients</em></div>
+    <p class="ch-lead">Training a neural network is gradient descent on a loss surface. To understand training — vanishing gradients, learning rates, momentum — you must understand calculus.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Big Picture</div>
+    <h2>Calculus in One Sentence</h2>
+    <p>A neural network defines a function. Training minimizes a loss function. Calculus tells us which direction to move the parameters to decrease the loss. That direction is the negative gradient.</p>
+
+    <div class="formula">Gradient descent update rule:
+  θ ← θ - α · ∇L(θ)
+
+where:
+  θ = parameters (weights + biases)
+  α = learning rate (step size)
+  ∇L(θ) = gradient of loss w.r.t. all parameters
+           (vector of partial derivatives)
+  negative sign = move against the gradient = downhill</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is a gradient? How is it different from a derivative? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Derivative:</strong> For a function of ONE variable f(x), the derivative df/dx is the slope at a point — how fast f changes as x changes.<br><br>
+        <strong>Gradient:</strong> For a function of MANY variables f(x₁, x₂, ..., xₙ), the gradient ∇f is a VECTOR of partial derivatives:<br><br>
+        <div class="formula">∇f = [∂f/∂x₁, ∂f/∂x₂, ..., ∂f/∂xₙ]
+
+Each component tells you: "if I change this parameter slightly,
+how much does the loss change?"
+
+The gradient VECTOR points in the direction of steepest ascent.
+Negative gradient → direction of steepest DESCENT → minimize loss.</div>
+        <strong>In ML:</strong> A model with 1 billion parameters has a gradient with 1 billion components. Each component = how sensitive the loss is to that one parameter. This is what backpropagation computes efficiently using the chain rule.<br><br>
+        <div class="tag">Key intuition</div> Gradient points uphill. Step against it to go downhill. The magnitude tells you how steep it is — large gradient = sharp slope = aggressive update.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the chain rule? Why is it the foundation of backpropagation? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        The <strong>chain rule</strong> says: if y = f(g(x)), then:<br><br>
+        <div class="formula">dy/dx = (dy/dg) × (dg/dx)
+
+For composed functions: derivative of the whole
+= product of derivatives of each part
+
+Example: L = MSE(relu(W·x + b), y)
+∂L/∂W = ∂L/∂MSE × ∂MSE/∂relu × ∂relu/∂(Wx+b) × ∂(Wx+b)/∂W
+      = 1      × gradient    × relu'(z)         × x</div>
+        <strong>Why it's the foundation of backprop:</strong><br>
+        A neural network is a massive composition of functions. The loss is a function of the last layer, which is a function of the second-to-last layer, ... which is a function of the inputs and weights.<br><br>
+        The chain rule lets us compute ∂L/∂W for any weight W, no matter how deep in the network, by multiplying together local gradients from the output back to that layer.<br><br>
+        <strong>Backpropagation = chain rule + memoization.</strong> We compute each local gradient once and reuse it for all weights that depend on it. This is the key efficiency insight.<br><br>
+        <div class="tag rose">Vanishing gradients</div> If each local gradient is &lt; 1, multiplying many together → exponentially small gradient → early layers barely update. This is why sigmoid activations died and ReLU took over (gradient is 1 for positive inputs, not a fraction).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the difference between SGD, Mini-batch GD, and Full-batch GD? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Full-batch GD:   gradient computed over ALL n training examples
+                 One update per epoch. Very accurate gradient.
+                 Too slow for large datasets. Can't fit in memory.
+
+Mini-batch GD:   gradient computed over B examples (batch size)
+                 Most common. B = 32, 64, 128, 256.
+                 Good balance of speed and accuracy.
+                 The "noise" from small batches actually helps escape sharp minima.
+
+SGD:             gradient computed over 1 example
+                 Very noisy. Very fast per update.
+                 Rarely used alone — usually mini-batch is called "SGD" loosely.</div>
+        <strong>Why mini-batch is best:</strong><br>
+        • GPUs are parallelized — batch of 32 takes barely longer than batch of 1<br>
+        • Noisy gradients act as regularization — helps avoid overfitting<br>
+        • More updates per epoch than full-batch — faster convergence in practice<br><br>
+        <strong>Batch size effects:</strong><br>
+        • Larger batch → more accurate gradient → but often generalizes worse (sharp minima)<br>
+        • Smaller batch → noisier → tends to find flatter, more generalizable minima<br>
+        • Rule of thumb: when doubling batch size, also scale learning rate linearly (linear scaling rule)<br><br>
+        <div class="tag gold">LLM note</div> LLMs use very large batches (millions of tokens) but compensate with careful learning rate schedules (warmup + cosine decay).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the Jacobian? What is the Hessian? When do they matter? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Jacobian: maps vector → vector (first-order, like a "matrix of gradients")
+  If f: Rⁿ → Rᵐ, then J ∈ Rᵐˣⁿ where Jᵢⱼ = ∂fᵢ/∂xⱼ
+  Used in: backprop through vector-valued functions, normalizing flows
+
+Hessian: matrix of second derivatives (curvature)
+  If f: Rⁿ → R, then H ∈ Rⁿˣⁿ where Hᵢⱼ = ∂²f/∂xᵢ∂xⱼ
+  Used in: Newton's method, understanding loss landscape curvature
+
+Second-order Taylor expansion:
+  f(x + δ) ≈ f(x) + ∇f·δ + ½ δᵀHδ</div>
+        <strong>Where they matter in ML:</strong><br>
+        • <strong>Jacobian in backprop:</strong> For layers with vector outputs (e.g., softmax), you need the Jacobian not just the gradient. Softmax's Jacobian is Diag(p) - ppᵀ.<br>
+        • <strong>Hessian and loss landscape:</strong> Large Hessian eigenvalues = sharp curvature = hard to optimize. This is related to why training is unstable with large learning rates.<br>
+        • <strong>Newton's method:</strong> Uses H⁻¹ to take curvature-aware steps. Much faster convergence than gradient descent but O(n³) cost — impractical for modern networks.<br>
+        • <strong>Second-order optimizers (K-FAC, Shampoo):</strong> Approximate the inverse Hessian efficiently — used in some large-scale training.<br><br>
+        <div class="tag rose">Practical note</div> For a 7B parameter model, the Hessian is 7B × 7B = 49 quadrillion entries. Nobody computes it directly. But understanding it conceptually explains why training dynamics behave the way they do.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Why do activation functions need to be non-linear? Explain with calculus. <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Without non-linearity, deep networks collapse to shallow ones.</strong><br><br>
+        <div class="formula">Linear network (no activation):
+Layer 1: h₁ = W₁x
+Layer 2: h₂ = W₂h₁ = W₂W₁x = Ax   (just one matrix!)
+Layer k: hₖ = Wₖ...W₁x = Bx
+
+No matter how many layers, output = one linear transformation.
+A 100-layer linear network = one matrix multiply. Useless.
+
+With ReLU:
+h₁ = relu(W₁x)  ← non-linear, kills negative values
+h₂ = relu(W₂h₁) ← piecewise linear, but not globally linear
+Result: can approximate any continuous function (Universal Approximation)</div>
+        <strong>Calculus perspective:</strong> The composition of linear functions is linear (matrix product is linear). Non-linearity breaks this — the chain rule then produces more complex gradient expressions that allow the network to learn non-linear boundaries.<br><br>
+        <strong>Common activation functions:</strong><br>
+        • <strong>Sigmoid:</strong> σ(x) = 1/(1+e⁻ˣ), derivative = σ(x)(1-σ(x)) — max 0.25 → vanishing gradient<br>
+        • <strong>ReLU:</strong> max(0,x), derivative = 0 or 1 — no vanishing, but "dying ReLU" (dead neurons with gradient 0)<br>
+        • <strong>GELU:</strong> x·Φ(x) where Φ is normal CDF — smooth ReLU approximation, used in transformers<br>
+        • <strong>SwiGLU:</strong> x·σ(βx) — used in LLaMA, Mistral. Empirically better for LLMs.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Linear Algebra</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Probability →</button>
+  </div>
 </div>
 
-<div class="topic">
-<h3>Eigenvalues & Eigenvectors</h3>
-<p>An eigenvector doesn't rotate — it only scales.</p>
-<p>Eigenvalue tells how much it scales.</p>
-<div class="highlight">
-Large Hessian eigenvalues = sharp curvature = training instability.
-</div>
+<!-- ═══════════════════════════════════ -->
+<!-- CH 3: PROBABILITY                  -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 03 / 08</div>
+      <div class="ch-tag">Core</div>
+    </div>
+    <div class="ch-title">Probability<br><em>Theory</em></div>
+    <p class="ch-lead">ML models don't output answers — they output probability distributions. Every loss function, every uncertainty estimate, every generative model is built on probability theory.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Why Probability</div>
+    <h2>Models Are Distributions, Not Answers</h2>
+    <p>A classifier outputs P(class | input). An LLM outputs P(next token | previous tokens). A VAE learns P(data). Understanding probability means understanding <strong>what the model is actually computing</strong>, not just treating it as a black box.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is Bayes' theorem? Give an ML example. <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Bayes' Theorem:
+P(A | B) = P(B | A) × P(A) / P(B)
+
+In words:
+  Posterior = Likelihood × Prior / Evidence
+
+P(A|B): probability of A given we observed B (what we want)
+P(B|A): probability of observing B if A is true (model of data)
+P(A):   prior probability of A (what we believed before)
+P(B):   total probability of observing B (normalizing constant)</div>
+        <strong>ML Example — Spam Filter:</strong><br>
+        • P(spam | email contains "lottery") = ?<br>
+        • P("lottery" | spam) = 0.4 (40% of spam has this word)<br>
+        • P(spam) = 0.2 (20% of emails are spam — prior)<br>
+        • P("lottery") = 0.1 (10% of all emails have this word)<br>
+        • P(spam | "lottery") = 0.4 × 0.2 / 0.1 = <strong>0.8</strong> (80%!)<br><br>
+        <strong>Bayesian vs frequentist ML:</strong><br>
+        • Frequentist: parameters are fixed unknowns, find the best point estimate (MLE, MAP)<br>
+        • Bayesian: parameters have distributions, maintain a posterior over all possible parameter values<br><br>
+        <div class="tag">Deep learning</div> Most deep learning is frequentist (find best weights). Bayesian deep learning (distributions over weights) is an active research area for uncertainty quantification.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is MLE vs MAP estimation? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">MLE (Maximum Likelihood Estimation):
+  θ_MLE = argmax P(data | θ)
+  Find parameters that make the observed data MOST LIKELY
+  No prior assumption — purely data-driven
+
+MAP (Maximum A Posteriori):
+  θ_MAP = argmax P(θ | data)
+         = argmax P(data | θ) × P(θ)   [by Bayes, ignoring constant]
+  Same as MLE but multiplied by a prior P(θ)
+  Prior acts as REGULARIZATION</div>
+        <strong>The connection to regularization:</strong><br>
+        • If prior P(θ) is Gaussian: MAP = MLE + L2 regularization (weight decay!)<br>
+        • If prior P(θ) is Laplace: MAP = MLE + L1 regularization (lasso, promotes sparsity)<br><br>
+        This means <strong>every time you add L2 regularization, you're implicitly doing MAP estimation with a Gaussian prior.</strong> Regularization has a probabilistic interpretation.<br><br>
+        <strong>Example — linear regression:</strong><br>
+        • MLE → ordinary least squares (minimizes sum of squared errors)<br>
+        • MAP with Gaussian prior → ridge regression (minimizes squared errors + λ‖w‖²)<br><br>
+        <div class="tag gold">Interview signal</div> Connecting regularization to Bayesian priors shows deep understanding. Most people know L2 regularization but not its probabilistic meaning.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the difference between independence and conditional independence? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Independence:
+  P(A ∩ B) = P(A) × P(B)
+  Knowing B tells you NOTHING about A
+
+Conditional Independence (A ⊥ B | C):
+  P(A ∩ B | C) = P(A | C) × P(B | C)
+  Given C, knowing B tells you nothing about A
+  (but before knowing C, A and B may be correlated!)</div>
+        <strong>Classic example — Naive Bayes:</strong> Assumes all features are conditionally independent given the class label. P(word₁, word₂ | spam) = P(word₁ | spam) × P(word₂ | spam). Wildly wrong assumption, but the classifier still works well in practice because the errors often cancel.<br><br>
+        <strong>Markov assumption in LLMs:</strong> Theoretically, each token depends on all previous tokens. This is not a Markov chain. But in older n-gram models, you assume the next word only depends on the last N words (conditional independence given those N words). LLMs use attention to avoid this simplification.<br><br>
+        <div class="tag rose">Important distinction</div> Two variables can be dependent overall but conditionally independent given a third variable. And vice versa — independent variables can become dependent when you condition on a common effect (Berkson's paradox).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the KL divergence? Why does it appear everywhere in ML? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">KL Divergence (Kullback-Leibler):
+  KL(P ‖ Q) = Σ P(x) log(P(x) / Q(x))    [discrete]
+             = ∫ p(x) log(p(x) / q(x)) dx  [continuous]
+
+Properties:
+  KL(P‖Q) ≥ 0 always (Gibbs' inequality)
+  KL(P‖Q) = 0 iff P = Q
+  NOT symmetric: KL(P‖Q) ≠ KL(Q‖P)</div>
+        <strong>Intuition:</strong> KL divergence measures how many extra bits you need to encode samples from P if you use a code optimized for Q. It's the "surprise" cost of using the wrong distribution.<br><br>
+        <strong>Where it appears in ML:</strong><br>
+        • <strong>Cross-entropy loss:</strong> H(P,Q) = H(P) + KL(P‖Q). Minimizing cross-entropy loss = minimizing KL divergence from model to data distribution.<br>
+        • <strong>VAEs:</strong> ELBO loss has a KL term between posterior q(z|x) and prior p(z) — regularizes the latent space to be Gaussian.<br>
+        • <strong>RLHF:</strong> PPO adds a KL penalty between the updated policy and the SFT model — prevents the model from drifting too far from the reference.<br>
+        • <strong>Knowledge distillation:</strong> Minimize KL(teacher outputs ‖ student outputs) — transfer soft probability distributions, not hard labels.<br>
+        • <strong>Variational inference:</strong> Approximate intractable posteriors by minimizing KL divergence.<br><br>
+        <div class="tag violet">Asymmetry matters</div> KL(P‖Q) penalizes placing low probability where P has high probability (mode-covering). KL(Q‖P) penalizes placing high probability where P has low probability (mode-seeking). GANs and VAEs differ in which direction they minimize.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Calculus</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Statistics →</button>
+  </div>
 </div>
 
-<div class="topic">
-<h3>SVD — The Most Important Decomposition</h3>
-<div class="code">A = UΣVᵀ</div>
-<p>U and V rotate. Σ scales.</p>
-<div class="tradeoff">
-Low-rank approximations power PCA, LoRA, and model compression.
-</div>
+<!-- ═══════════════════════════════════ -->
+<!-- CH 4: STATISTICS                   -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 04 / 08</div>
+      <div class="ch-tag">Applied</div>
+    </div>
+    <div class="ch-title">Statistical<br><em>Learning</em></div>
+    <p class="ch-lead">Statistics tells you how to draw conclusions from data, how confident to be, and whether your model is actually learning or just memorizing noise.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is the bias-variance tradeoff? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Expected error decomposition:
+  E[(y - ŷ)²] = Bias² + Variance + Irreducible Noise
+
+Bias:     How far is the model's average prediction from truth?
+          High bias = underfitting (model too simple)
+
+Variance: How much does the prediction change with different training data?
+          High variance = overfitting (model too sensitive to training noise)
+
+Irreducible noise: Can't be reduced — inherent randomness in data</div>
+        <strong>The tradeoff:</strong><br>
+        • Simple model (linear): high bias (can't fit complex patterns), low variance (stable predictions)<br>
+        • Complex model (deep network): low bias (can fit anything), high variance (overfits, unstable)<br><br>
+        <strong>What changes this tradeoff:</strong><br>
+        • More training data → reduces variance (with same model complexity)<br>
+        • Regularization → increases bias, reduces variance → net benefit on test set<br>
+        • Ensembles → reduce variance by averaging (random forests, bagging)<br>
+        • Boosting → reduces bias by sequentially correcting errors<br><br>
+        <strong>Modern twist — double descent:</strong> Very large neural networks and LLMs break the classical curve. After the "interpolation threshold," test error decreases again as model size grows far beyond training data size. The bias-variance curve is not monotone for over-parameterized models.<br><br>
+        <div class="tag">LLM scale</div> GPT-4 is massively over-parameterized relative to any individual task dataset, yet generalizes. The classical tradeoff doesn't fully explain this — implicit regularization in SGD plays a key role.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is cross-validation? When do you use k-fold vs other schemes? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Cross-validation</strong> = technique to estimate model performance without wasting data on a fixed test set.<br><br>
+        <div class="formula">k-fold cross validation:
+1. Split data into k equal folds
+2. For each fold i: train on k-1 folds, evaluate on fold i
+3. Average the k validation scores → unbiased performance estimate
+
+Common k values: 5 or 10
+Extreme case: k=n → Leave-One-Out CV (LOOCV)
+  Very low bias, very high variance, very slow for large n</div>
+        <strong>When to use which:</strong><br>
+        • <strong>k-fold (k=5 or 10):</strong> Standard choice. Good bias-variance tradeoff in the estimate.<br>
+        • <strong>Stratified k-fold:</strong> When classes are imbalanced — ensure each fold has the same class distribution. Always use for classification.<br>
+        • <strong>Time-series CV (walk-forward):</strong> For time-series data — never let future data appear in training fold. Train on [1..t], test on [t+1..t+k], then expand.<br>
+        • <strong>Group k-fold:</strong> When samples aren't independent (multiple images of same patient) — ensure all samples from one group stay in the same fold.<br><br>
+        <div class="tag rose">Common mistake</div> Doing feature selection or preprocessing on the full dataset before cross-validation. This leaks information from the validation fold into training → optimistically biased estimates. CV must wrap the entire pipeline.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain p-values and statistical significance. Why are they controversial in ML? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">p-value = P(observing data this extreme | null hypothesis is true)
+
+If p &lt; α (typically 0.05):
+  "Reject the null hypothesis" → result is "statistically significant"
+  Does NOT mean the effect is large or practically meaningful
+  Does NOT mean P(null hypothesis is true) = p</div>
+        <strong>What p-values actually tell you:</strong> If the null hypothesis were true (e.g., "model A and B perform the same"), how likely would we be to see a performance difference this large just by chance? Low p-value = the difference is unlikely due to chance.<br><br>
+        <strong>Why p-values are controversial in ML:</strong><br>
+        • ML uses large datasets → tiny, practically meaningless differences become "statistically significant"<br>
+        • Multiple comparisons problem: testing 20 hyperparameters at p&lt;0.05 → expect 1 false positive by chance<br>
+        • People confuse statistical significance with practical significance<br>
+        • Better alternatives: effect size (Cohen's d), confidence intervals, Bayesian approaches<br><br>
+        <strong>In ML practice, prefer:</strong> proper held-out test sets, multiple runs with different seeds, reporting variance/std deviation alongside mean performance, bootstrap confidence intervals.<br><br>
+        <div class="tag gold">A/B testing</div> In production ML, statistical significance of A/B tests matters more. But always check: is the sample size large enough? Is there a confounding variable? Is the effect practically meaningful?
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the Central Limit Theorem and why does it matter for ML? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Central Limit Theorem (CLT):
+The sum (or average) of n independent random variables
+approaches a NORMAL DISTRIBUTION as n → ∞,
+regardless of the original distribution.
+
+If X₁,...,Xₙ ~ any distribution with mean μ, variance σ²:
+  X̄ = (1/n)Σ Xᵢ ~ N(μ, σ²/n) approximately, for large n
+
+Standard error of the mean = σ / √n
+(Larger sample → more precise estimate → error shrinks as √n)</div>
+        <strong>Why it matters for ML:</strong><br>
+        • <strong>Validation estimates:</strong> Your validation loss is an average over many samples. By CLT, it's approximately normally distributed. This justifies using confidence intervals around performance metrics.<br>
+        • <strong>Weight initialization:</strong> Sum of many random inputs to a neuron → approximately normal → justifies Gaussian initialization (Xavier, Kaiming).<br>
+        • <strong>Batch normalization:</strong> CLT is part of why normalization works — mini-batch statistics approximate population statistics for large batches.<br>
+        • <strong>Gradient noise:</strong> Mini-batch gradient = average of n per-sample gradients → approximately Gaussian by CLT → justifies SGD's noise model.<br>
+        • <strong>Bootstrap methods:</strong> CLT underpins why bootstrap confidence intervals work.<br><br>
+        <div class="tag">Practical implication</div> "Run your experiment with multiple seeds and report mean ± std." This works because of CLT — the mean across seeds is a normally distributed estimator of true performance.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Probability</button>
+    <button class="nbtn primary" onclick="nextCh(3)">Optimization →</button>
+  </div>
 </div>
 
-<div class="topic">
-<h3>Dot Product & Cosine Similarity</h3>
-<div class="code">a · b = |a||b|cos(θ)</div>
-<p>Measures alignment between vectors.</p>
-<div class="highlight">
-Attention = Q·Kᵀ → alignment scoring.
-</div>
+<!-- ═══════════════════════════════════ -->
+<!-- CH 5: OPTIMIZATION                 -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 05 / 08</div>
+      <div class="ch-tag">Critical</div>
+    </div>
+    <div class="ch-title">Optimization<br><em>Theory</em></div>
+    <p class="ch-lead">Training is an optimization problem. Adam, learning rate schedules, gradient clipping, loss landscapes — all of this is applied optimization theory. Know it deeply.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is gradient descent? What are local vs global minima? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Gradient descent update:
+  θ ← θ - α · ∇L(θ)
+
+Local minimum:  ∇L = 0, but not the globally smallest point
+Global minimum: the absolute lowest point of L(θ)
+Saddle point:   ∇L = 0, but it's a min in some directions, max in others</div>
+        <strong>The good news for deep learning:</strong> In high-dimensional spaces (billions of parameters), true local minima are extremely rare. Most critical points where ∇L=0 are saddle points. And most local minima that exist have nearly the same loss as the global minimum. The loss landscape of modern neural networks is "surprisingly benign."<br><br>
+        <strong>What actually matters:</strong> Flat minima vs sharp minima. Flat = lower curvature around the minimum = better generalization. Sharp = the loss spikes quickly if you move slightly = worse generalization. SGD's noise bias the optimizer toward flatter minima.<br><br>
+        <div class="tag">Practical</div> Don't worry about getting stuck in local minima. Worry about: learning rate too large (diverge), learning rate too small (slow), saddle points (momentum helps escape), and flat loss regions (dead neurons, bad initialization).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain Adam optimizer. How does it improve on SGD? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Adam (Adaptive Moment Estimation):
+
+Hyperparameters: α (lr), β₁=0.9, β₂=0.999, ε=1e-8
+
+At each step t:
+  m_t = β₁·m_{t-1} + (1-β₁)·g_t        ← 1st moment (mean of gradients)
+  v_t = β₂·v_{t-1} + (1-β₂)·g_t²       ← 2nd moment (variance of gradients)
+
+Bias correction (important at start when m,v ≈ 0):
+  m̂_t = m_t / (1 - β₁ᵗ)
+  v̂_t = v_t / (1 - β₂ᵗ)
+
+Update:
+  θ_t = θ_{t-1} - α · m̂_t / (√v̂_t + ε)</div>
+        <strong>What each part does:</strong><br>
+        • <strong>1st moment (m):</strong> Exponential moving average of gradients → momentum. Smooths noisy gradients, accelerates consistent directions.<br>
+        • <strong>2nd moment (v):</strong> Exponential moving average of squared gradients → tracks per-parameter learning rate. Parameters with large historical gradients get smaller updates automatically.<br>
+        • <strong>Adaptive learning rates:</strong> Parameters that rarely get large gradients (sparse features) get bigger updates. Dense parameters get smaller updates.<br><br>
+        <strong>Adam vs SGD:</strong><br>
+        • Adam converges faster, less sensitive to learning rate choice<br>
+        • SGD often generalizes slightly better (used in many CV models)<br>
+        • AdamW = Adam + proper weight decay (fixes Adam's L2 regularization bug) — standard for LLMs<br><br>
+        <div class="tag sky">LLM training</div> GPT-4, LLaMA, Claude all use AdamW with β₁=0.9, β₂=0.95 (not the default 0.999), cosine learning rate schedule with warmup.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the learning rate? What happens if it's too large or too small? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Learning rate α in: θ ← θ - α · ∇L(θ)
+
+Too large:  - Steps overshoot the minimum
+            - Loss oscillates or diverges (NaN)
+            - Especially catastrophic on sharp loss surfaces
+
+Too small:  - Converges very slowly
+            - May get stuck in poor local region
+            - Training takes prohibitively long
+
+Just right: - Smooth, fast convergence
+            - Typical range: 1e-4 to 3e-4 for AdamW on LLMs</div>
+        <strong>Learning rate schedules (all used in practice):</strong><br>
+        • <strong>Warmup:</strong> Start very small, linearly increase for first N steps. Critical for large models — avoids large gradient updates before model has any coherent structure.<br>
+        • <strong>Cosine decay:</strong> After warmup, smoothly decay lr following a cosine curve to near-zero. Standard for LLM pretraining.<br>
+        • <strong>Linear decay:</strong> Simpler alternative. Less smooth.<br>
+        • <strong>Cyclical LR:</strong> Oscillates between low and high — helps explore and escape saddle points.<br>
+        • <strong>One-cycle:</strong> Fast ramp up, slow decay — FastAI popularized this for quick training.<br><br>
+        <div class="tag rose">Common mistake</div> Using the same learning rate for fine-tuning as pretraining. Fine-tuning should use 10-100× smaller lr — the model is already near a good minimum, large steps will destroy pretrained knowledge.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is convexity? Which ML loss functions are convex? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Convex function: f(λx + (1-λ)y) ≤ λf(x) + (1-λ)f(y) for all λ∈[0,1]
+  "The line segment between any two points lies above the function"
+  
+Equivalently (second order): Hessian is positive semidefinite everywhere
+  H ≽ 0  →  all eigenvalues of H are ≥ 0
+
+Key property: any local minimum of a convex function is the global minimum
+Gradient descent on convex problems is guaranteed to converge</div>
+        <strong>Convex ML loss functions:</strong><br>
+        • Linear regression (MSE loss): convex — one global minimum, analytical solution exists<br>
+        • Logistic regression (log loss): convex — gradient descent guaranteed to find global optimum<br>
+        • SVM (hinge loss + L2 regularization): convex<br>
+        • Lasso, Ridge: convex<br><br>
+        <strong>Non-convex (deep learning):</strong><br>
+        • Any neural network with non-linear activations: non-convex — no guarantee of global optimum<br>
+        • But: empirically works well anyway (see flat minima discussion)<br><br>
+        <strong>Why it matters for ML engineering:</strong> If your loss function is convex (logistic regression, linear SVM), you have theoretical guarantees. If non-convex (neural net), you rely on empirical best practices. Knowing this helps you set appropriate expectations and debug training issues.<br><br>
+        <div class="tag violet">Practical test</div> If gradient descent isn't converging on what should be a simple problem, check: is the problem actually convex? Are you using the right loss function? Is your learning rate appropriate?
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Statistics</button>
+    <button class="nbtn primary" onclick="nextCh(4)">Information Theory →</button>
+  </div>
 </div>
 
+<!-- ═══════════════════════════════════ -->
+<!-- CH 6: INFORMATION THEORY           -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 06 / 08</div>
+      <div class="ch-tag">Advanced</div>
+    </div>
+    <div class="ch-title">Information<br><em>Theory</em></div>
+    <p class="ch-lead">Entropy, cross-entropy, mutual information — these aren't abstract math. They're the foundation of every loss function you've ever used and the reason LLMs are trained the way they are.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is entropy? What does it measure? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Shannon Entropy:
+H(X) = -Σ P(x) · log₂ P(x)    (measured in bits)
+     = E[-log P(X)]             (expected surprise)
+
+Examples:
+  Fair coin (P=0.5, P=0.5):    H = 1 bit   (maximum uncertainty)
+  Biased coin (P=0.99, P=0.01): H ≈ 0.08 bits (very predictable)
+  10-sided fair die:            H = log₂(10) ≈ 3.32 bits
+
+Properties:
+  H ≥ 0 always
+  H = 0 when outcome is certain (one P=1)
+  H is maximized by uniform distribution</div>
+        <strong>Intuition:</strong> Entropy = average surprise = how unpredictable a distribution is = how many bits you need on average to encode a sample from it.<br><br>
+        <strong>In ML:</strong><br>
+        • LLMs are evaluated by <strong>perplexity</strong> = 2^H ≈ e^H, the "effective number of choices" the model has at each token step. Lower perplexity = better model.<br>
+        • Maximum entropy principle: when you don't know anything, assume a uniform distribution (maximum entropy prior)<br>
+        • Entropy of your label distribution tells you how hard a classification problem is<br><br>
+        <div class="tag">LLM perplexity</div> Perplexity = exp(cross-entropy loss). GPT-2: ~25 perplexity on WebText. GPT-4: estimated ~5-8. Each perplexity unit = significant improvement.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain cross-entropy loss. Why do we use it for classification? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Cross-entropy H(P, Q):
+  H(P, Q) = -Σ P(x) · log Q(x)
+
+  P = true distribution (one-hot: [0,0,1,0] for class 2)
+  Q = model's predicted distribution (softmax output)
+
+For one-hot P:
+  H(P, Q) = -log Q(correct class)
+           = -log(probability assigned to the right answer)
+
+Relationship to KL divergence:
+  H(P, Q) = H(P) + KL(P ‖ Q)
+  Since H(P) = 0 for one-hot labels (no uncertainty in truth):
+  Minimizing cross-entropy ≡ minimizing KL(P ‖ Q)</div>
+        <strong>Why it's the right loss for classification:</strong><br>
+        1. It's a proper scoring rule — maximized exactly when the model outputs the true probabilities<br>
+        2. Penalizes confident wrong predictions very harshly: if model says 0.001 for the correct class, loss = -log(0.001) = 6.9 bits — huge penalty<br>
+        3. Minimizing cross-entropy = MLE for categorical distributions<br>
+        4. Produces meaningful probability outputs (vs MSE, which doesn't)<br><br>
+        <strong>Why NOT MSE for classification:</strong> MSE treats class 0 and class 1 symmetrically and doesn't penalize confident wrong answers harshly enough. It also has flat gradients when predictions are near 0 or 1 (saturated sigmoid).<br><br>
+        <div class="tag gold">LLM training</div> LLMs minimize cross-entropy loss on next-token prediction. The loss directly measures: "how many bits does the model need to predict each token?" Better models need fewer bits.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is mutual information? How is it used in feature selection? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Mutual Information I(X; Y):
+  I(X; Y) = H(X) - H(X | Y)
+           = H(Y) - H(Y | X)
+           = H(X) + H(Y) - H(X, Y)
+           = KL(P(X,Y) ‖ P(X)P(Y))
+
+Measures: how much knowing Y reduces uncertainty about X
+I(X;Y) = 0  iff X and Y are independent
+I(X;Y) > 0  means they share information</div>
+        <strong>In feature selection:</strong> Compute I(feature; label) for every feature. Features with high mutual information with the label are highly relevant — knowing that feature significantly reduces uncertainty about the class. Select top-k.<br><br>
+        <strong>Advantage over correlation:</strong> Mutual information captures non-linear dependencies. Pearson correlation only captures linear relationships. Two variables can have zero correlation but high mutual information (e.g., y = x², where x is symmetric around 0).<br><br>
+        <strong>In deep learning:</strong><br>
+        • <strong>Information Bottleneck principle:</strong> Optimal representations maximize I(representation; label) and minimize I(representation; input). Compression + relevance.<br>
+        • <strong>Contrastive learning (SimCLR, CLIP):</strong> InfoNCE loss is a lower bound on mutual information between views of the same sample.<br>
+        • <strong>MINE:</strong> Mutual Information Neural Estimator — neural network that estimates MI from samples when distributions are unknown.<br><br>
+        <div class="tag violet">Limitation</div> Hard to estimate in high dimensions — requires estimating joint distributions from samples, which is difficult when dimensionality is high.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← Optimization</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Numerical Methods →</button>
+  </div>
 </div>
 
-<div class="section">
-<h2>Part 2: Calculus & Optimization</h2>
+<!-- ═══════════════════════════════════ -->
+<!-- CH 7: NUMERICAL METHODS            -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 07 / 08</div>
+      <div class="ch-tag">Practical</div>
+    </div>
+    <div class="ch-title">Numerical<br><em>Methods</em></div>
+    <p class="ch-lead">Real computers use floating point numbers, not infinite-precision math. Numerical stability, overflow, underflow, and precision bugs are real ML engineering problems you must understand.</p>
+  </div>
 
-<div class="topic">
-<h3>Gradients</h3>
-<p>Gradient ∇L points in steepest ascent direction.</p>
-<div class="highlight">
-Gradient is local. Learning rate controls step size.
-</div>
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is numerical instability? Give a real ML example. <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Numerical instability</strong> = small errors in computation (from floating point precision) grow catastrophically as operations compound.<br><br>
+        <div class="formula">Example: Naive softmax
+  softmax(x)ᵢ = exp(xᵢ) / Σ exp(xⱼ)
+
+If x = [1000, 1001, 1002]:
+  exp(1000) = 5.07 × 10^434   ← OVERFLOW! (float64 max ≈ 1.8×10^308)
+  Result: nan or inf
+
+Numerically stable softmax (subtract max first):
+  x' = x - max(x)   →   x' = [-2, -1, 0]
+  exp(x') = [0.135, 0.368, 1.0]   ← safely in range
+  softmax = [0.090, 0.245, 0.665]  ← mathematically identical!</div>
+        <strong>The trick:</strong> softmax(x) = softmax(x - c) for any constant c. Subtracting the max makes the largest value 0, and all others negative — exp of negative numbers can't overflow.<br><br>
+        <strong>Other examples in ML:</strong><br>
+        • <strong>log-sum-exp:</strong> Same trick. log(Σ exp(xᵢ)) = max(x) + log(Σ exp(xᵢ - max(x)))<br>
+        • <strong>Vanishing gradients:</strong> Many multiplications of small numbers → underflow to 0 → gradient disappears<br>
+        • <strong>Mixed precision training:</strong> BF16/FP16 can cause overflow in attention (QKᵀ scores get large) → need scaled dot-product attention (divide by √d_k)<br>
+        • <strong>Log probabilities:</strong> Multiplying many probabilities → underflow. Always work in log space, add instead of multiply.<br><br>
+        <div class="tag rose">Real bug</div> The √d_k scaling in transformer attention (Attention = softmax(QKᵀ/√d_k)V) is explicitly for numerical stability. Without it, large d_k → large dot products → softmax becomes very peaked → vanishing gradients.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is gradient clipping and why is it needed? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Gradient clipping:
+  if ‖g‖ > threshold:
+    g ← g × (threshold / ‖g‖)
+  
+  Clips the NORM of the gradient vector, not individual components
+  (preserves gradient direction, just limits step size)
+
+Typical threshold: 1.0 for LLMs (GPT, LLaMA all use this)
+PyTorch: torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)</div>
+        <strong>Why it's needed:</strong><br>
+        • In RNNs and deep networks, gradients can explode — multiply together through many layers → gradient norm grows exponentially → one massive step → weights blow up → NaN<br>
+        • In LLMs with long sequences, occasional examples can produce very large gradients (the model encounters something very surprising in the data)<br>
+        • Without clipping, one bad batch can destroy a training run that has been running for weeks<br><br>
+        <strong>Gradient clipping vs vanishing gradients:</strong><br>
+        • Exploding gradients: clip (norm-based)<br>
+        • Vanishing gradients: better architectures (residual connections, attention), better activations (ReLU, GELU), normalization (LayerNorm, BatchNorm)<br><br>
+        <div class="tag">Monitoring tip</div> Log gradient norms during training. If clipping fires frequently (&gt;50% of steps), your learning rate is too high or your model has architectural issues. Occasional clipping is normal.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Explain Batch Normalization and Layer Normalization mathematically. <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Batch Normalization (normalize across BATCH dimension):
+  For feature j, over batch of size n:
+  μⱼ = (1/n) Σᵢ xᵢⱼ                  ← batch mean
+  σⱼ² = (1/n) Σᵢ (xᵢⱼ - μⱼ)²         ← batch variance
+  x̂ᵢⱼ = (xᵢⱼ - μⱼ) / √(σⱼ² + ε)     ← normalize
+  yᵢⱼ = γⱼ · x̂ᵢⱼ + βⱼ               ← learnable scale/shift
+
+Layer Normalization (normalize across FEATURE dimension):
+  For sample i with d features:
+  μᵢ = (1/d) Σⱼ xᵢⱼ
+  σᵢ² = (1/d) Σⱼ (xᵢⱼ - μᵢ)²
+  x̂ᵢⱼ = (xᵢⱼ - μᵢ) / √(σᵢ² + ε)
+  yᵢⱼ = γⱼ · x̂ᵢⱼ + βⱼ</div>
+        <strong>Key difference:</strong> BatchNorm normalizes across the batch → depends on batch size → fails with batch size 1 → bad for autoregressive inference. LayerNorm normalizes within each sample → independent of batch size → works for transformers where sequences vary in length.<br><br>
+        <strong>Why normalization helps training:</strong><br>
+        • Prevents internal covariate shift: distribution of activations stays stable as weights change<br>
+        • Allows higher learning rates (gradients don't explode in unnormalized layers)<br>
+        • Slight regularization effect (BatchNorm noise from mini-batch estimates)<br>
+        • Pre-LayerNorm (used in modern LLMs): normalize before attention/FFN, not after → more stable gradients at depth<br><br>
+        <div class="tag sky">Modern LLMs</div> Use Pre-LayerNorm + RMSNorm (simplified LayerNorm without mean centering). LLaMA, Mistral use RMSNorm: yᵢⱼ = γⱼ · xᵢⱼ / √(mean(x²) + ε). Faster, equally effective.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← Information Theory</button>
+    <button class="nbtn primary" onclick="nextCh(6)">Graph &amp; Discrete →</button>
+  </div>
 </div>
 
-<div class="topic">
-<h3>The Chain Rule — Backprop</h3>
-<div class="code">∂L/∂w = ∂L/∂y · ∂y/∂w</div>
-<div class="tradeoff">
-Training uses more memory because activations must be stored.
-</div>
+<!-- ═══════════════════════════════════ -->
+<!-- CH 8: GRAPH & DISCRETE MATH        -->
+<!-- ═══════════════════════════════════ -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-eyebrow">
+      <div class="ch-num">Chapter 08 / 08</div>
+      <div class="ch-tag">Specialized</div>
+    </div>
+    <div class="ch-title">Graph &amp;<br><em>Discrete Math</em></div>
+    <p class="ch-lead">Graph Neural Networks, knowledge graphs, tokenization, algorithmic complexity — discrete math underpins the parts of ML that don't fit neatly into continuous optimization.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is Big-O notation? Why does it matter when building ML systems? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <div class="formula">Big-O notation: O(f(n)) describes how runtime scales with input size n
+
+Common complexities (fast to slow):
+  O(1)       — constant: hash table lookup
+  O(log n)   — logarithmic: binary search
+  O(n)       — linear: scanning all embeddings
+  O(n log n) — linearithmic: sorting, argsort
+  O(n²)      — quadratic: self-attention, brute-force similarity search
+  O(n³)      — cubic: full matrix inversion, naive SVD
+  O(2ⁿ)      — exponential: exhaustive search (never for large n)</div>
+        <strong>Why it matters for ML systems:</strong><br>
+        • <strong>Attention is O(n²):</strong> Doubling the sequence length quadruples the attention cost. This is the core scalability limit of standard transformers. Flash Attention makes this memory-efficient but doesn't change the complexity.<br>
+        • <strong>Brute-force vector search is O(n·d):</strong> Search 10M vectors of dim 1536 → 15B operations per query. ANN (HNSW) reduces query to O(log n) at the cost of index build time and memory.<br>
+        • <strong>Matrix multiply is O(n³) naive:</strong> 4096×4096 matrix × 4096×4096 = 68B operations. GPUs are designed to do this fast but it's still the dominant cost in transformers.<br>
+        • <strong>Sorting is O(n log n):</strong> argpartition (O(n)) vs argsort (O(n log n)) — the difference matters at 10M vectors.<br><br>
+        <div class="tag gold">Real tradeoff</div> O(n²) attention is why 1M context Gemini costs so much more than 8K context GPT-3.5. Quadratic cost is not theoretical — it's a major cost driver in production.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is a Graph Neural Network? How does message passing work? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Graph Neural Network (GNN)</strong> = a neural network that operates on graph-structured data (nodes, edges).<br><br>
+        <div class="formula">Graph G = (V, E): nodes V, edges E
+Each node v has a feature vector hᵥ
+
+Message Passing (one layer):
+  1. MESSAGE:  mᵤᵥ = φ(hᵤ, hᵥ, eᵤᵥ)      for each edge (u,v)
+               (compute message from neighbor u to v)
+
+  2. AGGREGATE: aᵥ = ⊕_{u∈N(v)} mᵤᵥ        
+               (aggregate all incoming messages, ⊕ = sum/mean/max)
+
+  3. UPDATE:   hᵥ' = ψ(hᵥ, aᵥ)              
+               (update node v's representation)
+
+After k layers: each node knows about its k-hop neighborhood</div>
+        <strong>Why it matters for AI:</strong><br>
+        • <strong>Molecular property prediction:</strong> Atoms = nodes, bonds = edges. GNNs predict drug properties, toxicity, protein folding.<br>
+        • <strong>Recommendation systems:</strong> Users and items as nodes, interactions as edges. PinSage (Pinterest), YouTube GNN.<br>
+        • <strong>Knowledge graphs:</strong> Entity linking, relation prediction.<br>
+        • <strong>Code analysis:</strong> Program dependence graphs, bug detection.<br><br>
+        <strong>Connection to attention:</strong> Transformers ARE a form of GNN where every token attends to every other token (fully connected graph) and attention weights are the edge weights. Message passing = attention.<br><br>
+        <div class="tag violet">Limitation</div> Over-smoothing: after many GNN layers, all node representations converge to the same value. Typically limited to 2-5 layers in practice.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is tokenization? What are BPE and WordPiece? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Tokenization</strong> = converting raw text to a sequence of integer IDs that the model processes. The vocabulary maps IDs ↔ subword pieces.<br><br>
+        <div class="formula">BPE (Byte-Pair Encoding):
+Algorithm:
+1. Start with character-level vocabulary
+2. Find the most frequent pair of adjacent tokens
+3. Merge that pair into a new token
+4. Repeat N times (N = desired vocab size - character vocab)
+
+"lower" + "lowest" → l,o,w,e,r,_,l,o,w,e,s,t
+Most frequent pair: "l","o" → "lo"
+Next: "lo","w" → "low"
+... → ["lower", "low", "est"]   (subwords)
+
+Used by: GPT-2/3/4, LLaMA, Mistral (cl100k_base or llama tokenizer)
+Vocab sizes: 32K–128K tokens typically</div>
+        <strong>WordPiece:</strong> Similar to BPE but merges maximize the language model likelihood of training data (not just frequency). Used by BERT, RoBERTa.<br><br>
+        <strong>Why subword tokenization?</strong><br>
+        • Character-level: very long sequences, loses morphological structure<br>
+        • Word-level: OOV problem, huge vocabulary for multilingual models<br>
+        • Subword: best of both — common words get single tokens, rare words split into pieces<br><br>
+        <strong>Tokenization gotchas that affect LLM behavior:</strong><br>
+        • Numbers: "1234567" may tokenize as ["123", "456", "7"] — arithmetic is hard because digits aren't aligned<br>
+        • Whitespace: leading spaces matter — " hello" and "hello" are different tokens<br>
+        • Languages: English-optimized tokenizers are less efficient for other languages → same text takes 3-5× more tokens in Chinese/Arabic<br><br>
+        <div class="tag rose">Interview signal</div> Knowing tokenization details explains LLM quirks — why they struggle with counting letters, why they produce odd behavior at context boundaries, why multilingual models cost more to run.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is dynamic programming and where does it appear in ML/NLP? <span class="toggle-icon">+</span></div>
+      <div class="qa-a">
+        <strong>Dynamic programming</strong> = solving problems by breaking them into overlapping subproblems, solving each once, and storing the results (memoization).<br><br>
+        <div class="formula">Key insight: if we've solved subproblem [i..j], we can reuse that solution
+instead of recomputing it when solving [i..k] for k > j.
+
+Time: O(n²) or O(n³) instead of exponential brute force
+Space: O(n) or O(n²) to store subproblem solutions</div>
+        <strong>Where it appears in ML/NLP:</strong><br>
+        • <strong>Viterbi algorithm (HMMs/CRFs):</strong> Find the most likely sequence of hidden states. Used in NER, POS tagging, speech recognition. O(n·k²) where k = number of states.<br>
+        • <strong>CTC (Connectionist Temporal Classification):</strong> Training speech-to-text and handwriting recognition. Forward-backward algorithm = DP over alignments.<br>
+        • <strong>Edit distance (Levenshtein):</strong> DP computes minimum edit distance between two strings. Used in spell-checking, fuzzy matching, evaluating generated text.<br>
+        • <strong>Bellman-Ford / shortest paths:</strong> Foundation of value iteration in reinforcement learning. Bellman equation IS a DP recurrence.<br>
+        • <strong>Beam search:</strong> Greedy approximate DP for sequence generation. At each step, keep top-k partial sequences (beams) instead of all possible sequences.<br><br>
+        <div class="tag sky">RL connection</div> The Bellman equation V(s) = max_a [R(s,a) + γ·V(s')] is a DP recurrence. Q-learning and value iteration directly implement DP over the state space. Deep RL replaces the DP table with a neural network.
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-label">⚡ Final Advice</div>
+    <p>The best ML engineers think in math but speak in intuition. When asked about gradient descent, <strong>don't recite the formula</strong> — explain that it's walking downhill on a loss surface. The formula matters, but the interviewer wants to know you understand what the math is <em>doing</em>, not just that you've memorized it.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← Numerical Methods</button>
+    <button class="nbtn primary" onclick="alert('🎉 All 8 chapters complete!\n\nYou now have the full mathematical foundation for ML & AI.\n\nNext: apply this to real interview questions!')">Complete! 🎓</button>
+  </div>
 </div>
 
-<div class="topic">
-<h3>Second-Order Methods</h3>
-<p>Newton's method uses Hessian.</p>
-<div class="tradeoff">
-Hessian is n×n. Impossible for trillion-parameter models.
-</div>
-</div>
+</main>
 
-<div class="topic">
-<h3>Learning Rate</h3>
-<div class="highlight">
-Too high → divergence. Too low → slow training.
-</div>
-<div class="tradeoff">
-Warmup + decay schedules stabilize training.
-</div>
-</div>
+<script>
+let cur = 0;
+const total = 8;
 
-<div class="topic">
-<h3>Adam & AdamW</h3>
-<p>Adam adapts learning rate per parameter.</p>
-<div class="tradeoff">
-3x memory usage vs SGD. Always prefer AdamW over Adam.
-</div>
-</div>
+function toggle(el) {
+  const ans = el.nextElementSibling;
+  const isOpen = ans.style.display === 'block';
+  ans.style.display = isOpen ? 'none' : 'block';
+  el.classList.toggle('open', !isOpen);
+}
 
-</div>
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  if (el) el.classList.add('active');
+  cur = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-<div class="section">
-<h2>Part 3: Probability & Information Theory</h2>
+function nextCh(c) {
+  if (c + 1 < total) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c + 1, items[c + 1]);
+  }
+}
 
-<div class="topic">
-<h3>MLE vs MAP</h3>
-<p>MLE maximizes likelihood.</p>
-<p>MAP includes prior (regularization).</p>
-<div class="highlight">
-L2 = Gaussian prior. L1 = Laplacian prior.
-</div>
-</div>
-
-<div class="topic">
-<h3>KL Divergence</h3>
-<p>KL(P||Q) ≠ KL(Q||P)</p>
-<div class="tradeoff">
-Forward KL → mean-seeking (VAEs).  
-Reverse KL → mode-seeking (RLHF).
-</div>
-</div>
-
-<div class="topic">
-<h3>Cross-Entropy Loss</h3>
-<div class="code">L = -Σ p(x) log q(x)</div>
-<p>Confidently wrong predictions are heavily punished.</p>
-</div>
-
-</div>
-
-<footer>
-Built for Deep Learning Mastery • Designed for Concept Clarity 🚀
-</footer>
-
-</div>
-
+function prevCh(c) {
+  if (c - 1 >= 0) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c - 1, items[c - 1]);
+  }
+}
+</script>
 </body>
 </html>
