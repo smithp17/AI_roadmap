@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python for AI/ML — Google L4 Interview Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface2: #f0ede8;
+  --surface3: #e8e4de;
+  --border: #d4cfc8;
+  --border2: #bfb9b1;
+  --text: #1a1814;
+  --text2: #5a554e;
+  --muted: #9a948c;
+  --accent: #e8401c;
+  --accent2: #c43518;
+  --blue: #1a56db;
+  --green: #0a7c4e;
+  --amber: #b45309;
+  --purple: #6d28d9;
+  --code-bg: #1e1e2e;
+  --code-text: #cdd6f4;
+  --code-keyword: #cba6f7;
+  --code-string: #a6e3a1;
+  --code-comment: #6c7086;
+  --code-func: #89b4fa;
+  --code-number: #fab387;
+  --code-type: #f9e2af;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 300;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* Subtle paper texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23f5f4f0'/%3E%3Crect width='1' height='1' x='0' y='0' fill='%23e8e4de' opacity='0.4'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* Navigation */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--text);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 0;
+  border-bottom: 3px solid var(--accent);
+}
+nav::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  color: #fff;
+  white-space: nowrap;
+  margin-right: 32px;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-brand-icon {
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.nav-item {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  padding: 0 14px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  white-space: nowrap;
+  transition: all 0.15s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.nav-item:hover { color: rgba(255,255,255,0.8); }
+.nav-item.active { color: #fff; border-bottom-color: var(--accent); }
+
+main {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 86px 28px 100px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Chapter */
+.chapter { display: none; animation: slideIn 0.3s ease both; }
+.chapter.active { display: block; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Chapter Header */
+.ch-header {
+  margin-bottom: 52px;
+  padding-bottom: 28px;
+  border-bottom: 2px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: start;
+}
+.ch-header-left {}
+.ch-header-right {
+  text-align: right;
+  padding-top: 4px;
+}
+
+.ch-crumb {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ch-crumb::before {
+  content: '//';
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ch-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  margin-bottom: 18px;
+  color: var(--text);
+}
+.ch-title span { color: var(--accent); }
+
+.ch-lead {
+  font-size: 13.5px;
+  color: var(--text2);
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 4px 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1.5px solid var(--border2);
+  color: var(--text2);
+}
+
+/* Sections */
+.section { margin-bottom: 60px; }
+
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::before {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+p {
+  margin-bottom: 14px;
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.75;
+}
+p strong { color: var(--text); font-weight: 600; }
+p:last-child { margin-bottom: 0; }
+
+/* Code Block */
+.code-block {
+  background: var(--code-bg);
+  border-radius: 0;
+  margin: 18px 0;
+  overflow: hidden;
+  border-left: 3px solid var(--accent);
+}
+.code-header {
+  background: rgba(255,255,255,0.06);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.code-lang {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+.code-dots { display: flex; gap: 5px; }
+.code-dots span {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+}
+.code-body {
+  padding: 18px 20px;
+  font-size: 12.5px;
+  color: var(--code-text);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.9;
+  font-family: 'JetBrains Mono', monospace;
+}
+.kw { color: var(--code-keyword); }
+.fn { color: var(--code-func); }
+.st { color: var(--code-string); }
+.cm { color: var(--code-comment); font-style: italic; }
+.nm { color: var(--code-number); }
+.tp { color: var(--code-type); }
+.op { color: #89dceb; }
+
+/* Q&A */
+.qa {
+  border: 1.5px solid var(--border);
+  margin: 14px 0;
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.qa:hover { border-color: var(--border2); box-shadow: 2px 2px 0 var(--border); }
+
+.qa-q {
+  padding: 15px 20px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  border-left: 4px solid var(--amber);
+  background: var(--surface);
+  transition: background 0.15s;
+  line-height: 1.5;
+}
+.qa-q:hover { background: var(--surface2); }
+.qa-q .ti { font-size: 18px; flex-shrink: 0; transition: transform 0.25s; color: var(--muted); font-weight: 300; margin-top: 1px; }
+.qa-q.open { border-left-color: var(--accent); }
+.qa-q.open .ti { transform: rotate(45deg); color: var(--accent); }
+
+.qa-a {
+  display: none;
+  padding: 20px 22px;
+  border-top: 1.5px solid var(--border);
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.8;
+  background: var(--surface);
+  border-left: 4px solid var(--surface3);
+}
+.qa-a strong { color: var(--text); font-weight: 600; }
+.qa-a code {
+  background: var(--code-bg);
+  color: var(--code-func);
+  padding: 1px 6px;
+  font-size: 11.5px;
+  border-radius: 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Tags */
+.tag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 8px;
+  border: 1.5px solid var(--border2);
+  color: var(--text2);
+  margin-right: 6px;
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.tag.red { border-color: var(--accent); color: var(--accent); }
+.tag.blue { border-color: var(--blue); color: var(--blue); }
+.tag.green { border-color: var(--green); color: var(--green); }
+.tag.amber { border-color: var(--amber); color: var(--amber); }
+.tag.purple { border-color: var(--purple); color: var(--purple); }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 8px;
+  margin-right: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-family: 'Syne', sans-serif;
+}
+.badge-easy { background: #dcfce7; color: var(--green); border: 1.5px solid #86efac; }
+.badge-med  { background: #fef3c7; color: var(--amber); border: 1.5px solid #fcd34d; }
+.badge-hard { background: #fee2e2; color: var(--accent); border: 1.5px solid #fca5a5; }
+.badge-google { background: #eff6ff; color: var(--blue); border: 1.5px solid #93c5fd; }
+
+/* Callout boxes */
+.callout {
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-left: 4px solid var(--blue);
+  background: #eff6ff;
+  font-size: 13px;
+}
+.callout-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.callout p { font-size: 13px; color: #1e3a6e; margin: 0; }
+
+.callout.warn {
+  border-left-color: var(--accent);
+  background: #fff5f5;
+}
+.callout.warn .callout-label { color: var(--accent); }
+.callout.warn p { color: #7f1d1d; }
+
+.callout.tip {
+  border-left-color: var(--green);
+  background: #f0fdf4;
+}
+.callout.tip .callout-label { color: var(--green); }
+.callout.tip p { color: #14532d; }
+
+.callout.google {
+  border-left-color: var(--amber);
+  background: #fffbeb;
+}
+.callout.google .callout-label { color: var(--amber); }
+.callout.google p { color: #78350f; }
+
+/* Table */
+.tbl-wrap { margin: 20px 0; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th {
+  background: var(--text);
+  color: rgba(255,255,255,0.8);
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-family: 'Syne', sans-serif;
+}
+td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text2);
+  line-height: 1.6;
+}
+tr:hover td { background: var(--surface2); }
+tr:last-child td { border-bottom: none; }
+td:first-child { color: var(--text); font-weight: 500; }
+td code {
+  background: var(--code-bg);
+  color: var(--code-func);
+  padding: 1px 5px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Two col */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }
+.mini-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  padding: 16px;
+  font-size: 12.5px;
+}
+.mini-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.mini-card p { font-size: 12.5px; color: var(--text2); margin: 0; }
+
+/* Nav buttons */
+.nav-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 2px solid var(--border);
+}
+.nbtn {
+  background: transparent;
+  border: 1.5px solid var(--border2);
+  color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.nbtn:hover { border-color: var(--accent); color: var(--accent); background: #fff5f5; }
+.nbtn.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+.nbtn.primary:hover { background: var(--accent2); }
+.nbtn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .ch-header { grid-template-columns: 1fr; }
+  .ch-header-right { text-align: left; }
+  .ch-title { font-size: 38px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <span class="nav-brand-icon">PY</span>
+    Python for ML
+  </div>
+  <div class="nav-item active" onclick="goTo(0,this)">① Core Python</div>
+  <div class="nav-item" onclick="goTo(1,this)">② Data Structures</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ NumPy</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ Pandas</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ PyTorch/TF</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ Concurrency</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ Design Patterns</div>
+  <div class="nav-item" onclick="goTo(7,this)">⑧ Testing &amp; Perf</div>
+</nav>
+
+<main>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 1: CORE PYTHON                   -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 01 / 08 — Python for AI/ML at Google</div>
+      <div class="ch-title">Core<br><span>Python</span></div>
+      <p class="ch-lead">Google L4 expects Python mastery — not just knowing syntax, but understanding the runtime, memory model, and idiomatic patterns that make professional code fast and maintainable.</p>
+    </div>
+    <div class="ch-header-right">
+      <div class="difficulty-badge">L4 / 2yr exp</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Python Internals</div>
+    <h2>What Google Actually Tests</h2>
+    <p>Google engineers don't just write Python — they write <strong>correct, efficient, idiomatic</strong> Python. The L4 bar expects you to know the "why" behind language features: how the GIL works, what happens under the hood with decorators, when generators beat lists, why mutability matters.</p>
+
+    <div class="callout google">
+      <div class="callout-label">🔴 Google Interview Pattern</div>
+      <p>Google interviewers will give you a working but naive solution and ask: "How would you make this more Pythonic?" or "What's the time/space complexity?" or "What happens if this runs on a 100GB dataset?" Know the answers before you sit down.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> Explain list comprehensions vs generator expressions. When do you use each? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <strong>List comprehension:</strong> Creates the full list in memory immediately. Returns a <code>list</code>.<br>
+        <strong>Generator expression:</strong> Lazy — computes values one at a time on demand. Returns a <code>generator</code> object.<br><br>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="cm"># List comprehension — all 1M items in RAM immediately</span>
+squares <span class="op">=</span> [x<span class="op">**</span><span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1_000_000</span>)]  <span class="cm"># ~8MB in memory</span>
+
+<span class="cm"># Generator expression — computes ONE item at a time</span>
+squares_gen <span class="op">=</span> (x<span class="op">**</span><span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1_000_000</span>))  <span class="cm"># ~120 bytes!</span>
+
+<span class="cm"># Use list when: you need to access items multiple times,</span>
+<span class="cm"># use indexing, or pass to something that needs a list</span>
+<span class="fn">sum</span>(squares)    <span class="cm"># already computed, just sum</span>
+squares[<span class="nm">999</span>]   <span class="cm"># random access — works</span>
+
+<span class="cm"># Use generator when: data is large, you only iterate once,</span>
+<span class="cm"># or you're chaining operations (pipeline)</span>
+<span class="fn">sum</span>(squares_gen)  <span class="cm"># streams through, never stores all at once</span>
+squares_gen[<span class="nm">999</span>] <span class="cm"># TypeError! generators have no indexing</span>
+
+<span class="cm"># ML use case: streaming large datasets</span>
+<span class="kw">def</span> <span class="fn">data_pipeline</span>(paths):
+    <span class="kw">return</span> (
+        preprocess(load(p))
+        <span class="kw">for</span> p <span class="kw">in</span> paths        <span class="cm"># never load all files at once</span>
+        <span class="kw">if</span> is_valid(p)
+    )</div>
+        </div>
+
+        <strong>Rule of thumb:</strong> Default to generator expressions for large data in ML pipelines. Use lists when you need random access, length checking, or will iterate multiple times (e.g., multiple epochs over a small dataset).<br><br>
+        <div class="tag blue">Memory</div> A list of 1M Python ints ≈ 8MB. Same generator ≈ 120 bytes. For 100GB datasets, generators aren't optional — they're required.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What are Python decorators? Write one from scratch. <span class="ti">+</span></div>
+      <div class="qa-a">
+        A <strong>decorator</strong> is a function that takes a function and returns a new function — wrapping additional behavior around it. Syntactic sugar for <code>fn = decorator(fn)</code>.<br><br>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> functools
+<span class="kw">import</span> time
+
+<span class="cm"># Basic decorator pattern</span>
+<span class="kw">def</span> <span class="fn">timer</span>(func):
+    <span class="st">"""Measure execution time of any function."""</span>
+    <span class="op">@</span><span class="fn">functools.wraps</span>(func)  <span class="cm"># preserves func.__name__, __doc__</span>
+    <span class="kw">def</span> <span class="fn">wrapper</span>(<span class="op">*</span>args, <span class="op">**</span>kwargs):
+        start <span class="op">=</span> time.perf_counter()
+        result <span class="op">=</span> func(<span class="op">*</span>args, <span class="op">**</span>kwargs)
+        elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> start
+        <span class="fn">print</span>(<span class="st">f"</span>{func.<span class="fn">__name__</span>}<span class="st"> took </span>{elapsed:.4f}<span class="st">s"</span>)
+        <span class="kw">return</span> result
+    <span class="kw">return</span> wrapper
+
+<span class="op">@</span>timer
+<span class="kw">def</span> <span class="fn">train_epoch</span>(model, dataloader):
+    ...  <span class="cm"># automatically timed now</span>
+
+<span class="cm"># Decorator WITH arguments (factory pattern)</span>
+<span class="kw">def</span> <span class="fn">retry</span>(max_attempts<span class="op">=</span><span class="nm">3</span>, delay<span class="op">=</span><span class="nm">1.0</span>):
+    <span class="kw">def</span> <span class="fn">decorator</span>(func):
+        <span class="op">@</span><span class="fn">functools.wraps</span>(func)
+        <span class="kw">def</span> <span class="fn">wrapper</span>(<span class="op">*</span>args, <span class="op">**</span>kwargs):
+            <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_attempts):
+                <span class="kw">try</span>:
+                    <span class="kw">return</span> func(<span class="op">*</span>args, <span class="op">**</span>kwargs)
+                <span class="kw">except</span> <span class="tp">Exception</span> <span class="kw">as</span> e:
+                    <span class="kw">if</span> attempt <span class="op">==</span> max_attempts <span class="op">-</span> <span class="nm">1</span>:
+                        <span class="kw">raise</span>
+                    time.sleep(delay <span class="op">*</span> (<span class="nm">2</span> <span class="op">**</span> attempt))  <span class="cm"># exponential backoff</span>
+        <span class="kw">return</span> wrapper
+    <span class="kw">return</span> decorator
+
+<span class="op">@</span><span class="fn">retry</span>(max_attempts<span class="op">=</span><span class="nm">3</span>, delay<span class="op">=</span><span class="nm">0.5</span>)
+<span class="kw">def</span> <span class="fn">call_llm_api</span>(prompt):
+    ...</div>
+        </div>
+
+        <strong>ML use cases for decorators:</strong> <code>@timer</code> for profiling training steps, <code>@retry</code> for API calls, <code>@cache</code> for expensive feature computation, <code>@torch.no_grad()</code> is itself a decorator.<br><br>
+        <div class="tag red">Critical</div> Always use <code>@functools.wraps</code> inside your decorator. Without it, <code>wrapped_fn.__name__</code> returns <code>'wrapper'</code> instead of the original function name — breaks logging, debugging, and introspection.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What are Python's *args and **kwargs? How are they used in ML frameworks? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="cm"># *args: collects extra POSITIONAL arguments into a tuple</span>
+<span class="cm"># **kwargs: collects extra KEYWORD arguments into a dict</span>
+
+<span class="kw">def</span> <span class="fn">model_forward</span>(<span class="op">*</span>inputs, <span class="op">**</span>config):
+    <span class="fn">print</span>(inputs)   <span class="cm"># tuple: (tensor1, tensor2, ...)</span>
+    <span class="fn">print</span>(config)   <span class="cm"># dict: {'dropout': 0.1, 'training': True}</span>
+
+model_forward(x, y, dropout<span class="op">=</span><span class="nm">0.1</span>, training<span class="op">=</span><span class="kw">True</span>)
+
+<span class="cm"># Unpacking: * spreads list/tuple as positional args</span>
+<span class="cm">#            ** spreads dict as keyword args</span>
+args <span class="op">=</span> [tensor_a, tensor_b]
+config <span class="op">=</span> {<span class="st">'dropout'</span>: <span class="nm">0.1</span>, <span class="st">'training'</span>: <span class="kw">True</span>}
+model_forward(<span class="op">*</span>args, <span class="op">**</span>config)  <span class="cm"># same as above</span>
+
+<span class="cm"># Real ML example: generic model wrapper</span>
+<span class="kw">class</span> <span class="tp">ModelWrapper</span>:
+    <span class="kw">def</span> <span class="fn">__call__</span>(self, <span class="op">*</span>args, <span class="op">**</span>kwargs):
+        <span class="cm"># Log, profile, validate, then forward</span>
+        self.<span class="fn">_log_call</span>(<span class="fn">len</span>(args), kwargs.<span class="fn">keys</span>())
+        <span class="kw">with</span> self.profiler:
+            <span class="kw">return</span> self.model(<span class="op">*</span>args, <span class="op">**</span>kwargs)  <span class="cm"># pass through everything</span>
+
+<span class="cm"># Common pattern: config dataclass + **asdict()</span>
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, asdict
+
+<span class="op">@</span>dataclass
+<span class="kw">class</span> <span class="tp">TrainingConfig</span>:
+    lr: <span class="tp">float</span> <span class="op">=</span> <span class="nm">3e-4</span>
+    batch_size: <span class="tp">int</span> <span class="op">=</span> <span class="nm">32</span>
+    warmup_steps: <span class="tp">int</span> <span class="op">=</span> <span class="nm">100</span>
+
+cfg <span class="op">=</span> <span class="fn">TrainingConfig</span>()
+optimizer <span class="op">=</span> <span class="fn">AdamW</span>(model.parameters(), <span class="op">**</span><span class="fn">asdict</span>(cfg))</div>
+        </div>
+        <div class="tag amber">Google style</div> Google's ML codebases use <code>**config_dict</code> extensively for passing hyperparameters. Know how to unpack dataclasses and TypedDicts cleanly.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Explain Python's GIL. How does it affect ML workloads? <span class="ti">+</span></div>
+      <div class="qa-a">
+        The <strong>GIL (Global Interpreter Lock)</strong> is a mutex in CPython that allows only ONE thread to execute Python bytecode at a time — even on multi-core CPUs.<br><br>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="cm"># GIL impact demonstration</span>
+<span class="kw">import</span> threading
+<span class="kw">import</span> multiprocessing
+
+<span class="cm"># BAD: threading for CPU-bound Python code</span>
+<span class="cm"># GIL means threads take turns — no parallelism</span>
+<span class="kw">def</span> <span class="fn">cpu_heavy</span>(data):
+    <span class="kw">return</span> [x <span class="op">**</span> <span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> data]  <span class="cm"># pure Python — GIL held</span>
+
+threads <span class="op">=</span> [threading.Thread(target<span class="op">=</span>cpu_heavy, args<span class="op">=</span>(chunk,)) <span class="kw">for</span> chunk <span class="kw">in</span> chunks]
+<span class="cm"># ^ Slower than single-threaded! Threads compete for GIL</span>
+
+<span class="cm"># GOOD: multiprocessing bypasses GIL (separate processes)</span>
+<span class="kw">with</span> multiprocessing.Pool(<span class="nm">8</span>) <span class="kw">as</span> pool:
+    results <span class="op">=</span> pool.map(cpu_heavy, chunks)  <span class="cm"># True parallelism</span>
+
+<span class="cm"># GIL is RELEASED for I/O and C extensions!</span>
+<span class="cm"># Threading WORKS for:</span>
+<span class="cm">#   - Network I/O (API calls, downloading data)</span>
+<span class="cm">#   - File I/O</span>
+<span class="cm">#   - NumPy/PyTorch (C extensions release GIL)</span>
+
+<span class="cm"># PyTorch DataLoader: workers use multiprocessing by default</span>
+loader <span class="op">=</span> <span class="fn">DataLoader</span>(
+    dataset,
+    num_workers<span class="op">=</span><span class="nm">4</span>,       <span class="cm"># 4 separate processes (not threads)</span>
+    prefetch_factor<span class="op">=</span><span class="nm">2</span>,   <span class="cm"># pre-load 2 batches per worker</span>
+    pin_memory<span class="op">=</span><span class="kw">True</span>,      <span class="cm"># faster CPU→GPU transfers</span>
+)</div>
+        </div>
+        <strong>The GIL in ML context:</strong><br>
+        • <strong>Not a problem for model training:</strong> PyTorch/TensorFlow operations run in C++/CUDA — GIL is released. GPU computation is fully parallel.<br>
+        • <strong>Problem for data preprocessing:</strong> Pure Python transforms in DataLoader workers — use <code>multiprocessing</code> (num_workers &gt; 0) or move transforms to C extensions.<br>
+        • <strong>Python 3.13+:</strong> Experimental free-threaded mode (no GIL). Not production-ready yet.<br><br>
+        <div class="tag red">Google context</div> Google's JAX and TensorFlow preprocessing pipelines use <code>tf.data</code> which runs entirely in C++ — bypasses GIL completely. Understanding this explains why <code>tf.data</code> outperforms pure Python data pipelines.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What are Python context managers? Implement one for managing GPU memory. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <strong>Context managers</strong> define setup and teardown code that runs with the <code>with</code> statement — guarantees cleanup even if exceptions occur.<br><br>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+<span class="kw">import</span> torch
+
+<span class="cm"># Method 1: __enter__ / __exit__ class</span>
+<span class="kw">class</span> <span class="tp">GPUMemoryTracker</span>:
+    <span class="kw">def</span> <span class="fn">__enter__</span>(self):
+        torch.cuda.reset_peak_memory_stats()
+        torch.cuda.synchronize()
+        self.start_mem <span class="op">=</span> torch.cuda.memory_allocated()
+        <span class="kw">return</span> self  <span class="cm"># available as 'as' target</span>
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(self, exc_type, exc_val, exc_tb):
+        torch.cuda.synchronize()
+        self.peak_mem <span class="op">=</span> torch.cuda.max_memory_allocated()
+        self.delta <span class="op">=</span> self.peak_mem <span class="op">-</span> self.start_mem
+        <span class="fn">print</span>(<span class="st">f"Peak GPU memory: </span>{self.peak_mem <span class="op">/</span> <span class="nm">1e9</span>:.2f}<span class="st"> GB"</span>)
+        <span class="kw">return</span> <span class="kw">False</span>  <span class="cm"># False = don't suppress exceptions</span>
+
+<span class="kw">with</span> <span class="fn">GPUMemoryTracker</span>() <span class="kw">as</span> tracker:
+    output <span class="op">=</span> model(large_batch)
+    loss <span class="op">=</span> criterion(output, labels)
+<span class="fn">print</span>(<span class="st">f"Used </span>{tracker.delta <span class="op">/</span> <span class="nm">1e6</span>:.1f}<span class="st"> MB"</span>)
+
+<span class="cm"># Method 2: @contextmanager decorator (simpler)</span>
+<span class="op">@</span>contextmanager
+<span class="kw">def</span> <span class="fn">inference_mode</span>(model):
+    <span class="st">"""Switch model to eval, disable grad, restore after."""</span>
+    was_training <span class="op">=</span> model.training
+    model.eval()
+    <span class="kw">try</span>:
+        <span class="kw">with</span> torch.no_grad():
+            <span class="kw">yield</span> model  <span class="cm"># ← the 'with' block runs here</span>
+    <span class="kw">finally</span>:
+        <span class="kw">if</span> was_training:
+            model.train()  <span class="cm"># always restore, even on exception</span>
+
+<span class="kw">with</span> <span class="fn">inference_mode</span>(model) <span class="kw">as</span> m:
+    predictions <span class="op">=</span> m(test_data)</div>
+        </div>
+        <div class="tag green">Best practice</div> Context managers are essential for safe resource management in ML: GPU memory, file handles, model training/eval switching, temporary directories for checkpoints, database connections.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Data Structures →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 2: DATA STRUCTURES               -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 02 / 08</div>
+      <div class="ch-title">Data<br><span>Structures</span></div>
+      <p class="ch-lead">Google tests data structures in every engineer interview. For ML roles, you also need to know which structures appear under the hood of ML frameworks — and when to use each for maximum performance.</p>
+    </div>
+    <div class="ch-header-right"><div class="difficulty-badge">L4 / Core</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> Compare list, tuple, set, and dict. When do you use each in ML? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Type</th><th>Ordered</th><th>Mutable</th><th>Duplicates</th><th>Lookup</th><th>ML Use Case</th></tr>
+            <tr><td><code>list</code></td><td>✅</td><td>✅</td><td>✅</td><td>O(n)</td><td>Batches, sequences, model layers</td></tr>
+            <tr><td><code>tuple</code></td><td>✅</td><td>❌</td><td>✅</td><td>O(n)</td><td>Tensor shapes, fixed configs, dict keys</td></tr>
+            <tr><td><code>set</code></td><td>❌</td><td>✅</td><td>❌</td><td>O(1)</td><td>Vocabulary, deduplication, stopwords</td></tr>
+            <tr><td><code>dict</code></td><td>✅ (3.7+)</td><td>✅</td><td>keys: ❌</td><td>O(1)</td><td>Model state_dict, metrics, token→id maps</td></tr>
+            <tr><td><code>frozenset</code></td><td>❌</td><td>❌</td><td>❌</td><td>O(1)</td><td>Immutable vocab sets, cache keys</td></tr>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="cm"># Tuple for tensor shapes — immutable, hashable, memory-efficient</span>
+shape <span class="op">=</span> (<span class="nm">32</span>, <span class="nm">512</span>, <span class="nm">768</span>)  <span class="cm"># (batch, seq_len, hidden_dim)</span>
+cache_key <span class="op">=</span> shape       <span class="cm"># can use as dict key (lists can't)</span>
+
+<span class="cm"># Set for O(1) vocabulary lookup vs O(n) list lookup</span>
+vocab_list <span class="op">=</span> [<span class="st">"the"</span>, <span class="st">"a"</span>, <span class="st">"is"</span>, ...]       <span class="cm"># O(n) "the" in vocab_list</span>
+vocab_set <span class="op">=</span> {<span class="st">"the"</span>, <span class="st">"a"</span>, <span class="st">"is"</span>, ...}       <span class="cm"># O(1) "the" in vocab_set</span>
+<span class="cm"># With 100K vocab, set is 100,000× faster for membership test</span>
+
+<span class="cm"># Dict for model checkpoints</span>
+checkpoint <span class="op">=</span> {
+    <span class="st">"epoch"</span>: <span class="nm">42</span>,
+    <span class="st">"model_state_dict"</span>: model.state_dict(),
+    <span class="st">"optimizer_state_dict"</span>: optimizer.state_dict(),
+    <span class="st">"loss"</span>: <span class="nm">0.234</span>,
+    <span class="st">"config"</span>: {<span class="st">"lr"</span>: <span class="nm">3e-4</span>, <span class="st">"batch_size"</span>: <span class="nm">32</span>},
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Implement an LRU cache from scratch. When is it used in ML systems? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">from</span> collections <span class="kw">import</span> OrderedDict
+<span class="kw">from</span> functools <span class="kw">import</span> lru_cache
+
+<span class="kw">class</span> <span class="tp">LRUCache</span>:
+    <span class="st">"""Least Recently Used cache — O(1) get and put."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, capacity: <span class="tp">int</span>):
+        self.capacity <span class="op">=</span> capacity
+        self.cache <span class="op">=</span> <span class="fn">OrderedDict</span>()  <span class="cm"># maintains insertion order</span>
+
+    <span class="kw">def</span> <span class="fn">get</span>(self, key) <span class="op">-></span> <span class="tp">int</span>:
+        <span class="kw">if</span> key <span class="kw">not in</span> self.cache:
+            <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>
+        self.cache.<span class="fn">move_to_end</span>(key)  <span class="cm"># mark as recently used</span>
+        <span class="kw">return</span> self.cache[key]
+
+    <span class="kw">def</span> <span class="fn">put</span>(self, key, value) <span class="op">-></span> <span class="kw">None</span>:
+        <span class="kw">if</span> key <span class="kw">in</span> self.cache:
+            self.cache.<span class="fn">move_to_end</span>(key)
+        self.cache[key] <span class="op">=</span> value
+        <span class="kw">if</span> <span class="fn">len</span>(self.cache) <span class="op">></span> self.capacity:
+            self.cache.<span class="fn">popitem</span>(last<span class="op">=</span><span class="kw">False</span>)  <span class="cm"># remove oldest (front)</span>
+
+<span class="cm"># Python built-in — use this in production</span>
+<span class="op">@</span><span class="fn">lru_cache</span>(maxsize<span class="op">=</span><span class="nm">1024</span>)
+<span class="kw">def</span> <span class="fn">tokenize</span>(text: <span class="tp">str</span>) <span class="op">-></span> <span class="tp">tuple</span>[<span class="tp">int</span>, ...]:  <span class="cm"># must be hashable return type</span>
+    <span class="kw">return</span> <span class="fn">tuple</span>(tokenizer.<span class="fn">encode</span>(text))
+
+<span class="cm"># ML use cases for LRU cache:</span>
+<span class="cm"># 1. Semantic search cache (same question → cached embedding)</span>
+<span class="cm"># 2. Feature cache (expensive feature extraction → cache results)</span>
+<span class="cm"># 3. Tokenization cache (repeated prompts in RAG)</span>
+<span class="cm"># 4. KV cache in transformers IS an LRU-like cache for attention</span></div>
+        </div>
+        <div class="tag amber">Google L4</div> Implementing LRU from scratch is a very common Google coding question. Know OrderedDict, know the O(1) property using a hashmap + doubly-linked list mentally, and know the Python shortcut <code>@lru_cache</code>.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is a defaultdict and Counter? Give ML examples. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">from</span> collections <span class="kw">import</span> defaultdict, Counter
+<span class="kw">import</span> heapq
+
+<span class="cm"># defaultdict: never get KeyError, default value auto-created</span>
+word_to_docs <span class="op">=</span> defaultdict(<span class="tp">list</span>)
+<span class="kw">for</span> doc_id, words <span class="kw">in</span> corpus.items():
+    <span class="kw">for</span> word <span class="kw">in</span> words:
+        word_to_docs[word].append(doc_id)  <span class="cm"># no KeyError if new word</span>
+
+<span class="cm"># Inverted index for search (BM25, TF-IDF)</span>
+index <span class="op">=</span> defaultdict(<span class="kw">lambda</span>: defaultdict(<span class="tp">int</span>))  <span class="cm"># word → doc → count</span>
+<span class="kw">for</span> doc_id, tokens <span class="kw">in</span> documents:
+    <span class="kw">for</span> token <span class="kw">in</span> tokens:
+        index[token][doc_id] <span class="op">+=</span> <span class="nm">1</span>
+
+<span class="cm"># Counter: count hashable elements, most_common(), arithmetic</span>
+corpus <span class="op">=</span> [<span class="st">"the cat sat"</span>, <span class="st">"the cat ate"</span>, <span class="st">"a dog ran"</span>]
+all_words <span class="op">=</span> <span class="st">" "</span>.join(corpus).split()
+word_freq <span class="op">=</span> <span class="fn">Counter</span>(all_words)
+<span class="cm"># Counter({'the': 2, 'cat': 2, 'sat': 1, 'ate': 1, 'a': 1, 'dog': 1, 'ran': 1})</span>
+
+top_10 <span class="op">=</span> word_freq.<span class="fn">most_common</span>(<span class="nm">10</span>)  <span class="cm"># O(n log k) — uses heapq internally</span>
+vocab <span class="op">=</span> {word: idx <span class="kw">for</span> idx, (word, _) <span class="kw">in</span> <span class="fn">enumerate</span>(word_freq.<span class="fn">most_common</span>(<span class="nm">50000</span>))}
+
+<span class="cm"># Counter arithmetic for dataset comparison</span>
+train_dist <span class="op">=</span> <span class="fn">Counter</span>(train_labels)
+test_dist  <span class="op">=</span> <span class="fn">Counter</span>(test_labels)
+missing_in_test <span class="op">=</span> train_dist <span class="op">-</span> test_dist  <span class="cm"># classes in train but not test</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Explain Python's memory model — how are objects stored, and what is reference counting? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> sys
+
+<span class="cm"># Everything in Python is an object on the heap</span>
+<span class="cm"># Variables are REFERENCES (pointers), not values</span>
+
+a <span class="op">=</span> [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>]
+b <span class="op">=</span> a          <span class="cm"># b points to SAME list object</span>
+b.append(<span class="nm">4</span>)   <span class="cm"># modifies the SAME object</span>
+<span class="fn">print</span>(a)       <span class="cm"># [1, 2, 3, 4] — aliasing!</span>
+
+<span class="cm"># Reference counting: object is deleted when ref count hits 0</span>
+<span class="fn">print</span>(sys.<span class="fn">getrefcount</span>(a))  <span class="cm"># 2 (a + getrefcount arg)</span>
+<span class="kw">del</span> b           <span class="cm"># ref count drops to 1</span>
+<span class="kw">del</span> a           <span class="cm"># ref count = 0 → object freed</span>
+
+<span class="cm"># CRITICAL in ML: tensor aliasing can cause bugs</span>
+<span class="kw">import</span> torch
+x <span class="op">=</span> torch.<span class="fn">zeros</span>(<span class="nm">100</span>, <span class="nm">100</span>)
+y <span class="op">=</span> x           <span class="cm"># alias — same storage!</span>
+y[<span class="nm">0</span>] <span class="op">=</span> <span class="nm">1</span>        <span class="cm"># modifies x too!</span>
+
+<span class="cm"># Safe copies:</span>
+y <span class="op">=</span> x.clone()   <span class="cm"># new tensor, separate storage</span>
+y <span class="op">=</span> x.detach()  <span class="cm"># shares storage but detaches from compute graph</span>
+
+<span class="cm"># Memory-efficient patterns for large models</span>
+<span class="kw">def</span> <span class="fn">process_batch</span>(data):
+    result <span class="op">=</span> model(data)
+    loss <span class="op">=</span> criterion(result, labels)
+    <span class="kw">return</span> loss.item()  <span class="cm"># .item() extracts Python scalar, releases tensor</span>
+    <span class="cm"># If you returned 'loss' (tensor), the compute graph stays in memory!</span>
+
+<span class="cm"># Circular references — reference counting alone can't free these</span>
+<span class="cm"># Python's cyclic garbage collector handles these periodically</span>
+<span class="kw">import</span> gc
+gc.<span class="fn">collect</span>()  <span class="cm"># force GC cycle (rarely needed, but useful after large model loads)</span></div>
+        </div>
+        <div class="tag red">ML gotcha</div> The most common memory leak in PyTorch: storing tensor objects (not <code>.item()</code>) in a list across batches. The entire computation graph for every batch stays in memory. Always call <code>.item()</code> when recording scalar metrics.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Core Python</button>
+    <button class="nbtn primary" onclick="nextCh(1)">NumPy →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 3: NUMPY                         -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 03 / 08</div>
+      <div class="ch-title">NumPy<br><span>Mastery</span></div>
+      <p class="ch-lead">NumPy is the bedrock of scientific Python. Google interviewers expect you to write vectorized code naturally — loops over arrays are a red flag at L4.</p>
+    </div>
+    <div class="ch-header-right"><div class="difficulty-badge">L4 / Critical</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is broadcasting? Give three examples. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <strong>Broadcasting</strong> = NumPy's rules for performing operations on arrays of different shapes without copying data.<br><br>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Rule: align shapes from the right, expand dims of size 1</span>
+
+<span class="cm"># Example 1: Normalize a batch of images</span>
+images <span class="op">=</span> np.random.<span class="fn">rand</span>(<span class="nm">100</span>, <span class="nm">3</span>, <span class="nm">224</span>, <span class="nm">224</span>)  <span class="cm"># (batch, C, H, W)</span>
+mean <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">0.485</span>, <span class="nm">0.456</span>, <span class="nm">0.406</span>]).<span class="fn">reshape</span>(<span class="nm">1</span>, <span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">1</span>)  <span class="cm"># (1, 3, 1, 1)</span>
+std  <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">0.229</span>, <span class="nm">0.224</span>, <span class="nm">0.225</span>]).<span class="fn">reshape</span>(<span class="nm">1</span>, <span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">1</span>)
+normalized <span class="op">=</span> (images <span class="op">-</span> mean) <span class="op">/</span> std  <span class="cm"># broadcasts across batch, H, W</span>
+
+<span class="cm"># Example 2: Pairwise distances (critical for KNN, clustering)</span>
+A <span class="op">=</span> np.random.<span class="fn">rand</span>(<span class="nm">100</span>, <span class="nm">128</span>)   <span class="cm"># 100 query embeddings</span>
+B <span class="op">=</span> np.random.<span class="fn">rand</span>(<span class="nm">1000</span>, <span class="nm">128</span>)  <span class="cm"># 1000 database embeddings</span>
+<span class="cm"># Euclidean distance: ||a-b||² = ||a||² + ||b||² - 2a·b</span>
+dists <span class="op">=</span> (
+    np.<span class="fn">sum</span>(A<span class="op">**</span><span class="nm">2</span>, axis<span class="op">=</span><span class="nm">1</span>, keepdims<span class="op">=</span><span class="kw">True</span>)    <span class="cm"># (100, 1)</span>
+    <span class="op">+</span> np.<span class="fn">sum</span>(B<span class="op">**</span><span class="nm">2</span>, axis<span class="op">=</span><span class="nm">1</span>)               <span class="cm"># (1000,) broadcasts to (1, 1000)</span>
+    <span class="op">-</span> <span class="nm">2</span> <span class="op">*</span> A <span class="op">@</span> B.T                         <span class="cm"># (100, 1000)</span>
+)  <span class="cm"># result: (100, 1000) — all pairwise distances</span>
+
+<span class="cm"># Example 3: Attention mask (transformer padding mask)</span>
+seq_lens <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">5</span>, <span class="nm">3</span>, <span class="nm">7</span>])               <span class="cm"># (batch=3,)</span>
+positions <span class="op">=</span> np.<span class="fn">arange</span>(<span class="nm">10</span>)[np.newaxis, :]     <span class="cm"># (1, seq=10)</span>
+mask <span class="op">=</span> positions <span class="op"><</span> seq_lens[:, np.newaxis]    <span class="cm"># (3, 10) boolean mask</span>
+<span class="cm"># [[T,T,T,T,T,F,F,F,F,F],</span>
+<span class="cm">#  [T,T,T,F,F,...],</span>
+<span class="cm">#  [T,T,T,T,T,T,T,F,F,F]]</span></div>
+        </div>
+        <div class="tag blue">Performance</div> Broadcasting avoids explicit loops AND avoids copying data. NumPy tracks the broadcast virtually — no new array is allocated until the operation is computed.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Implement softmax, cross-entropy loss, and batch normalization in NumPy. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">softmax</span>(x: np.ndarray, axis: <span class="tp">int</span> <span class="op">=</span> <span class="op">-</span><span class="nm">1</span>) <span class="op">-></span> np.ndarray:
+    <span class="st">"""Numerically stable softmax."""</span>
+    x_shifted <span class="op">=</span> x <span class="op">-</span> np.<span class="fn">max</span>(x, axis<span class="op">=</span>axis, keepdims<span class="op">=</span><span class="kw">True</span>)  <span class="cm"># stability</span>
+    exp_x <span class="op">=</span> np.<span class="fn">exp</span>(x_shifted)
+    <span class="kw">return</span> exp_x <span class="op">/</span> np.<span class="fn">sum</span>(exp_x, axis<span class="op">=</span>axis, keepdims<span class="op">=</span><span class="kw">True</span>)
+
+<span class="kw">def</span> <span class="fn">cross_entropy_loss</span>(logits: np.ndarray, labels: np.ndarray) <span class="op">-></span> <span class="tp">float</span>:
+    <span class="st">"""Cross-entropy loss with numerical stability.
+    logits: (batch, num_classes)
+    labels: (batch,) integer class indices
+    """</span>
+    batch_size <span class="op">=</span> logits.shape[<span class="nm">0</span>]
+    probs <span class="op">=</span> <span class="fn">softmax</span>(logits)                          <span class="cm"># (batch, classes)</span>
+    correct_probs <span class="op">=</span> probs[np.<span class="fn">arange</span>(batch_size), labels]  <span class="cm"># fancy indexing</span>
+    <span class="kw">return</span> <span class="op">-</span>np.<span class="fn">mean</span>(np.<span class="fn">log</span>(correct_probs <span class="op">+</span> <span class="nm">1e-9</span>))    <span class="cm"># epsilon for log(0)</span>
+
+<span class="kw">def</span> <span class="fn">batch_norm</span>(x: np.ndarray, gamma, beta, eps<span class="op">=</span><span class="nm">1e-5</span>):
+    <span class="st">"""Batch normalization forward pass.
+    x: (batch, features)
+    """</span>
+    mu <span class="op">=</span> np.<span class="fn">mean</span>(x, axis<span class="op">=</span><span class="nm">0</span>)          <span class="cm"># (features,)</span>
+    var <span class="op">=</span> np.<span class="fn">var</span>(x, axis<span class="op">=</span><span class="nm">0</span>)           <span class="cm"># (features,)</span>
+    x_hat <span class="op">=</span> (x <span class="op">-</span> mu) <span class="op">/</span> np.<span class="fn">sqrt</span>(var <span class="op">+</span> eps)  <span class="cm"># normalize</span>
+    <span class="kw">return</span> gamma <span class="op">*</span> x_hat <span class="op">+</span> beta           <span class="cm"># scale and shift</span>
+
+<span class="cm"># Fancy indexing — must know for Google interviews</span>
+probs <span class="op">=</span> np.random.<span class="fn">rand</span>(<span class="nm">4</span>, <span class="nm">10</span>)   <span class="cm"># 4 samples, 10 classes</span>
+labels <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">2</span>, <span class="nm">5</span>, <span class="nm">0</span>, <span class="nm">7</span>])  <span class="cm"># true class per sample</span>
+selected <span class="op">=</span> probs[np.<span class="fn">arange</span>(<span class="nm">4</span>), labels]  <span class="cm"># [probs[0,2], probs[1,5], ...]</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the difference between views and copies in NumPy? Why does it matter? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># VIEW: shares memory with original. Changes affect both.</span>
+a <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>])
+b <span class="op">=</span> a.<span class="fn">reshape</span>(<span class="nm">2</span>, <span class="nm">3</span>)    <span class="cm"># VIEW — no copy</span>
+c <span class="op">=</span> a[<span class="nm">0</span>:<span class="nm">3</span>]             <span class="cm"># VIEW — slicing is a view</span>
+c[<span class="nm">0</span>] <span class="op">=</span> <span class="nm">99</span>              <span class="cm"># modifies a[0] too!</span>
+<span class="fn">print</span>(a)               <span class="cm"># [99, 2, 3, 4, 5, 6]</span>
+
+<span class="cm"># Check if view: b.base is a → True means view</span>
+<span class="fn">print</span>(b.base <span class="kw">is</span> a)     <span class="cm"># True</span>
+
+<span class="cm"># COPY: independent memory</span>
+d <span class="op">=</span> a.<span class="fn">copy</span>()             <span class="cm"># explicit copy</span>
+e <span class="op">=</span> a[a <span class="op">></span> <span class="nm">2</span>]            <span class="cm"># boolean indexing → ALWAYS a copy</span>
+f <span class="op">=</span> a[[<span class="nm">0</span>, <span class="nm">2</span>, <span class="nm">4</span>]]        <span class="cm"># fancy indexing → ALWAYS a copy</span>
+
+<span class="cm"># Performance implications for ML</span>
+large <span class="op">=</span> np.random.<span class="fn">rand</span>(<span class="nm">10_000</span>, <span class="nm">10_000</span>)  <span class="cm"># 800MB</span>
+
+<span class="cm"># GOOD: transpose is free (just changes stride metadata)</span>
+transposed <span class="op">=</span> large.T          <span class="cm"># O(1) — no data copied</span>
+<span class="fn">print</span>(transposed.base <span class="kw">is</span> large)  <span class="cm"># True</span>
+
+<span class="cm"># GOTCHA: non-contiguous arrays slow down operations</span>
+<span class="cm"># After transpose, memory layout is non-contiguous</span>
+<span class="cm"># Some ops require contiguous memory → implicit copy triggered</span>
+contiguous <span class="op">=</span> np.<span class="fn">ascontiguousarray</span>(transposed)  <span class="cm"># explicit copy to C-order</span>
+
+<span class="cm"># np.asarray vs np.array</span>
+<span class="cm"># np.asarray: returns view if possible (no copy)</span>
+<span class="cm"># np.array:   always makes a copy (safe but slow)</span>
+tensor <span class="op">=</span> np.<span class="fn">asarray</span>(some_list)  <span class="cm"># avoid unnecessary copies in hot loops</span></div>
+        </div>
+        <div class="tag red">Performance bug</div> Accidentally triggering copies of large arrays is a common source of OOM errors in ML pipelines. Always check with <code>.base</code> or <code>np.shares_memory(a, b)</code> when performance matters.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Data Structures</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Pandas →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 4: PANDAS                        -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 04 / 08</div>
+      <div class="ch-title">Pandas &amp;<br><span>Data Wrangling</span></div>
+      <p class="ch-lead">Real ML data is messy. Pandas is your primary tool for cleaning, joining, aggregating, and transforming datasets before they ever reach a model.</p>
+    </div>
+    <div class="ch-header-right"><div class="difficulty-badge">L4 / Applied</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> How do you handle missing values in a DataFrame? What are the ML implications? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+df <span class="op">=</span> pd.<span class="fn">DataFrame</span>({<span class="st">'age'</span>: [<span class="nm">25</span>, np.nan, <span class="nm">30</span>], <span class="st">'income'</span>: [<span class="nm">50k</span>, <span class="nm">60k</span>, np.nan]})
+
+<span class="cm"># Inspect missing data</span>
+df.<span class="fn">isnull</span>().<span class="fn">sum</span>()          <span class="cm"># count NaN per column</span>
+df.<span class="fn">isnull</span>().<span class="fn">mean</span>() <span class="op">*</span> <span class="nm">100</span>  <span class="cm"># % missing per column</span>
+
+<span class="cm"># Strategy 1: Drop — only when few rows missing (&lt;1-5%)</span>
+df.<span class="fn">dropna</span>()              <span class="cm"># drop rows with ANY NaN</span>
+df.<span class="fn">dropna</span>(subset<span class="op">=</span>[<span class="st">'age'</span>]) <span class="cm"># drop only if 'age' is NaN</span>
+
+<span class="cm"># Strategy 2: Impute — fill with statistics</span>
+df[<span class="st">'age'</span>].<span class="fn">fillna</span>(df[<span class="st">'age'</span>].<span class="fn">median</span>(), inplace<span class="op">=</span><span class="kw">True</span>)   <span class="cm"># robust to outliers</span>
+df[<span class="st">'income'</span>].<span class="fn">fillna</span>(df[<span class="st">'income'</span>].<span class="fn">mean</span>(), inplace<span class="op">=</span><span class="kw">True</span>) <span class="cm"># only if not skewed</span>
+
+<span class="cm"># Strategy 3: sklearn imputer for ML pipelines (no data leakage!)</span>
+<span class="kw">from</span> sklearn.impute <span class="kw">import</span> SimpleImputer, KNNImputer
+imputer <span class="op">=</span> <span class="fn">SimpleImputer</span>(strategy<span class="op">=</span><span class="st">'median'</span>)
+imputer.<span class="fn">fit</span>(X_train)         <span class="cm"># learn statistics on train only!</span>
+X_train <span class="op">=</span> imputer.<span class="fn">transform</span>(X_train)
+X_test  <span class="op">=</span> imputer.<span class="fn">transform</span>(X_test)  <span class="cm"># use train median on test</span>
+
+<span class="cm"># Strategy 4: Add missing indicator column (tells model WHERE data was missing)</span>
+df[<span class="st">'age_missing'</span>] <span class="op">=</span> df[<span class="st">'age'</span>].<span class="fn">isnull</span>().<span class="fn">astype</span>(<span class="tp">int</span>)
+df[<span class="st">'age'</span>].<span class="fn">fillna</span>(<span class="nm">0</span>, inplace<span class="op">=</span><span class="kw">True</span>)</div>
+        </div>
+        <div class="tag red">Data leakage</div> Never fit imputers on the full dataset. Always fit on training data only, then transform both train and test. Using test statistics to fill train missing values = data leakage = misleadingly good evaluation scores.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain groupby + agg. Implement a feature engineering pipeline. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># groupby: split → apply → combine</span>
+<span class="cm"># Critical for creating aggregate features in ML</span>
+
+transactions <span class="op">=</span> pd.<span class="fn">DataFrame</span>({
+    <span class="st">'user_id'</span>: [<span class="nm">1</span>, <span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">2</span>, <span class="nm">2</span>, <span class="nm">3</span>],
+    <span class="st">'amount'</span>: [<span class="nm">100</span>, <span class="nm">200</span>, <span class="nm">50</span>, <span class="nm">300</span>, <span class="nm">75</span>, <span class="nm">500</span>],
+    <span class="st">'timestamp'</span>: pd.<span class="fn">date_range</span>(<span class="st">'2024-01'</span>, periods<span class="op">=</span><span class="nm">6</span>, freq<span class="op">=</span><span class="st">'D'</span>)
+})
+
+<span class="cm"># Multi-aggregate feature engineering</span>
+user_features <span class="op">=</span> transactions.<span class="fn">groupby</span>(<span class="st">'user_id'</span>)[<span class="st">'amount'</span>].<span class="fn">agg</span>(
+    total_spend<span class="op">=</span><span class="st">'sum'</span>,
+    avg_spend<span class="op">=</span><span class="st">'mean'</span>,
+    max_spend<span class="op">=</span><span class="st">'max'</span>,
+    num_transactions<span class="op">=</span><span class="st">'count'</span>,
+    spend_std<span class="op">=</span><span class="st">'std'</span>,
+    spend_cv<span class="op">=</span><span class="kw">lambda</span> x: x.std() <span class="op">/</span> x.mean()  <span class="cm"># coefficient of variation</span>
+).<span class="fn">reset_index</span>()
+
+<span class="cm"># transform: returns same shape as original (for inline features)</span>
+transactions[<span class="st">'user_avg_spend'</span>] <span class="op">=</span> (
+    transactions.<span class="fn">groupby</span>(<span class="st">'user_id'</span>)[<span class="st">'amount'</span>].<span class="fn">transform</span>(<span class="st">'mean'</span>)
+)
+<span class="cm"># Each row now has its user's average spend — useful for normalization</span>
+transactions[<span class="st">'amount_normalized'</span>] <span class="op">=</span> (
+    transactions[<span class="st">'amount'</span>] <span class="op">/</span> transactions[<span class="st">'user_avg_spend'</span>]
+)
+
+<span class="cm"># Rolling features (time-series ML)</span>
+transactions <span class="op">=</span> transactions.<span class="fn">sort_values</span>(<span class="st">'timestamp'</span>)
+transactions[<span class="st">'rolling_7d_spend'</span>] <span class="op">=</span> (
+    transactions.<span class="fn">groupby</span>(<span class="st">'user_id'</span>)[<span class="st">'amount'</span>]
+    .<span class="fn">transform</span>(<span class="kw">lambda</span> x: x.<span class="fn">rolling</span>(<span class="st">'7D'</span>).<span class="fn">sum</span>())
+)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you optimize Pandas for large datasets? What are the alternatives? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># 1. Reduce memory with dtypes (can reduce RAM by 50-70%)</span>
+df[<span class="st">'age'</span>] <span class="op">=</span> df[<span class="st">'age'</span>].<span class="fn">astype</span>(np.int8)       <span class="cm"># int64→int8 if values 0-127</span>
+df[<span class="st">'score'</span>] <span class="op">=</span> df[<span class="st">'score'</span>].<span class="fn">astype</span>(np.float32) <span class="cm"># float64→float32</span>
+df[<span class="st">'category'</span>] <span class="op">=</span> df[<span class="st">'category'</span>].<span class="fn">astype</span>(<span class="st">'category'</span>) <span class="cm"># string→category code</span>
+
+<span class="cm"># 2. Vectorize — NEVER use iterrows()</span>
+<span class="cm"># BAD: 1000x slower than vectorized</span>
+<span class="kw">for</span> idx, row <span class="kw">in</span> df.<span class="fn">iterrows</span>():
+    df.<span class="fn">loc</span>[idx, <span class="st">'result'</span>] <span class="op">=</span> row[<span class="st">'x'</span>] <span class="op">*</span> <span class="nm">2</span> <span class="op">+</span> row[<span class="st">'y'</span>]
+
+<span class="cm"># GOOD: vectorized</span>
+df[<span class="st">'result'</span>] <span class="op">=</span> df[<span class="st">'x'</span>] <span class="op">*</span> <span class="nm">2</span> <span class="op">+</span> df[<span class="st">'y'</span>]
+
+<span class="cm"># For complex row-wise ops: apply with axis=1 (still slow but better)</span>
+<span class="cm"># Best: use numpy operations with .values</span>
+result <span class="op">=</span> np.<span class="fn">where</span>(df[<span class="st">'x'</span>].values <span class="op">></span> <span class="nm">0</span>, df[<span class="st">'y'</span>].values, <span class="nm">0</span>)
+
+<span class="cm"># 3. Read in chunks for files that don't fit in RAM</span>
+chunk_iter <span class="op">=</span> pd.<span class="fn">read_csv</span>(<span class="st">'huge.csv'</span>, chunksize<span class="op">=</span><span class="nm">100_000</span>)
+results <span class="op">=</span> [process(chunk) <span class="kw">for</span> chunk <span class="kw">in</span> chunk_iter]
+
+<span class="cm"># 4. Alternatives for scale</span>
+<span class="cm"># Polars: Rust-based, 5-20x faster than Pandas, lazy evaluation</span>
+<span class="kw">import</span> polars <span class="kw">as</span> pl
+df_pl <span class="op">=</span> pl.<span class="fn">read_csv</span>(<span class="st">'data.csv'</span>)
+result <span class="op">=</span> df_pl.<span class="fn">lazy</span>().<span class="fn">filter</span>(pl.col(<span class="st">'age'</span>) <span class="op">></span> <span class="nm">18</span>).<span class="fn">collect</span>()
+
+<span class="cm"># Dask: parallelized Pandas API for out-of-core processing</span>
+<span class="kw">import</span> dask.dataframe <span class="kw">as</span> dd
+ddf <span class="op">=</span> dd.<span class="fn">read_parquet</span>(<span class="st">'data/*.parquet'</span>)  <span class="cm"># lazy — doesn't load yet</span>
+result <span class="op">=</span> ddf.<span class="fn">groupby</span>(<span class="st">'user_id'</span>)[<span class="st">'amount'</span>].<span class="fn">sum</span>().<span class="fn">compute</span>()  <span class="cm"># now execute</span>
+
+<span class="cm"># BigQuery + Pandas for Google-scale data</span>
+<span class="kw">from</span> google.cloud <span class="kw">import</span> bigquery
+client <span class="op">=</span> bigquery.<span class="fn">Client</span>()
+df <span class="op">=</span> client.<span class="fn">query</span>(<span class="st">"SELECT * FROM dataset.table LIMIT 1000000"</span>).<span class="fn">to_dataframe</span>()</div>
+        </div>
+        <div class="tag amber">Google scale</div> At Google, most ML data lives in BigQuery or GCS. You'll use <code>tf.data</code>, Apache Beam, or Dataflow for preprocessing — not Pandas directly. But Pandas is used for exploration, prototyping, and smaller-scale ETL.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← NumPy</button>
+    <button class="nbtn primary" onclick="nextCh(3)">PyTorch/TF →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 5: PYTORCH / TENSORFLOW          -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 05 / 08</div>
+      <div class="ch-title">PyTorch &amp;<br><span>TensorFlow</span></div>
+      <p class="ch-lead">Google uses TensorFlow, JAX, and increasingly PyTorch. Know both APIs, understand autograd deeply, and be able to debug training issues from first principles.</p>
+    </div>
+    <div class="ch-header-right"><div class="difficulty-badge">L4 / Critical</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain PyTorch's autograd. How does it compute gradients? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> torch
+
+<span class="cm"># autograd builds a computational graph (DAG) on the fly</span>
+<span class="cm"># Each operation records: inputs + how to compute the gradient</span>
+
+x <span class="op">=</span> torch.<span class="fn">tensor</span>([<span class="nm">2.0</span>], requires_grad<span class="op">=</span><span class="kw">True</span>)  <span class="cm"># leaf node</span>
+w <span class="op">=</span> torch.<span class="fn">tensor</span>([<span class="nm">3.0</span>], requires_grad<span class="op">=</span><span class="kw">True</span>)  <span class="cm"># leaf node</span>
+
+<span class="cm"># Forward pass builds the graph</span>
+z <span class="op">=</span> x <span class="op">*</span> w       <span class="cm"># z.grad_fn = MulBackward0</span>
+L <span class="op">=</span> z <span class="op">**</span> <span class="nm">2</span>      <span class="cm"># L.grad_fn = PowBackward0</span>
+
+<span class="cm"># Backward pass: traverses graph in reverse (chain rule)</span>
+L.<span class="fn">backward</span>()    <span class="cm"># compute dL/dw and dL/dx</span>
+
+<span class="cm"># dL/dw = dL/dz * dz/dw = 2z * x = 2*(x*w) * x = 2*6*2 = 24</span>
+<span class="fn">print</span>(w.grad)   <span class="cm"># tensor([24.])</span>
+<span class="fn">print</span>(x.grad)   <span class="cm"># tensor([36.]) — 2*(x*w) * w = 2*6*3</span>
+
+<span class="cm"># CRITICAL: zero gradients between batches!</span>
+optimizer.<span class="fn">zero_grad</span>()   <span class="cm"># gradients ACCUMULATE by default</span>
+loss.<span class="fn">backward</span>()
+optimizer.<span class="fn">step</span>()
+
+<span class="cm"># Gradient accumulation trick (simulate large batch on small GPU)</span>
+accumulation_steps <span class="op">=</span> <span class="nm">4</span>  <span class="cm"># effective batch = batch_size * 4</span>
+<span class="kw">for</span> i, (inputs, labels) <span class="kw">in</span> <span class="fn">enumerate</span>(dataloader):
+    outputs <span class="op">=</span> model(inputs)
+    loss <span class="op">=</span> criterion(outputs, labels) <span class="op">/</span> accumulation_steps
+    loss.<span class="fn">backward</span>()   <span class="cm"># gradients accumulate across mini-batches</span>
+    <span class="kw">if</span> (i <span class="op">+</span> <span class="nm">1</span>) <span class="op">%</span> accumulation_steps <span class="op">==</span> <span class="nm">0</span>:
+        optimizer.<span class="fn">step</span>()     <span class="cm"># update after 4 mini-batches</span>
+        optimizer.<span class="fn">zero_grad</span>()</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Write a complete training loop in PyTorch with best practices. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">from</span> torch.cuda.amp <span class="kw">import</span> autocast, GradScaler
+
+<span class="kw">def</span> <span class="fn">train_epoch</span>(model, loader, optimizer, criterion, device, scaler):
+    model.<span class="fn">train</span>()     <span class="cm"># sets dropout, batchnorm to training mode</span>
+    total_loss <span class="op">=</span> <span class="nm">0.0</span>
+
+    <span class="kw">for</span> batch_idx, (inputs, labels) <span class="kw">in</span> <span class="fn">enumerate</span>(loader):
+        inputs, labels <span class="op">=</span> inputs.<span class="fn">to</span>(device), labels.<span class="fn">to</span>(device)
+        optimizer.<span class="fn">zero_grad</span>(set_to_none<span class="op">=</span><span class="kw">True</span>)  <span class="cm"># faster than zero_grad()</span>
+
+        <span class="cm"># Mixed precision (AMP) — ~2x speedup on modern GPUs</span>
+        <span class="kw">with</span> <span class="fn">autocast</span>(device_type<span class="op">=</span><span class="st">'cuda'</span>, dtype<span class="op">=</span>torch.bfloat16):
+            outputs <span class="op">=</span> model(inputs)
+            loss <span class="op">=</span> criterion(outputs, labels)
+
+        scaler.<span class="fn">scale</span>(loss).<span class="fn">backward</span>()        <span class="cm"># scaled backward for AMP</span>
+        scaler.<span class="fn">unscale_</span>(optimizer)           <span class="cm"># unscale before clip</span>
+        nn.utils.<span class="fn">clip_grad_norm_</span>(model.parameters(), max_norm<span class="op">=</span><span class="nm">1.0</span>)
+        scaler.<span class="fn">step</span>(optimizer)               <span class="cm"># only steps if grads valid</span>
+        scaler.<span class="fn">update</span>()                      <span class="cm"># adjust scale factor</span>
+
+        total_loss <span class="op">+=</span> loss.<span class="fn">item</span>()            <span class="cm"># .item() detaches from graph!</span>
+
+    <span class="kw">return</span> total_loss <span class="op">/</span> <span class="fn">len</span>(loader)
+
+<span class="op">@</span>torch.no_grad()  <span class="cm"># disable gradient tracking for inference</span>
+<span class="kw">def</span> <span class="fn">evaluate</span>(model, loader, criterion, device):
+    model.<span class="fn">eval</span>()      <span class="cm"># disables dropout, uses running stats in batchnorm</span>
+    total_loss <span class="op">=</span> <span class="nm">0.0</span>
+    correct <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">for</span> inputs, labels <span class="kw">in</span> loader:
+        inputs, labels <span class="op">=</span> inputs.<span class="fn">to</span>(device), labels.<span class="fn">to</span>(device)
+        outputs <span class="op">=</span> model(inputs)
+        total_loss <span class="op">+=</span> criterion(outputs, labels).<span class="fn">item</span>()
+        correct <span class="op">+=</span> (outputs.<span class="fn">argmax</span>(<span class="nm">1</span>) <span class="op">==</span> labels).<span class="fn">sum</span>().<span class="fn">item</span>()
+
+    <span class="kw">return</span> total_loss <span class="op">/</span> <span class="fn">len</span>(loader), correct <span class="op">/</span> <span class="fn">len</span>(loader.dataset)</div>
+        </div>
+        <div class="tag green">Checklist</div> 5 things every training loop needs: <code>model.train()</code> / <code>model.eval()</code> switching, <code>zero_grad()</code> before backward, <code>clip_grad_norm_</code>, <code>loss.item()</code> not <code>loss</code>, and <code>@torch.no_grad()</code> for evaluation.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you debug NaN loss during training? Systematic approach. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> torch
+
+<span class="cm"># Step 1: Enable anomaly detection (pinpoints where NaN first appears)</span>
+torch.autograd.<span class="fn">set_detect_anomaly</span>(<span class="kw">True</span>)  <span class="cm"># SLOW — only for debugging</span>
+
+<span class="cm"># Step 2: Check inputs — NaN can come from your data</span>
+<span class="kw">def</span> <span class="fn">check_batch</span>(inputs, labels):
+    <span class="kw">assert</span> <span class="kw">not</span> torch.<span class="fn">isnan</span>(inputs).<span class="fn">any</span>(), <span class="st">"NaN in inputs!"</span>
+    <span class="kw">assert</span> <span class="kw">not</span> torch.<span class="fn">isinf</span>(inputs).<span class="fn">any</span>(), <span class="st">"Inf in inputs!"</span>
+    <span class="kw">assert</span> (labels <span class="op">>=</span> <span class="nm">0</span>).<span class="fn">all</span>(), <span class="st">"Negative label indices!"</span>
+
+<span class="cm"># Step 3: Check gradients after backward</span>
+<span class="kw">for</span> name, param <span class="kw">in</span> model.<span class="fn">named_parameters</span>():
+    <span class="kw">if</span> param.grad <span class="kw">is not</span> <span class="kw">None</span>:
+        <span class="kw">if</span> torch.<span class="fn">isnan</span>(param.grad).<span class="fn">any</span>():
+            <span class="fn">print</span>(<span class="st">f"NaN gradient in </span>{name}<span class="st">"</span>)
+
+<span class="cm"># Step 4: Monitor gradient norms — exploding = will go NaN</span>
+total_norm <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> p <span class="kw">in</span> model.parameters():
+    <span class="kw">if</span> p.grad <span class="kw">is not</span> <span class="kw">None</span>:
+        total_norm <span class="op">+=</span> p.grad.<span class="fn">data</span>.<span class="fn">norm</span>(<span class="nm">2</span>).<span class="fn">item</span>() <span class="op">**</span> <span class="nm">2</span>
+total_norm <span class="op">=</span> total_norm <span class="op">**</span> <span class="nm">0.5</span>
+<span class="cm"># If > 100x typical norm → explosion about to happen</span>
+
+<span class="cm"># Common root causes:</span>
+<span class="cm"># 1. Learning rate too high → reduce by 10x</span>
+<span class="cm"># 2. log(0) in loss → add epsilon or use stable implementations</span>
+<span class="cm"># 3. Division by zero in normalization → add eps=1e-8</span>
+<span class="cm"># 4. Input data has NaN/Inf → fix data pipeline</span>
+<span class="cm"># 5. Bad weight initialization → use kaiming_normal for ReLU</span>
+<span class="cm"># 6. No gradient clipping → add clip_grad_norm_(max_norm=1.0)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Pandas</button>
+    <button class="nbtn primary" onclick="nextCh(4)">Concurrency →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 6: CONCURRENCY                   -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 06 / 08</div>
+      <div class="ch-title">Async &amp;<br><span>Concurrency</span></div>
+      <p class="ch-lead">LLM serving, data pipelines, and API integrations are all I/O-bound or CPU-bound concurrency problems. Google expects you to choose the right model and use it correctly.</p>
+    </div>
+    <div class="ch-header-right"><div class="difficulty-badge">L4 / Advanced</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> When do you use asyncio vs threading vs multiprocessing? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Approach</th><th>Best For</th><th>GIL</th><th>Overhead</th><th>ML Use Case</th></tr>
+            <tr><td><code>asyncio</code></td><td>Many concurrent I/O operations</td><td>N/A</td><td>Very Low</td><td>LLM API calls, streaming responses, web serving</td></tr>
+            <tr><td><code>threading</code></td><td>I/O-bound with blocking calls</td><td>Released for I/O</td><td>Low</td><td>Data downloading, concurrent file reads</td></tr>
+            <tr><td><code>multiprocessing</code></td><td>CPU-bound Python code</td><td>Bypassed</td><td>High</td><td>Data preprocessing, feature engineering</td></tr>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> asyncio
+<span class="kw">import</span> httpx
+
+<span class="cm"># asyncio: handle 1000s of concurrent LLM API calls efficiently</span>
+<span class="kw">async def</span> <span class="fn">call_llm</span>(session: httpx.AsyncClient, prompt: <span class="tp">str</span>) <span class="op">-></span> <span class="tp">str</span>:
+    response <span class="op">=</span> <span class="kw">await</span> session.<span class="fn">post</span>(
+        <span class="st">"https://api.anthropic.com/v1/messages"</span>,
+        json<span class="op">=</span>{<span class="st">"model"</span>: <span class="st">"claude-sonnet-4-6"</span>, <span class="st">"messages"</span>: [{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: prompt}]},
+        headers<span class="op">=</span>{<span class="st">"x-api-key"</span>: API_KEY}
+    )
+    <span class="kw">return</span> response.json()[<span class="st">"content"</span>][<span class="nm">0</span>][<span class="st">"text"</span>]
+
+<span class="kw">async def</span> <span class="fn">batch_llm_calls</span>(prompts: <span class="tp">list</span>[<span class="tp">str</span>]) <span class="op">-></span> <span class="tp">list</span>[<span class="tp">str</span>]:
+    <span class="kw">async with</span> httpx.<span class="fn">AsyncClient</span>(timeout<span class="op">=</span><span class="nm">30</span>) <span class="kw">as</span> session:
+        <span class="cm"># Run all calls concurrently — not sequentially!</span>
+        tasks <span class="op">=</span> [<span class="fn">call_llm</span>(session, p) <span class="kw">for</span> p <span class="kw">in</span> prompts]
+        <span class="kw">return</span> <span class="kw">await</span> asyncio.<span class="fn">gather</span>(<span class="op">*</span>tasks)
+
+<span class="cm"># 100 API calls: sequential=100s, async=~1-2s (rate limit permitting)</span>
+
+<span class="cm"># Semaphore: limit concurrent requests (avoid rate limits)</span>
+<span class="kw">async def</span> <span class="fn">rate_limited_batch</span>(prompts, max_concurrent<span class="op">=</span><span class="nm">10</span>):
+    semaphore <span class="op">=</span> asyncio.<span class="fn">Semaphore</span>(max_concurrent)
+    <span class="kw">async def</span> <span class="fn">limited_call</span>(session, prompt):
+        <span class="kw">async with</span> semaphore:  <span class="cm"># at most max_concurrent at once</span>
+            <span class="kw">return</span> <span class="kw">await</span> <span class="fn">call_llm</span>(session, prompt)
+    <span class="kw">async with</span> httpx.<span class="fn">AsyncClient</span>() <span class="kw">as</span> session:
+        <span class="kw">return</span> <span class="kw">await</span> asyncio.<span class="fn">gather</span>(<span class="op">*</span>[<span class="fn">limited_call</span>(session, p) <span class="kw">for</span> p <span class="kw">in</span> prompts])</div>
+        </div>
+        <div class="tag blue">LLM serving</div> FastAPI + asyncio is the standard stack for LLM API servers. Every request handler should be <code>async def</code> — synchronous handlers block the event loop and destroy throughput.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Implement a thread-safe producer-consumer pipeline for ML data loading. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> queue
+<span class="kw">import</span> threading
+<span class="kw">from</span> typing <span class="kw">import</span> Iterator
+
+<span class="kw">class</span> <span class="tp">PrefetchDataLoader</span>:
+    <span class="st">"""
+    Prefetch batches in background threads while GPU computes.
+    Classic producer-consumer pattern with a bounded queue.
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, dataset, batch_size: <span class="tp">int</span>, num_workers: <span class="tp">int</span> <span class="op">=</span> <span class="nm">4</span>, prefetch: <span class="tp">int</span> <span class="op">=</span> <span class="nm">8</span>):
+        self.dataset <span class="op">=</span> dataset
+        self.batch_size <span class="op">=</span> batch_size
+        self.queue <span class="op">=</span> queue.<span class="fn">Queue</span>(maxsize<span class="op">=</span>prefetch)  <span class="cm"># bounded — backpressure</span>
+        self._stop <span class="op">=</span> threading.<span class="fn">Event</span>()
+
+    <span class="kw">def</span> <span class="fn">_producer</span>(self):
+        <span class="st">"""Runs in background thread — loads and preprocesses batches."""</span>
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">0</span>, <span class="fn">len</span>(self.dataset), self.batch_size):
+            <span class="kw">if</span> self._stop.<span class="fn">is_set</span>():
+                <span class="kw">break</span>
+            batch <span class="op">=</span> self.dataset[i : i <span class="op">+</span> self.batch_size]
+            processed <span class="op">=</span> self.<span class="fn">_preprocess</span>(batch)
+            self.queue.<span class="fn">put</span>(processed)  <span class="cm"># blocks if queue full (backpressure)</span>
+        self.queue.<span class="fn">put</span>(<span class="kw">None</span>)  <span class="cm"># sentinel: signals done</span>
+
+    <span class="kw">def</span> <span class="fn">__iter__</span>(self) <span class="op">-></span> Iterator:
+        worker <span class="op">=</span> threading.<span class="fn">Thread</span>(target<span class="op">=</span>self._producer, daemon<span class="op">=</span><span class="kw">True</span>)
+        worker.<span class="fn">start</span>()
+        <span class="kw">try</span>:
+            <span class="kw">while</span> <span class="kw">True</span>:
+                batch <span class="op">=</span> self.queue.<span class="fn">get</span>(timeout<span class="op">=</span><span class="nm">60</span>)  <span class="cm"># timeout guards against deadlock</span>
+                <span class="kw">if</span> batch <span class="kw">is</span> <span class="kw">None</span>:  <span class="cm"># sentinel received</span>
+                    <span class="kw">break</span>
+                <span class="kw">yield</span> batch
+        <span class="kw">finally</span>:
+            self._stop.<span class="fn">set</span>()    <span class="cm"># signal worker to stop on exception</span>
+            worker.<span class="fn">join</span>(<span class="nm">2.0</span>)   <span class="cm"># wait up to 2s for clean shutdown</span></div>
+        </div>
+        <div class="tag amber">Interview note</div> This pattern — bounded queue + daemon thread + sentinel value + stop event — is exactly what PyTorch's DataLoader implements internally. Understanding it shows you know the infrastructure, not just the API.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← PyTorch/TF</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Design Patterns →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 7: DESIGN PATTERNS               -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 07 / 08</div>
+      <div class="ch-title">Design<br><span>Patterns</span></div>
+      <p class="ch-lead">Google's ML codebases are large, collaborative, and must evolve. Knowing the right design patterns makes your ML code testable, extensible, and production-grade.</p>
+    </div>
+    <div class="ch-header-right"><div class="difficulty-badge">L4 / Senior</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What design patterns are most common in ML systems? Show Python implementations. <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+<span class="kw">from</span> typing <span class="kw">import</span> Protocol
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+<span class="cm"># 1. STRATEGY PATTERN — swap algorithms without changing client code</span>
+<span class="kw">class</span> <span class="tp">Optimizer</span>(Protocol):
+    <span class="kw">def</span> <span class="fn">step</span>(self, params, grads): ...
+
+<span class="kw">class</span> <span class="tp">SGDOptimizer</span>:
+    <span class="kw">def</span> <span class="fn">step</span>(self, params, grads):
+        <span class="kw">for</span> p, g <span class="kw">in</span> <span class="fn">zip</span>(params, grads):
+            p.data <span class="op">-=</span> self.lr <span class="op">*</span> g
+
+<span class="kw">class</span> <span class="tp">AdamOptimizer</span>:
+    <span class="kw">def</span> <span class="fn">step</span>(self, params, grads): ...
+
+<span class="cm"># 2. FACTORY PATTERN — create objects from config strings</span>
+<span class="kw">def</span> <span class="fn">get_optimizer</span>(name: <span class="tp">str</span>, lr: <span class="tp">float</span>, <span class="op">**</span>kwargs):
+    optimizers <span class="op">=</span> {
+        <span class="st">"sgd"</span>: SGDOptimizer,
+        <span class="st">"adam"</span>: AdamOptimizer,
+        <span class="st">"adamw"</span>: AdamWOptimizer,
+    }
+    <span class="kw">if</span> name <span class="kw">not in</span> optimizers:
+        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">f"Unknown optimizer: </span>{name}<span class="st">"</span>)
+    <span class="kw">return</span> optimizers[name](lr<span class="op">=</span>lr, <span class="op">**</span>kwargs)
+
+<span class="cm"># 3. PIPELINE / CHAIN OF RESPONSIBILITY — data transforms</span>
+<span class="kw">class</span> <span class="tp">Transform</span>(ABC):
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">__call__</span>(self, x): ...
+
+    <span class="kw">def</span> <span class="fn">__or__</span>(self, other):  <span class="cm"># pipe operator: t1 | t2 | t3</span>
+        <span class="kw">return</span> <span class="fn">Pipeline</span>([self, other])
+
+<span class="kw">class</span> <span class="tp">Pipeline</span>(<span class="tp">Transform</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, transforms):
+        self.transforms <span class="op">=</span> transforms
+    <span class="kw">def</span> <span class="fn">__call__</span>(self, x):
+        <span class="kw">for</span> t <span class="kw">in</span> self.transforms:
+            x <span class="op">=</span> t(x)
+        <span class="kw">return</span> x
+
+pipeline <span class="op">=</span> <span class="fn">Normalize</span>() <span class="op">|</span> <span class="fn">Augment</span>() <span class="op">|</span> <span class="fn">ToTensor</span>()
+result <span class="op">=</span> pipeline(raw_image)  <span class="cm"># clean, composable</span>
+
+<span class="cm"># 4. REGISTRY PATTERN — auto-discover subclasses (popular in ML frameworks)</span>
+_MODEL_REGISTRY <span class="op">=</span> {}
+
+<span class="kw">def</span> <span class="fn">register_model</span>(name: <span class="tp">str</span>):
+    <span class="kw">def</span> <span class="fn">decorator</span>(cls):
+        _MODEL_REGISTRY[name] <span class="op">=</span> cls
+        <span class="kw">return</span> cls
+    <span class="kw">return</span> decorator
+
+<span class="op">@</span><span class="fn">register_model</span>(<span class="st">"resnet50"</span>)
+<span class="kw">class</span> <span class="tp">ResNet50</span>(nn.Module): ...
+
+<span class="op">@</span><span class="fn">register_model</span>(<span class="st">"vit_base"</span>)
+<span class="kw">class</span> <span class="tp">ViTBase</span>(nn.Module): ...
+
+model <span class="op">=</span> _MODEL_REGISTRY[config.model_name]()  <span class="cm"># create from config</span></div>
+        </div>
+        <div class="tag blue">Google style</div> Google's ML configs are proto or dataclass definitions. Model architectures are in registries. Everything is configurable without code changes. This is how you scale ML codebases to hundreds of contributors.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you use Python type hints effectively in ML code? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">from</span> __future__ <span class="kw">import</span> annotations  <span class="cm"># enable forward references</span>
+<span class="kw">from</span> typing <span class="kw">import</span> TypeVar, Generic, Protocol, Literal, TypedDict
+<span class="kw">from</span> typing <span class="kw">import</span> Sequence, Mapping, Callable, Iterator
+<span class="kw">import</span> torch
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+
+<span class="cm"># TypedDict for structured dicts (better than plain dict)</span>
+<span class="kw">class</span> <span class="tp">ModelOutput</span>(TypedDict):
+    logits: torch.Tensor
+    hidden_states: <span class="tp">list</span>[torch.Tensor]
+    loss: torch.Tensor <span class="op">|</span> <span class="kw">None</span>
+
+<span class="cm"># Literal types for constrained string args</span>
+<span class="tp">PoolingMode</span> <span class="op">=</span> Literal[<span class="st">"mean"</span>, <span class="st">"max"</span>, <span class="st">"cls"</span>]
+
+<span class="kw">def</span> <span class="fn">pool_embeddings</span>(
+    hidden: torch.Tensor,       <span class="cm"># (batch, seq, hidden)</span>
+    mask: torch.Tensor,         <span class="cm"># (batch, seq) bool</span>
+    mode: <span class="tp">PoolingMode</span> <span class="op">=</span> <span class="st">"mean"</span>
+) <span class="op">-></span> torch.Tensor:             <span class="cm"># (batch, hidden)</span>
+    ...
+
+<span class="cm"># Generic types for type-safe containers</span>
+T <span class="op">=</span> <span class="fn">TypeVar</span>(<span class="st">'T'</span>)
+
+<span class="kw">class</span> <span class="tp">Dataset</span>(<span class="tp">Generic</span>[T]):
+    <span class="kw">def</span> <span class="fn">__getitem__</span>(self, idx: <span class="tp">int</span>) <span class="op">-></span> T: ...
+    <span class="kw">def</span> <span class="fn">__len__</span>(self) <span class="op">-></span> <span class="tp">int</span>: ...
+
+<span class="tp">TextDataset</span> <span class="op">=</span> <span class="tp">Dataset</span>[<span class="tp">str</span>]
+<span class="tp">TensorDataset</span> <span class="op">=</span> <span class="tp">Dataset</span>[torch.Tensor]
+
+<span class="cm"># Dataclass with validation</span>
+<span class="op">@</span>dataclass
+<span class="kw">class</span> <span class="tp">TrainingConfig</span>:
+    model_name: <span class="tp">str</span>
+    lr: <span class="tp">float</span> <span class="op">=</span> <span class="nm">3e-4</span>
+    batch_size: <span class="tp">int</span> <span class="op">=</span> <span class="nm">32</span>
+    warmup_steps: <span class="tp">int</span> <span class="op">=</span> <span class="nm">1000</span>
+    device: Literal[<span class="st">"cpu"</span>, <span class="st">"cuda"</span>, <span class="st">"mps"</span>] <span class="op">=</span> <span class="st">"cuda"</span>
+    gradient_clip: <span class="tp">float</span> <span class="op">|</span> <span class="kw">None</span> <span class="op">=</span> <span class="nm">1.0</span>
+
+    <span class="kw">def</span> <span class="fn">__post_init__</span>(self):
+        <span class="kw">assert</span> self.lr <span class="op">></span> <span class="nm">0</span>, <span class="st">"Learning rate must be positive"</span>
+        <span class="kw">assert</span> self.batch_size <span class="op">></span> <span class="nm">0</span>, <span class="st">"Batch size must be positive"</span></div>
+        </div>
+        <div class="tag google">Google requirement</div> All new Python code at Google requires type annotations and passes <code>mypy --strict</code>. In interviews, writing typed code signals you write production-quality Python, not just scripts.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← Concurrency</button>
+    <button class="nbtn primary" onclick="nextCh(6)">Testing &amp; Perf →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- CH 8: TESTING & PERFORMANCE         -->
+<!-- ════════════════════════════════════ -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-header-left">
+      <div class="ch-crumb">Chapter 08 / 08</div>
+      <div class="ch-title">Testing &amp;<br><span>Performance</span></div>
+      <p class="ch-lead">Google won't ship untested code. ML testing is uniquely hard — tests for determinism, numerical correctness, and performance profiling are expected at L4.</p>
+    </div>
+    <div class="ch-header-right"><div class="difficulty-badge">L4 / Must Know</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> How do you test ML code? What makes ML testing different from regular software testing? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> pytest
+<span class="kw">import</span> torch
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># 1. Shape tests — most ML bugs are shape mismatches</span>
+<span class="kw">class</span> <span class="tp">TestAttentionLayer</span>:
+    <span class="kw">def</span> <span class="fn">test_output_shape</span>(self):
+        model <span class="op">=</span> <span class="fn">MultiHeadAttention</span>(d_model<span class="op">=</span><span class="nm">256</span>, n_heads<span class="op">=</span><span class="nm">8</span>)
+        x <span class="op">=</span> torch.randn(<span class="nm">4</span>, <span class="nm">16</span>, <span class="nm">256</span>)  <span class="cm"># (batch, seq, d_model)</span>
+        out <span class="op">=</span> model(x)
+        <span class="kw">assert</span> out.shape <span class="op">==</span> x.shape, <span class="st">f"Expected </span>{x.shape}<span class="st">, got </span>{out.shape}<span class="st">"</span>
+
+    <span class="cm"># 2. Gradient flow test — do gradients reach all parameters?</span>
+    <span class="kw">def</span> <span class="fn">test_gradients_flow</span>(self):
+        model <span class="op">=</span> <span class="fn">MyModel</span>()
+        loss <span class="op">=</span> model(torch.randn(<span class="nm">4</span>, <span class="nm">10</span>)).<span class="fn">sum</span>()
+        loss.<span class="fn">backward</span>()
+        <span class="kw">for</span> name, param <span class="kw">in</span> model.<span class="fn">named_parameters</span>():
+            <span class="kw">assert</span> param.grad <span class="kw">is not</span> <span class="kw">None</span>, <span class="st">f"No gradient for </span>{name}<span class="st">"</span>
+            <span class="kw">assert</span> <span class="kw">not</span> torch.<span class="fn">isnan</span>(param.grad).<span class="fn">any</span>(), <span class="st">f"NaN gradient in </span>{name}<span class="st">"</span>
+
+    <span class="cm"># 3. Loss decreases test — model should improve on small dataset</span>
+    <span class="kw">def</span> <span class="fn">test_loss_decreases</span>(self):
+        torch.manual_seed(<span class="nm">42</span>)  <span class="cm"># reproducibility</span>
+        model <span class="op">=</span> <span class="fn">MyModel</span>()
+        optimizer <span class="op">=</span> torch.optim.<span class="fn">Adam</span>(model.parameters(), lr<span class="op">=</span><span class="nm">0.01</span>)
+        X, y <span class="op">=</span> torch.randn(<span class="nm">32</span>, <span class="nm">10</span>), torch.randint(<span class="nm">0</span>, <span class="nm">5</span>, (<span class="nm">32</span>,))
+
+        losses <span class="op">=</span> []
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">50</span>):
+            optimizer.<span class="fn">zero_grad</span>()
+            loss <span class="op">=</span> F.<span class="fn">cross_entropy</span>(model(X), y)
+            loss.<span class="fn">backward</span>()
+            optimizer.<span class="fn">step</span>()
+            losses.<span class="fn">append</span>(loss.<span class="fn">item</span>())
+
+        <span class="kw">assert</span> losses[<span class="op">-</span><span class="nm">1</span>] <span class="op"><</span> losses[<span class="nm">0</span>], <span class="st">"Loss should decrease (model should learn)"</span>
+
+    <span class="cm"># 4. Numerical precision test — use tolerance, not == for floats</span>
+    <span class="kw">def</span> <span class="fn">test_softmax_sums_to_one</span>(self):
+        logits <span class="op">=</span> torch.randn(<span class="nm">100</span>, <span class="nm">10</span>)
+        probs <span class="op">=</span> torch.softmax(logits, dim<span class="op">=-</span><span class="nm">1</span>)
+        np.testing.<span class="fn">assert_allclose</span>(
+            probs.<span class="fn">sum</span>(dim<span class="op">=-</span><span class="nm">1</span>).<span class="fn">numpy</span>(),
+            np.<span class="fn">ones</span>(<span class="nm">100</span>),
+            rtol<span class="op">=</span><span class="nm">1e-5</span>  <span class="cm"># relative tolerance for floating point</span>
+        )</div>
+        </div>
+        <div class="tag amber">Google testing</div> Use <code>torch.allclose(a, b, atol=1e-6)</code> for tensor comparison. Never use <code>==</code> for floats. Use <code>pytest.mark.parametrize</code> to test across multiple shapes and dtypes automatically.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you profile and optimize Python/PyTorch code for performance? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">import</span> cProfile
+<span class="kw">import</span> pstats
+<span class="kw">import</span> torch
+<span class="kw">from</span> torch.profiler <span class="kw">import</span> profile, record_function, ProfilerActivity
+
+<span class="cm"># Python profiling — find slow Python code</span>
+<span class="kw">with</span> cProfile.<span class="fn">Profile</span>() <span class="kw">as</span> pr:
+    <span class="fn">train_epoch</span>(model, loader)
+stats <span class="op">=</span> pstats.<span class="fn">Stats</span>(pr)
+stats.<span class="fn">sort_stats</span>(<span class="st">'cumulative'</span>).<span class="fn">print_stats</span>(<span class="nm">20</span>)  <span class="cm"># top 20 slowest functions</span>
+
+<span class="cm"># PyTorch profiler — find CPU/GPU bottlenecks + memory</span>
+<span class="kw">with</span> <span class="fn">profile</span>(
+    activities<span class="op">=</span>[ProfilerActivity.CPU, ProfilerActivity.CUDA],
+    record_shapes<span class="op">=</span><span class="kw">True</span>,
+    profile_memory<span class="op">=</span><span class="kw">True</span>,
+    with_stack<span class="op">=</span><span class="kw">True</span>
+) <span class="kw">as</span> prof:
+    <span class="kw">with</span> <span class="fn">record_function</span>(<span class="st">"model_forward"</span>):
+        output <span class="op">=</span> model(inputs)
+    <span class="kw">with</span> <span class="fn">record_function</span>(<span class="st">"loss"</span>):
+        loss <span class="op">=</span> criterion(output, labels)
+
+<span class="fn">print</span>(prof.<span class="fn">key_averages</span>().<span class="fn">table</span>(sort_by<span class="op">=</span><span class="st">"cuda_time_total"</span>, row_limit<span class="op">=</span><span class="nm">10</span>))
+
+<span class="cm"># Common optimizations once you've profiled:</span>
+
+<span class="cm"># 1. Compile the model (PyTorch 2.0+) — 2-3x speedup</span>
+model <span class="op">=</span> torch.<span class="fn">compile</span>(model, mode<span class="op">=</span><span class="st">"max-autotune"</span>)
+
+<span class="cm"># 2. Pin memory for faster CPU→GPU transfers</span>
+loader <span class="op">=</span> <span class="fn">DataLoader</span>(dataset, pin_memory<span class="op">=</span><span class="kw">True</span>, num_workers<span class="op">=</span><span class="nm">4</span>)
+
+<span class="cm"># 3. Use einsum for complex tensor operations (readable + fast)</span>
+<span class="cm"># Batch matrix multiply: (B,H,N,D) × (B,H,D,M) → (B,H,N,M)</span>
+result <span class="op">=</span> torch.<span class="fn">einsum</span>(<span class="st">'bhnd,bhdm->bhnm'</span>, Q, K)
+
+<span class="cm"># 4. Memory-efficient attention (Flash Attention)</span>
+<span class="cm"># torch.nn.functional.scaled_dot_product_attention uses Flash Attention</span>
+<span class="cm"># when available — no code change needed in PyTorch 2.0+</span>
+attn_output <span class="op">=</span> F.<span class="fn">scaled_dot_product_attention</span>(Q, K, V, is_causal<span class="op">=</span><span class="kw">True</span>)</div>
+        </div>
+        <div class="tag red">Google expectation</div> "Profile before optimizing." Never guess where the bottleneck is. At Google, performance PRs require profiler output showing the improvement. Know <code>cProfile</code>, <code>torch.profiler</code>, and <code>time.perf_counter</code> for microbenchmarks.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the difference between @staticmethod, @classmethod, and instance methods? When do you use each in ML? <span class="ti">+</span></div>
+      <div class="qa-a">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python</span><div class="code-dots"><span></span><span></span><span></span></div></div>
+          <div class="code-body"><span class="kw">class</span> <span class="tp">TransformerModel</span>(nn.Module):
+
+    <span class="cm"># Instance method: has access to self (the instance)</span>
+    <span class="cm"># Most common — reads/writes instance state</span>
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x: torch.Tensor) <span class="op">-></span> torch.Tensor:
+        x <span class="op">=</span> self.<span class="fn">embedding</span>(x)     <span class="cm"># uses self</span>
+        <span class="kw">return</span> self.<span class="fn">output</span>(x)
+
+    <span class="cm"># @classmethod: receives the CLASS as first arg (cls)</span>
+    <span class="cm"># Use for: alternative constructors (from_pretrained, from_config)</span>
+    <span class="op">@</span>classmethod
+    <span class="kw">def</span> <span class="fn">from_pretrained</span>(cls, model_name: <span class="tp">str</span>) <span class="op">-></span> <span class="st">"TransformerModel"</span>:
+        config <span class="op">=</span> <span class="fn">load_config</span>(model_name)
+        model <span class="op">=</span> cls(<span class="op">**</span>config)            <span class="cm"># cls = TransformerModel (or subclass!)</span>
+        model.<span class="fn">load_state_dict</span>(<span class="fn">load_weights</span>(model_name))
+        <span class="kw">return</span> model
+
+    <span class="op">@</span>classmethod
+    <span class="kw">def</span> <span class="fn">from_config</span>(cls, config: dict) <span class="op">-></span> <span class="st">"TransformerModel"</span>:
+        <span class="kw">return</span> cls(<span class="op">**</span>config)
+
+    <span class="cm"># @staticmethod: no self, no cls — just a function in the namespace</span>
+    <span class="cm"># Use for: utility functions that belong conceptually to the class</span>
+    <span class="op">@</span>staticmethod
+    <span class="kw">def</span> <span class="fn">causal_mask</span>(seq_len: <span class="tp">int</span>) <span class="op">-></span> torch.Tensor:
+        <span class="cm"># No instance or class needed — just math</span>
+        <span class="kw">return</span> torch.<span class="fn">triu</span>(torch.<span class="fn">ones</span>(seq_len, seq_len), diagonal<span class="op">=</span><span class="nm">1</span>).<span class="fn">bool</span>()
+
+    <span class="op">@</span>staticmethod
+    <span class="kw">def</span> <span class="fn">count_parameters</span>(model: nn.Module) <span class="op">-></span> <span class="tp">int</span>:
+        <span class="kw">return</span> <span class="fn">sum</span>(p.<span class="fn">numel</span>() <span class="kw">for</span> p <span class="kw">in</span> model.parameters() <span class="kw">if</span> p.requires_grad)
+
+<span class="cm"># Usage:</span>
+model <span class="op">=</span> TransformerModel.<span class="fn">from_pretrained</span>(<span class="st">"bert-base"</span>)  <span class="cm"># classmethod</span>
+mask <span class="op">=</span> TransformerModel.<span class="fn">causal_mask</span>(<span class="nm">512</span>)               <span class="cm"># staticmethod</span>
+out <span class="op">=</span> model(x)                                          <span class="cm"># instance method</span></div>
+        </div>
+        <div class="tag green">HuggingFace pattern</div> HuggingFace's <code>from_pretrained()</code> is a classmethod — it creates an instance of whatever class you call it on, even subclasses. This is why you can call <code>BertForSequenceClassification.from_pretrained("bert-base")</code> without changing the base class.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-label">⚡ Final Tip for Google L4</div>
+    <p>Google interviewers evaluate <strong>code quality</strong> as much as correctness. Write type hints. Use descriptive names. Add a one-line docstring. Handle edge cases explicitly. A clean, well-typed solution that's 80% right beats a working hack with no types or error handling. The goal is: <em>would a senior engineer want to merge this into their codebase?</em></p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← Design Patterns</button>
+    <button class="nbtn primary" onclick="alert('🎉 All 8 chapters complete!\n\nYou\'re ready for the Python portion of a Google L4 AI/ML interview.\n\nNext step: practice on leetcode.com and review Google\'s Python Style Guide.')">Complete! Ready for Google 🔴</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let cur = 0;
+const total = 8;
+
+function toggle(el) {
+  const ans = el.nextElementSibling;
+  const isOpen = ans.style.display === 'block';
+  ans.style.display = isOpen ? 'none' : 'block';
+  el.classList.toggle('open', !isOpen);
+}
+
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  if (el) el.classList.add('active');
+  cur = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextCh(c) {
+  if (c + 1 < total) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c + 1, items[c + 1]);
+  }
+}
+
+function prevCh(c) {
+  if (c - 1 >= 0) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c - 1, items[c - 1]);
+  }
+}
+</script>
+</body>
+</html>
