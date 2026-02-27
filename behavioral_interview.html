@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behavioral Interviews — AI Engineer at Google</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,500;0,700;0,900;1,900&family=Inconsolata:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d0d;--surface:#161616;--surface2:#1e1e1e;--surface3:#252525;--border:#2e2e2e;--border2:#3a3a3a;--text:#e8e8e8;--text2:#aaaaaa;--muted:#666;--cyan:#00d4aa;--orange:#ff6b35;--yellow:#ffd166;--purple:#b48eff;--blue:#4da6ff;--red:#ff4d6d;--green:#06d6a0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inconsolata',monospace;font-weight:300;line-height:1.7;min-height:100vh;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,13,0.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 24px;overflow-x:auto;scrollbar-width:none;}
+nav::-webkit-scrollbar{display:none;}
+.nav-brand{font-family:'Archivo',sans-serif;font-weight:900;font-size:12px;color:var(--green);white-space:nowrap;margin-right:24px;letter-spacing:0.05em;text-transform:uppercase;}
+.nav-item{font-size:10px;color:var(--muted);padding:0 11px;height:52px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;letter-spacing:0.03em;text-transform:uppercase;}
+.nav-item:hover{color:var(--text);}
+.nav-item.active{color:var(--green);border-bottom-color:var(--green);}
+main{max-width:900px;margin:0 auto;padding:80px 24px 100px;}
+.chapter{display:none;animation:fadeUp 0.35s ease both;}
+.chapter.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.ch-header{margin-bottom:52px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.ch-num{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.ch-title{font-family:'Archivo',sans-serif;font-size:clamp(34px,5.5vw,62px);font-weight:900;line-height:0.95;letter-spacing:-0.03em;margin-bottom:20px;}
+.ch-title em{font-style:italic;color:var(--green);}
+.ch-lead{font-size:15px;color:var(--text2);max-width:580px;line-height:1.6;}
+.section{margin-bottom:60px;}
+.section-label{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+h2{font-family:'Archivo',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-bottom:16px;line-height:1.2;}
+h3{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700;margin-bottom:10px;margin-top:28px;}
+p{margin-bottom:14px;font-size:15px;color:var(--text2);}
+p strong{color:var(--text);font-weight:600;}
+p:last-child{margin-bottom:0;}
+.qa{background:var(--surface);border:1px solid var(--border);margin:14px 0;overflow:hidden;}
+.qa-q{padding:15px 20px;font-size:14px;color:var(--yellow);cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-left:3px solid var(--yellow);transition:background 0.2s;line-height:1.5;}
+.qa-q:hover{background:var(--surface2);}
+.qa-q .arrow{font-size:18px;flex-shrink:0;transition:transform 0.3s;margin-top:1px;}
+.qa-q.open .arrow{transform:rotate(45deg);}
+.qa-a{display:none;padding:18px 20px;border-top:1px solid var(--border);font-size:14px;color:var(--text2);line-height:1.85;border-left:3px solid var(--surface3);}
+.qa-a strong{color:var(--cyan);}
+.insight{background:var(--surface2);border:1px solid var(--border2);border-left:3px solid var(--green);padding:20px 24px;margin:20px 0;}
+.insight-label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--green);margin-bottom:8px;}
+.insight p{font-size:14px;margin:0;line-height:1.75;}
+.insight strong{color:var(--green);}
+.warning{background:rgba(255,77,109,0.06);border:1px solid rgba(255,77,109,0.2);border-left:3px solid var(--red);padding:16px 20px;margin:18px 0;}
+.warning-label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+.warning p{font-size:14px;margin:0;color:var(--text2);}
+.star-box{background:var(--surface);border:1px solid var(--border);padding:0;margin:20px 0;overflow:hidden;}
+.star-row{display:grid;grid-template-columns:100px 1fr;border-bottom:1px solid var(--border);}
+.star-row:last-child{border-bottom:none;}
+.star-label{padding:14px 16px;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;font-weight:700;display:flex;align-items:center;border-right:1px solid var(--border);}
+.star-label.s{color:var(--cyan);}
+.star-label.t{color:var(--yellow);}
+.star-label.a{color:var(--orange);}
+.star-label.r{color:var(--green);}
+.star-content{padding:14px 16px;font-size:13.5px;color:var(--text2);line-height:1.6;}
+.star-content strong{color:var(--text);}
+.gattr{background:var(--surface);border:1px solid var(--border);padding:20px;margin:12px 0;}
+.gattr-name{font-family:'Archivo',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;}
+.gattr-desc{font-size:13.5px;color:var(--text2);margin-bottom:8px;line-height:1.6;}
+.gattr-signals{font-size:12px;color:var(--muted);}
+.gattr-signals span{color:var(--green);margin-right:8px;}
+.tbl-wrap{margin:18px 0;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--surface3);color:var(--muted);padding:9px 14px;text-align:left;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border2);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text2);line-height:1.5;}
+tr:last-child td{border-bottom:none;}
+td:first-child{color:var(--text);font-weight:600;}
+.nav-btns{display:flex;justify-content:space-between;margin-top:56px;padding-top:28px;border-top:1px solid var(--border);}
+.nbtn{background:transparent;border:1px solid var(--border2);color:var(--text2);font-family:'Inconsolata',monospace;font-size:12px;padding:11px 20px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;letter-spacing:0.05em;}
+.nbtn:hover{border-color:var(--green);color:var(--green);}
+.nbtn.primary{background:var(--green);color:#000;border-color:var(--green);font-weight:600;}
+.nbtn.primary:hover{background:#08f0b5;}
+.nbtn:disabled{opacity:0.25;cursor:not-allowed;}
+.story-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--green);padding:18px 20px;margin:16px 0;}
+.story-card h4{font-family:'Archivo',sans-serif;font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text);}
+.story-card .s-row{display:grid;grid-template-columns:80px 1fr;gap:8px;margin-bottom:6px;font-size:13px;}
+.story-card .s-row .lbl{color:var(--green);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding-top:2px;}
+.story-card .s-row .val{color:var(--text2);line-height:1.6;}
+.tag{display:inline-block;font-size:9px;padding:2px 7px;border:1px solid var(--green);color:var(--green);margin:4px 4px 4px 0;letter-spacing:0.08em;text-transform:uppercase;}
+.tag.red{border-color:var(--red);color:var(--red);}
+.tag.orange{border-color:var(--orange);color:var(--orange);}
+.tag.yellow{border-color:var(--yellow);color:var(--yellow);}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">🎯 Behavioral</div>
+  <div class="nav-item active" onclick="goTo(0,this)">① Google's 4 Attributes</div>
+  <div class="nav-item" onclick="goTo(1,this)">② STAR Method</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ Your Stories Bank</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ Common Questions</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ AI-Specific Qs</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ Mistakes to Avoid</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ Questions to Ask</div>
+</nav>
+<main>
+
+<!-- CH 1 -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 01 / 07 — Behavioral Interview Prep</div>
+    <div class="ch-title">Google's<br><em>4 Hiring</em><br>Attributes</div>
+    <p class="ch-lead">Google evaluates every candidate on 4 specific attributes. Every behavioral question maps to one of these. Know them and you know what they're looking for in every answer.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — The Four Attributes</div>
+    <h2>What Google Actually Evaluates</h2>
+    <div class="gattr">
+      <div class="gattr-name" style="color:var(--cyan)">① General Cognitive Ability (GCA)</div>
+      <div class="gattr-desc">Not just IQ — it's your ability to learn, reason through ambiguous problems, and figure things out quickly. In behavioral rounds: "Tell me about a time you had to learn something complex fast." They want to see HOW you think, not just what you know.</div>
+      <div class="gattr-signals"><span>✓</span>Learning from failures <span>✓</span>Structured thinking <span>✓</span>Asking good questions <span>✓</span>Adapting when wrong</div>
+    </div>
+    <div class="gattr">
+      <div class="gattr-name" style="color:var(--yellow)">② Role-Related Knowledge (RRK)</div>
+      <div class="gattr-desc">Do you actually know the technical domain? For AI engineers: ML systems, LLMs, data pipelines, distributed training, model serving. This shows in HOW you describe your projects — the depth, the tradeoffs you mention, the metrics you track.</div>
+      <div class="gattr-signals"><span>✓</span>Technical specifics in stories <span>✓</span>Tradeoffs mentioned <span>✓</span>Metrics and outcomes <span>✓</span>Why you chose approach X over Y</div>
+    </div>
+    <div class="gattr">
+      <div class="gattr-name" style="color:var(--orange)">③ Leadership</div>
+      <div class="gattr-desc">At Google, everyone is expected to lead — even ICs. Not "I managed 10 people" — it's "I influenced direction, resolved disagreements, unblocked others, stepped up when there was no clear owner." Junior candidates: show ownership of a feature/project. Senior: show influence without authority.</div>
+      <div class="gattr-signals"><span>✓</span>Took initiative <span>✓</span>Drove consensus <span>✓</span>Mentored someone <span>✓</span>Pushed back with data <span>✓</span>Removed blockers for the team</div>
+    </div>
+    <div class="gattr">
+      <div class="gattr-name" style="color:var(--green)">④ Googleyness</div>
+      <div class="gattr-desc">Culture fit — but specific. Comfort with ambiguity (Google projects often have no clear requirements). Bias to action. User empathy. Intellectual humility (admitting when wrong, updating beliefs with evidence). Collaborative not competitive. Cares about ethics and impact.</div>
+      <div class="gattr-signals"><span>✓</span>User-first thinking <span>✓</span>OK with uncertainty <span>✓</span>Collaborative <span>✓</span>Admits mistakes <span>✓</span>Thinks about broader impact</div>
+    </div>
+    <div class="insight">
+      <div class="insight-label">⚡ How to Use This</div>
+      <p>Before every interview, label each of your prepared stories with which attribute it primarily demonstrates. Make sure you have at least 2 stories per attribute. When you hear a behavioral question, quickly map it to the attribute and pick the right story.</p>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">STAR Method →</button>
+  </div>
+</div>
+
+<!-- CH 2 -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 02 / 07</div>
+    <div class="ch-title">The STAR<br><em>Method</em></div>
+    <p class="ch-lead">Every behavioral answer should follow STAR: Situation, Task, Action, Result. But most people do it wrong — they spend too long on Situation and not enough on Action and Result. Here's how to do it right.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — The Framework</div>
+    <div class="star-box">
+      <div class="star-row">
+        <div class="star-label s">Situation</div>
+        <div class="star-content"><strong>10-15% of your answer.</strong> Set the context briefly. What was the project? What was your team? What was the business goal? Don't over-explain — interviewers don't need full history. One or two sentences.</div>
+      </div>
+      <div class="star-row">
+        <div class="star-label t">Task</div>
+        <div class="star-content"><strong>10% of your answer.</strong> What was YOUR specific responsibility? Not "the team had to..." — "I was responsible for..." This is where you define your ownership clearly. Don't make it vague.</div>
+      </div>
+      <div class="star-row">
+        <div class="star-label a">Action</div>
+        <div class="star-content"><strong>60-70% of your answer.</strong> The most important part. What did YOU specifically do? Not "we" — "I". Break down your actual reasoning and decisions. Why did you choose approach X over Y? What was the tradeoff? What did you learn mid-way and how did you adapt? This is where your technical depth shows.</div>
+      </div>
+      <div class="star-row">
+        <div class="star-label r">Result</div>
+        <div class="star-content"><strong>15-20% of your answer.</strong> Quantify the outcome. Not "it went well" — "latency dropped from 800ms to 120ms," "model accuracy improved from 82% to 91%," "reduced training cost by 40%," "shipped to 100M users." If no metric: describe qualitative impact. Always end with what YOU learned.</div>
+      </div>
+    </div>
+    <div class="warning">
+      <div class="warning-label">⚠️ The 3 STAR Mistakes Everyone Makes</div>
+      <p>1. <strong>Too much "we."</strong> Say "I" — interviewers are evaluating YOU. You can acknowledge teammates but keep the focus on your actions.<br><br>2. <strong>No metrics in Result.</strong> "It went well" is not a result. Dig for numbers: time saved, accuracy gained, users impacted, cost reduced.<br><br>3. <strong>Action is vague.</strong> "I worked with the team to fix the issue" is useless. Be specific: "I proposed using gradient checkpointing to reduce memory by 40%, which allowed us to increase batch size and cut training time by 3 hours per run."</p>
+    </div>
+    <h3>The 2-Minute Rule</h3>
+    <p>Each behavioral answer should take <strong>90 seconds to 2 minutes</strong>. Shorter = not enough depth. Longer = you're not editing. Practice timing yourself. If you're going past 2.5 minutes, cut the Situation section first — it's always the most overexplained.</p>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← 4 Attributes</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Your Stories Bank →</button>
+  </div>
+</div>
+
+<!-- CH 3 -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 03 / 07</div>
+    <div class="ch-title">Build Your<br><em>Stories</em><br>Bank</div>
+    <p class="ch-lead">Prepare 8-10 stories from your experience before the interview. Each story should be reusable across multiple questions. Here's exactly what stories to prepare and what to include in each.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — The Stories You MUST Have Ready</div>
+    <h2>8 Stories That Cover Everything</h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>Story Type</th><th>Sample Question It Answers</th><th>Attribute</th><th>What to Include</th></tr>
+      <tr><td style="color:var(--cyan)">🏆 Biggest Technical Achievement</td><td>"Tell me about your most impressive project"</td><td>RRK + GCA</td><td>Technical depth, metrics, your specific contribution, why the approach was novel</td></tr>
+      <tr><td style="color:var(--red)">💥 Significant Failure</td><td>"Tell me about a mistake you made"</td><td>GCA + Googleyness</td><td>Own it fully, what you learned, what changed in your behavior after</td></tr>
+      <tr><td style="color:var(--yellow)">⚡ Worked Under Ambiguity</td><td>"Tell me about a time with unclear requirements"</td><td>GCA + Googleyness</td><td>How you defined the problem, how you got unstuck, outcome</td></tr>
+      <tr><td style="color:var(--orange)">🤝 Disagreement / Conflict</td><td>"Tell me about a disagreement with a colleague"</td><td>Leadership + Googleyness</td><td>The disagreement, how you listened AND pushed back, resolution, relationship after</td></tr>
+      <tr><td style="color:var(--green)">📈 Drove Impact</td><td>"Most impactful thing you've done"</td><td>Leadership + RRK</td><td>Business impact, technical approach, scale, metrics</td></tr>
+      <tr><td style="color:var(--purple)">⏱️ Tight Deadline</td><td>"Tell me about pressure / prioritization"</td><td>Leadership + GCA</td><td>How you triaged, what you cut, how you communicated, outcome</td></tr>
+      <tr><td style="color:var(--blue)">📚 Learned Fast</td><td>"New technology / domain you had to master"</td><td>GCA</td><td>How you approached learning, what resources, how long, what you built</td></tr>
+      <tr><td style="color:var(--cyan)">🧑‍🏫 Helped Others</td><td>"Tell me about mentoring / helping a colleague"</td><td>Leadership + Googleyness</td><td>What the person needed, your approach, outcome for them</td></tr>
+    </table></div>
+  </div>
+  <div class="section">
+    <div class="section-label">02 — Example Story (AI Engineer Version)</div>
+    <div class="story-card">
+      <h4>Story: Model Degradation in Production (Failure + Learning)</h4>
+      <div class="s-row"><div class="lbl">S</div><div class="val">I was the lead AI engineer on a fraud detection model serving 2M daily transactions at a fintech startup. Three months after launch, the model's precision dropped from 94% to 78% with no code changes.</div></div>
+      <div class="s-row"><div class="lbl">T</div><div class="val">I was responsible for diagnosing and fixing the degradation without taking the system offline — it was revenue-critical and had no fallback.</div></div>
+      <div class="s-row"><div class="lbl">A</div><div class="val">My first instinct was a model bug — I spent 2 days checking training code. Wrong. Then I looked at input data distributions and found the culprit: a new mobile payment provider had joined the platform, and their transactions had very different feature distributions than our training data (concept drift). I'd never set up drift monitoring, so I had no early warning. I immediately built a drift detection layer using PSI scores on all 40 features, found 12 features with PSI > 0.2. I then retrained with the last 6 weeks of data including the new provider, added cohort-specific features, and set up automated weekly retraining. I also built a monitoring dashboard with p-value alerts.</div></div>
+      <div class="s-row"><div class="lbl">R</div><div class="val">Precision recovered to 93% within a week. The drift monitoring system has since caught 2 more drift events before they caused degradation. I presented this to the team as a post-mortem and we now require drift monitoring before any model goes to production.</div></div>
+    </div>
+    <div class="insight">
+      <div class="insight-label">⚡ Why This Story Works</div>
+      <p>It <strong>owns the failure</strong> (I never set up drift monitoring). It shows <strong>technical depth</strong> (PSI scores, concept drift, cohort features). It has <strong>concrete metrics</strong> (94% → 78% → 93%). And it ends with <strong>systemic change</strong> — the mark of a learning-oriented engineer who prevents future failures, not just fixes current ones.</p>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← STAR Method</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Common Questions →</button>
+  </div>
+</div>
+
+<!-- CH 4 -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 04 / 07</div>
+    <div class="ch-title">Common<br><em>Questions</em></div>
+    <p class="ch-lead">The same 15 behavioral questions appear in 90% of interviews. Here they are with the exact approach for each — what attribute they test and what a strong answer must include.</p>
+  </div>
+  <div class="section">
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Tell me about yourself." <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>This is not a biography. It's a 90-second pitch.</strong> Structure: Present → Past → Future.<br><br>
+        <strong>Template:</strong><br>
+        "I'm currently [role] at [company], where I [what you do and at what scale]. Before that, I [1-2 previous relevant roles/experiences that led here]. What excites me about AI engineering specifically is [genuine interest]. I'm interested in this role at [company] because [specific reason — be specific, not generic]."<br><br>
+        <strong>For AI engineer:</strong><br>
+        "I'm currently an ML engineer at [company], where I own the recommendation system serving 10M daily users — from data pipeline through model training, serving, and monitoring. Before that I studied [field] at [university] where I did [relevant project]. I got drawn to the intersection of ML and systems engineering — specifically how to take a model from a notebook to something that's reliable, fast, and improving over time. I'm excited about this role because [specific team/product/technology at Google]."<br><br>
+        <div class="tag red">Don't</div> Read your resume. Mention every job. Ramble past 2 minutes. Say "I'm a passionate learner" (everyone says this).
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Tell me about a time you failed." <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>This tests intellectual humility (Googleyness) and learning ability (GCA).</strong><br><br>
+        <strong>What they're looking for:</strong> Can you own failure without making excuses? Did you genuinely learn? Did the failure lead to a system-level change, not just "I'll be more careful next time"?<br><br>
+        <strong>Strong answer structure:</strong><br>
+        1. Pick a REAL failure — not a disguised success ("I worked too hard"). Something that actually went wrong.<br>
+        2. Own it clearly: "This was my mistake because..."<br>
+        3. What happened as a result (honest impact — missed deadline, degraded system, cost overrun)<br>
+        4. What you specifically learned — something concrete and behavioral<br>
+        5. What changed: "Now I always X before doing Y. This has prevented Z twice since then."<br><br>
+        <div class="tag red">Avoid</div> Failures that are thinly veiled humblebrags ("I was too detail-oriented"). Failures where you blame others. Failures with no learning.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Tell me about a time you disagreed with your manager / team." <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Tests: Leadership and Googleyness.</strong> They want to see you can disagree respectfully with data, not by being stubborn or passive.<br><br>
+        <strong>The ideal story has:</strong><br>
+        1. A real disagreement (not trivial)<br>
+        2. You gathered evidence before pushing back (not just opinion vs opinion)<br>
+        3. You expressed disagreement clearly and professionally<br>
+        4. One of two outcomes — either you convinced them (with data), or they convinced you (and you updated your position gracefully)<br>
+        5. The relationship is fine after. You "disagree and commit" once a decision is made.<br><br>
+        <strong>Red flag story:</strong> You disagreed, management didn't listen, you were eventually proven right and they were wrong. Even if true — this story makes you look like you can't let go.<br><br>
+        <strong>Good ending:</strong> "In the end, [manager] went with their approach. I committed to making it work as well as possible. Six months later, we saw [outcome]. It taught me that [genuine learning about when to push vs when to defer]."
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"What's your greatest strength / weakness?" <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Strength: be specific, not generic.</strong><br>
+        Bad: "I'm a hard worker / fast learner / detail-oriented."<br>
+        Good: "My strength is debugging complex ML systems. When a model degrades in production, I've developed a systematic approach — I check data drift first, then feature distribution, then recent code changes. This has helped me diagnose 4 production incidents in the last year, usually within 2-3 hours."<br><br>
+        <strong>Weakness: be genuine, not manipulative.</strong><br>
+        Bad (the classic trap): "I work too hard" / "I'm a perfectionist."<br>
+        Good: A real weakness with evidence that you're actively working on it.<br>
+        Example: "I've struggled with over-engineering solutions. Early in my career I'd build a complex distributed system when a simple script would do. I've gotten much better at this — I now explicitly ask 'what's the simplest thing that could work?' before designing. My last 3 projects have shipped significantly faster because of this."
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Why Google?" / "Why do you want to leave your current company?" <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>"Why Google?" — be specific, not generic.</strong><br>
+        Bad: "Google has amazing engineers and great culture."<br>
+        Good: "I've been following [specific team's research / product / paper]. The work on [specific system — e.g., YouTube's DNN recommendation paper, or Google Brain's work on scaling laws] is directly relevant to problems I'm working on. I want to work at the scale that Google operates at — the engineering challenges at 2 billion users are fundamentally different from what I face at [current company] and I want to grow through those challenges."<br><br>
+        <strong>"Why are you leaving?" — positive framing, no complaints about current company.</strong><br>
+        Bad: "My current company has a toxic culture / no growth / bad management." Even if true — never say this.<br>
+        Good: "I've learned a lot at [current company] and I'm proud of what I've built there. I feel I've grown as much as I can in my current role, and I'm looking for challenges at larger scale. Google's work on [specific area] is the natural next step for where I want to go."
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Where do you see yourself in 5 years?" <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Google doesn't want someone who's just using them as a stepping stone, but they also want ambitious people.</strong><br><br>
+        Good framing: Focus on skills and impact, not titles.<br><br>
+        "In 5 years, I want to be the kind of engineer who can design and build AI systems from scratch at massive scale — from data pipeline to model architecture to serving infrastructure. I want to have shipped something that meaningfully affects millions of people. I'm not fixated on a particular title, but I want to have the depth to mentor other engineers in AI systems and to be the person the team turns to for the hardest ML infrastructure problems. Google is where I think I can develop those skills fastest."<br><br>
+        <div class="tag">If asked about management vs IC:</div> Be honest. If you want to stay technical: "I want to go deep on the IC track — I think the biggest impact I can have is as a strong technical contributor and informal mentor, not through people management." Google respects this.
+      </div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Stories Bank</button>
+    <button class="nbtn primary" onclick="nextCh(3)">AI-Specific Qs →</button>
+  </div>
+</div>
+
+<!-- CH 5 -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 05 / 07</div>
+    <div class="ch-title">AI-Specific<br><em>Behavioral</em><br>Questions</div>
+    <p class="ch-lead">AI engineer roles have behavioral questions that go beyond standard software questions. These test your judgment on ML-specific situations — ethics, uncertainty, model failures, and technical tradeoffs.</p>
+  </div>
+  <div class="section">
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Tell me about a time a model you built caused an unintended negative outcome." <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>This tests: Googleyness (ethics + honesty) + GCA (did you learn?).</strong><br><br>
+        If you have a real example — use it. If not, reframe to: a time your model had unintended behavior you didn't anticipate.<br><br>
+        <strong>Structure:</strong><br>
+        1. The system and its intended purpose<br>
+        2. The unintended outcome (be specific — bias in predictions, unfairness to a user segment, wrong recommendations leading to user harm)<br>
+        3. How you discovered it (proactive monitoring, or user complaint — be honest)<br>
+        4. What you did: immediate mitigation + root cause fix<br>
+        5. What systemic safeguard you added to prevent recurrence<br><br>
+        <strong>Example framing:</strong> "My recommendation model had very high average accuracy, but when I sliced by new user cohort, it was significantly worse — essentially showing new users random content. I discovered this after a product manager mentioned that new user retention was lower than expected. I added slice-based evaluation to our standard eval suite and adjusted training to oversample new user interactions."<br><br>
+        <div class="tag">Key point</div> Show that you think about fairness, slices, and subgroup performance — not just overall accuracy. This signals maturity.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"How do you decide when a model is good enough to ship?" <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Tests: RRK (do you have a systematic approach?) + Leadership (can you make judgment calls?).</strong><br><br>
+        <strong>Strong answer covers:</strong><br><br>
+        1. <strong>Business context first:</strong> "It depends on the use case. For fraud detection, I'd accept a worse model to launch faster if the alternative is no fraud detection at all. For medical diagnosis, the bar is much higher."<br><br>
+        2. <strong>Multiple signal types:</strong> Offline metrics (accuracy, NDCG, F1) are necessary but not sufficient. I need online signals from A/B test — does it improve business metrics? Are users satisfied?<br><br>
+        3. <strong>Regression testing:</strong> New model must not degrade on any important slice even if overall metric improves.<br><br>
+        4. <strong>Operational readiness:</strong> Does the model meet latency requirements? Is monitoring set up? Do we have a rollback plan? Accuracy alone isn't enough — a model that's accurate but breaks in production is not ready to ship.<br><br>
+        5. <strong>Gradual rollout:</strong> "I never ship a new model to 100% of traffic immediately. I start with 1-5% canary, monitor for 24-48h, then expand."
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Tell me about a time you had to explain a technical ML concept to a non-technical stakeholder." <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Tests: Communication + Googleyness (user/stakeholder empathy).</strong><br><br>
+        This is about <strong>translation</strong> — taking something technical and making it actionable for someone who doesn't have your background.<br><br>
+        <strong>Structure your answer around:</strong><br>
+        1. Who the stakeholder was and what they needed to understand<br>
+        2. What the technical concept was (be specific)<br>
+        3. The analogy or framing you used — show your creativity in explanation<br>
+        4. How they responded and what decision they made<br><br>
+        <strong>Example:</strong> "A product manager asked why our model kept recommending the same 20 creators to everyone. I explained popularity bias using a hiring analogy: 'Imagine a hiring manager who only interviews candidates who've already worked at Google. They'll always pick great people, but they'll miss the brilliant person who just needed a chance.' That framing clicked for her — she then pushed for us to add a diversity constraint and measure creator distribution as a product metric, which led to a 15% increase in creator diversity in recommendations."<br><br>
+        <div class="tag">What they want to hear</div> That you tailored the explanation to the audience. That they understood AND took action. That you listen before explaining.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">"Tell me about a time you worked with highly uncertain or messy data." <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Tests: RRK (data engineering skills) + GCA (problem-solving under uncertainty).</strong><br><br>
+        This is extremely common for AI engineers. Almost all real production data is messy.<br><br>
+        <strong>Strong answer elements:</strong><br>
+        1. What was wrong with the data (missing values, wrong labels, distribution mismatch, schema changes, duplicates)<br>
+        2. How you detected the problem (EDA, validation checks, model behaving strangely)<br>
+        3. Your approach to handling it — not just "I cleaned it" but HOW specifically:<br>
+        &nbsp;&nbsp;• Missing values: imputation strategy and why<br>
+        &nbsp;&nbsp;• Wrong labels: how you identified and relabeled<br>
+        &nbsp;&nbsp;• Noisy data: data quality filtering criteria and threshold<br>
+        4. How you validated your cleaning didn't introduce new bias<br>
+        5. What systematic process you put in place (data validation pipeline, schema checks)<br><br>
+        <div class="tag">Key signal</div> Engineers who've dealt with real data know that "cleaning data" is 40% of the job. Showing this depth immediately signals production experience vs. academic/notebook experience.
+      </div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Common Questions</button>
+    <button class="nbtn primary" onclick="nextCh(4)">Mistakes to Avoid →</button>
+  </div>
+</div>
+
+<!-- CH 6 -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 06 / 07</div>
+    <div class="ch-title">Mistakes<br><em>to Avoid</em></div>
+    <p class="ch-lead">These are the patterns that silently tank interviews. You might never know these were the reason you didn't get an offer — interviewers rarely give specific feedback.</p>
+  </div>
+  <div class="section">
+    <div class="tbl-wrap"><table>
+      <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+      <tr><td style="color:var(--red)">Saying "we" throughout</td><td>Interviewer can't tell what YOU did. They're hiring you, not your team.</td><td>Say "I". Acknowledge team briefly, then return to your specific actions.</td></tr>
+      <tr><td style="color:var(--red)">No metrics in results</td><td>"It went well" means nothing. Every result needs a number or clear qualitative impact.</td><td>Before your interview, quantify every story. Estimate if exact numbers aren't available — "roughly 3× faster" is fine.</td></tr>
+      <tr><td style="color:var(--red)">Fake weakness</td><td>Every interviewer knows "I'm a perfectionist" is not real. It signals you can't be honest.</td><td>Pick a real weakness. Show active effort to improve it. Show it's getting better.</td></tr>
+      <tr><td style="color:var(--red)">Badmouthing previous employer</td><td>Makes you look unprofessional and bitter. Interviewer wonders what you'll say about them.</td><td>Always positive framing. "I want to grow" not "my team is bad."</td></tr>
+      <tr><td style="color:var(--red)">Memorized robotic answers</td><td>Sounds rehearsed, not genuine. Interviewers can tell immediately.</td><td>Know your structure and bullet points, not word-for-word. Practice out loud to sound natural.</td></tr>
+      <tr><td style="color:var(--red)">Too long answers (5+ min)</td><td>Interviewer loses track. Looks like poor communication skills.</td><td>Target 90 seconds – 2 minutes. Stop at 2 minutes. Let them ask follow-ups.</td></tr>
+      <tr><td style="color:var(--red)">No specific examples</td><td>"I always make sure to communicate clearly" is not a behavioral answer. They asked for a SPECIFIC TIME.</td><td>Listen for "tell me about a time" — they want a story, not a general statement about yourself.</td></tr>
+      <tr><td style="color:var(--red)">Failure story with no learning</td><td>A failure with no growth signal = a candidate who doesn't learn. Big red flag at Google.</td><td>Every failure must end with: "here's what I changed in my behavior as a result."</td></tr>
+      <tr><td style="color:var(--red)">Not asking what they care about</td><td>Generic story that doesn't match what the interviewer values.</td><td>Start with: "Can I ask — is there a specific aspect of this you'd like me to focus on?" Then tailor.</td></tr>
+      <tr><td style="color:var(--red)">Talking past the end of an answer</td><td>Can't tell when you're done. Looks disorganized.</td><td>End with the result clearly: "In total, this improved X by Y. That's the story." Then stop.</td></tr>
+    </table></div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← AI-Specific Qs</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Questions to Ask →</button>
+  </div>
+</div>
+
+<!-- CH 7 -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 07 / 07</div>
+    <div class="ch-title">Questions<br><em>to Ask</em><br>Them</div>
+    <p class="ch-lead">At the end of every interview: "Do you have any questions for me?" Most candidates ask generic questions. Smart questions signal genuine curiosity, technical depth, and that you've done your research.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — Questions That Impress</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">Technical questions that show depth <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>"What does the ML infrastructure look like for this team? Do you use managed platforms like Vertex AI / SageMaker or do you run custom infrastructure on Kubernetes?"</strong><br>
+        Shows: you understand the ML infrastructure landscape, you'll be productive quickly.<br><br>
+        <strong>"How does the team handle model evaluation — what's the process from a model being trained to it being in production?"</strong><br>
+        Shows: you care about the full ML lifecycle, not just the training part.<br><br>
+        <strong>"What does drift monitoring look like for the models here? How do you know when a model needs retraining?"</strong><br>
+        Shows: you've thought about production ML operations, not just model building.<br><br>
+        <strong>"What's the biggest technical challenge the team is dealing with right now?"</strong><br>
+        Shows: curiosity and you're thinking about how you can contribute to real problems.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">Culture and team questions <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>"What does a typical week look like for an engineer on this team — how is time split between coding, meetings, design, and research?"</strong><br>
+        Shows: you care about day-to-day work quality, not just the job description.<br><br>
+        <strong>"What's the onboarding process like? What does success look like in the first 3 months for someone in this role?"</strong><br>
+        Shows: you're serious about joining and want to hit the ground running.<br><br>
+        <strong>"How does the team decide what to work on — is it top-down from product requirements, or do engineers have input into technical direction?"</strong><br>
+        Shows: you care about autonomy and engineering influence — a Googleyness signal.<br><br>
+        <strong>"What's your favorite thing about working on this team? And what's the hardest thing?"</strong><br>
+        Shows: intellectual honesty. You want a realistic picture, not a sales pitch. And it's a question most interviewers enjoy answering.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)">Questions to NEVER ask <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="tag red">Never Ask</div> "What does Google do?" — shows no research.<br><br>
+        <div class="tag red">Never Ask</div> "What's the salary / stock package?" — ask HR, not your interviewer. Very awkward.<br><br>
+        <div class="tag red">Never Ask</div> "How many vacation days do I get?" — completely wrong signal at this stage.<br><br>
+        <div class="tag red">Never Ask</div> "Can I work remotely?" — ask this after you have an offer.<br><br>
+        <div class="tag red">Never Ask</div> "What are the promotion criteria?" — too soon. Sounds like you're already negotiating.<br><br>
+        <div class="tag red">Never Ask</div> Nothing — "I think I got all my questions answered, thanks." This is a missed opportunity and makes you look passive. Always have 2-3 questions ready.
+      </div>
+    </div>
+  </div>
+  <div class="insight">
+    <div class="insight-label">⚡ The Final Mindset</div>
+    <p>Behavioral interviews are not lie detector tests. They're conversations where the interviewer is trying to answer: <strong>"Would I enjoy working with this person? Would they make the team better? Would they be honest when something goes wrong?"</strong> Be genuine, be specific, and show that you've learned from everything — both successes and failures. That's what Googleyness actually means.</p>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← Mistakes to Avoid</button>
+    <button class="nbtn primary" onclick="alert('✅ Behavioral complete!\nBuilding ML Systems & Frontier AI now...')">Done ✓</button>
+  </div>
+</div>
+
+</main>
+<script>
+let cur=0;const total=7;
+function toggle(el){const a=el.nextElementSibling;const o=a.style.display==='block';a.style.display=o?'none':'block';el.classList.toggle('open',!o);}
+function goTo(idx,el){document.querySelectorAll('.chapter').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('ch'+idx).classList.add('active');el.classList.add('active');cur=idx;window.scrollTo({top:0,behavior:'smooth'});}
+function nextCh(c){if(c+1<total){const items=document.querySelectorAll('.nav-item');goTo(c+1,items[c+1]);}}
+function prevCh(c){if(c-1>=0){const items=document.querySelectorAll('.nav-item');goTo(c-1,items[c-1]);}}
+</script>
+</body>
+</html>

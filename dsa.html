@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS&A + Recommendation Systems — AI Engineer Interview</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,500;0,700;0,900;1,900&family=Inconsolata:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --surface2: #1e1e1e;
+  --surface3: #252525;
+  --border: #2e2e2e;
+  --border2: #3a3a3a;
+  --text: #e8e8e8;
+  --text2: #aaaaaa;
+  --muted: #666;
+  --cyan: #00d4aa;
+  --orange: #ff6b35;
+  --yellow: #ffd166;
+  --purple: #b48eff;
+  --blue: #4da6ff;
+  --red: #ff4d6d;
+  --green: #06d6a0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inconsolata', monospace;
+  font-weight: 300;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events:none;
+  z-index:9999;
+}
+
+nav {
+  position: fixed;
+  top:0; left:0; right:0;
+  z-index:100;
+  background: rgba(13,13,13,0.97);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display:none; }
+
+.nav-brand {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--purple);
+  white-space: nowrap;
+  margin-right: 24px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  font-size: 10px;
+  color: var(--muted);
+  padding: 0 11px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.nav-item:hover { color: var(--text); }
+.nav-item.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px 100px;
+}
+
+.chapter { display:none; animation: fadeUp 0.35s ease both; }
+.chapter.active { display:block; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.ch-header {
+  margin-bottom: 52px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ch-num {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.ch-title {
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(34px, 5.5vw, 62px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+}
+.ch-title em { font-style: italic; color: var(--purple); }
+
+.ch-lead {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 580px;
+  line-height: 1.6;
+}
+
+.section { margin-bottom: 60px; }
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-family: 'Archivo', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+h3 {
+  font-family: 'Archivo', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  margin-top: 28px;
+}
+
+p { margin-bottom: 14px; font-size: 15px; color: var(--text2); }
+p strong { color: var(--text); font-weight: 600; }
+p:last-child { margin-bottom: 0; }
+
+/* Q&A */
+.qa {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin: 14px 0;
+  overflow: hidden;
+}
+.qa-q {
+  padding: 15px 20px;
+  font-size: 14px;
+  color: var(--yellow);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 3px solid var(--yellow);
+  transition: background 0.2s;
+  line-height: 1.5;
+}
+.qa-q:hover { background: var(--surface2); }
+.qa-q .arrow { font-size: 18px; flex-shrink:0; transition: transform 0.3s; margin-top:1px; }
+.qa-q.open .arrow { transform: rotate(45deg); }
+.qa-a {
+  display: none;
+  padding: 18px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.85;
+  border-left: 3px solid var(--surface3);
+}
+.qa-a strong { color: var(--cyan); }
+
+.badge {
+  display:inline-block; font-size:9px; padding:2px 7px;
+  margin-right:5px; letter-spacing:0.1em; text-transform:uppercase;
+  font-weight:600; flex-shrink:0;
+}
+.badge-easy { background:rgba(6,214,160,0.15); color:var(--green); border:1px solid rgba(6,214,160,0.3); }
+.badge-med  { background:rgba(255,209,102,0.15); color:var(--yellow); border:1px solid rgba(255,209,102,0.3); }
+.badge-hard { background:rgba(255,77,109,0.15); color:var(--red); border:1px solid rgba(255,77,109,0.3); }
+.badge-ai   { background:rgba(180,142,255,0.15); color:var(--purple); border:1px solid rgba(180,142,255,0.3); }
+
+.tag {
+  display:inline-block; font-size:9px; padding:2px 7px;
+  border:1px solid var(--cyan); color:var(--cyan);
+  margin:4px 4px 4px 0; letter-spacing:0.08em; text-transform:uppercase;
+}
+.tag.orange { border-color:var(--orange); color:var(--orange); }
+.tag.purple { border-color:var(--purple); color:var(--purple); }
+.tag.red    { border-color:var(--red);    color:var(--red); }
+.tag.green  { border-color:var(--green);  color:var(--green); }
+.tag.yellow { border-color:var(--yellow); color:var(--yellow); }
+
+.analogy {
+  border-left: 3px solid var(--yellow);
+  padding: 16px 20px; margin: 20px 0;
+  background: rgba(255,209,102,0.04);
+}
+.analogy-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--yellow); margin-bottom: 6px; }
+.analogy p { font-size: 14px; color: var(--text2); margin:0; }
+
+.insight {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--purple);
+  padding: 20px 24px; margin: 20px 0;
+}
+.insight-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple); margin-bottom: 8px; }
+.insight p { font-size: 14px; margin:0; line-height:1.75; }
+.insight strong { color: var(--purple); }
+
+.warning {
+  background: rgba(255,77,109,0.06);
+  border: 1px solid rgba(255,77,109,0.2);
+  border-left: 3px solid var(--red);
+  padding: 16px 20px; margin: 18px 0;
+}
+.warning-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+.warning p { font-size: 14px; margin:0; color: var(--text2); }
+
+.success {
+  background: rgba(6,214,160,0.06);
+  border: 1px solid rgba(6,214,160,0.2);
+  border-left: 3px solid var(--green);
+  padding: 16px 20px; margin: 18px 0;
+}
+.success-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+.success p { font-size: 14px; margin:0; color: var(--text2); }
+
+.formula {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  padding: 14px 20px; margin: 14px 0;
+  font-size: 13px; color: var(--cyan);
+  overflow-x: auto; white-space: pre; line-height: 1.9;
+}
+
+.tbl-wrap { margin: 18px 0; overflow-x: auto; }
+table { width:100%; border-collapse:collapse; font-size: 13px; }
+th {
+  background: var(--surface3); color: var(--muted);
+  padding: 9px 14px; text-align: left;
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  vertical-align: top; color: var(--text2); line-height: 1.5;
+}
+tr:last-child td { border-bottom: none; }
+td:first-child { color: var(--text); font-weight: 600; }
+
+.tradeoff { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }
+.t-card { background: var(--surface); border: 1px solid var(--border); padding: 18px; }
+.t-card h4 { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.t-card.pro h4 { color: var(--green); }
+.t-card.mixed h4 { color: var(--purple); }
+.t-card ul { padding-left: 16px; }
+.t-card li { margin-bottom: 6px; color: var(--text2); line-height: 1.5; font-size:13.5px; }
+
+/* AI USE CASE CARD */
+.ai-use {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  padding: 14px 18px;
+  margin: 10px 0;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.ai-use-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--purple); font-weight:600; padding-top:2px; }
+.ai-use-text { font-size: 13.5px; color: var(--text2); line-height: 1.6; }
+.ai-use-text strong { color: var(--text); }
+
+/* PIPELINE FLOW */
+.flow {
+  display: flex; flex-wrap: wrap;
+  align-items: stretch; gap: 4px; margin: 20px 0;
+}
+.flow-box {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 12px 14px;
+  font-size: 12px; min-width: 100px; flex:1;
+  text-align: center;
+}
+.flow-box strong { display:block; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--purple); margin-bottom:4px; }
+.flow-box span { color: var(--text2); }
+.flow-arrow { display:flex; align-items:center; color:var(--muted); font-size:20px; padding: 0 2px; }
+
+/* STEPS */
+.steps { margin: 18px 0; }
+.step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+.step-num {
+  width: 26px; height: 26px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--purple);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0; margin-top: 2px; font-weight: 600;
+}
+.step p { font-size: 14.5px; margin:0; }
+
+/* NAV */
+.nav-btns {
+  display: flex; justify-content: space-between;
+  margin-top: 56px; padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.nbtn {
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--text2); font-family: 'Inconsolata', monospace;
+  font-size: 12px; padding: 11px 20px; cursor: pointer;
+  transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.nbtn:hover { border-color: var(--purple); color: var(--purple); }
+.nbtn.primary { background: var(--purple); color: #000; border-color: var(--purple); font-weight: 600; }
+.nbtn.primary:hover { background: #c8a8ff; }
+.nbtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+/* BIG ANSWER — platform diagram */
+.platform-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin: 16px 0;
+}
+.platform-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.platform-icon { font-size: 22px; }
+.platform-name { font-family: 'Archivo', sans-serif; font-size: 18px; font-weight: 700; }
+.platform-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.platform-body { padding: 18px; font-size: 13.5px; color: var(--text2); line-height: 1.8; }
+.platform-body strong { color: var(--text); }
+.platform-body .stage { margin-top: 14px; }
+.platform-body .stage-label {
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--purple); margin-bottom: 5px;
+}
+
+/* complexity pill */
+.cpx { display:inline-flex; align-items:center; gap:6px; font-size:11px; padding:3px 9px; border:1px solid var(--border2); color:var(--text2); margin: 3px 4px 3px 0; }
+.cpx .dot { width:7px; height:7px; border-radius:50%; }
+.dot-green  { background:var(--green); }
+.dot-yellow { background:var(--yellow); }
+.dot-red    { background:var(--red); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">🧠 DS&A + RecSys</div>
+  <div class="nav-item active"  onclick="goTo(0,this)">① Do You Need DS&A?</div>
+  <div class="nav-item"         onclick="goTo(1,this)">② Arrays & Hashing</div>
+  <div class="nav-item"         onclick="goTo(2,this)">③ Graphs & Trees</div>
+  <div class="nav-item"         onclick="goTo(3,this)">④ Heaps & Sorting</div>
+  <div class="nav-item"         onclick="goTo(4,this)">⑤ Rec Systems 101</div>
+  <div class="nav-item"         onclick="goTo(5,this)">⑥ YouTube</div>
+  <div class="nav-item"         onclick="goTo(6,this)">⑦ Instagram / TikTok</div>
+  <div class="nav-item"         onclick="goTo(7,this)">⑧ How Models Learn</div>
+  <div class="nav-item"         onclick="goTo(8,this)">⑨ System Design</div>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════ CH 1 ══════════════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 01 / 09 — DS&A + Recommendation Systems</div>
+    <div class="ch-title">Do You<br><em>Actually</em><br>Need DS&A?</div>
+    <p class="ch-lead">Short answer: yes — but not the same way a backend engineer does. Here's exactly what you need, what you can skip, and how DS&A shows up in real AI engineering work.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Honest Truth</div>
+    <h2>What AI Engineers Are Actually Asked</h2>
+
+    <div class="insight">
+      <div class="insight-label">⚡ The Reality at 2 Years Experience</div>
+      <p>At companies like Google, Meta, and OpenAI, AI engineer interviews typically have <strong>1-2 coding rounds</strong> (DS&A) and <strong>1-2 ML/system design rounds</strong>. You WILL be asked DS&A. But the problems are usually <strong>medium difficulty</strong>, not the hard graph DP that a pure SWE faces. You need the fundamentals cold — arrays, hashmaps, trees, heaps, BFS/DFS. That covers 80% of what you'll see.</p>
+    </div>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Topic</th><th>AI Engineer Priority</th><th>Why</th></tr>
+      <tr><td style="color:var(--green)">Arrays, Strings, Hashing</td><td>🔴 Must Know</td><td>Show up everywhere — data processing, feature engineering, lookup tables</td></tr>
+      <tr><td style="color:var(--green)">Hashmaps / Sets</td><td>🔴 Must Know</td><td>Deduplication, counting, lookup — core of many ML pipelines</td></tr>
+      <tr><td style="color:var(--green)">BFS / DFS on Graphs</td><td>🔴 Must Know</td><td>Knowledge graphs, dependency resolution, recommendation traversal</td></tr>
+      <tr><td style="color:var(--green)">Heaps / Priority Queues</td><td>🔴 Must Know</td><td>Top-K problems — everywhere in ranking and recommendation</td></tr>
+      <tr><td style="color:var(--green)">Binary Search</td><td>🔴 Must Know</td><td>Sorted feature lookups, threshold tuning</td></tr>
+      <tr><td style="color:var(--yellow)">Sliding Window / Two Pointer</td><td>🟡 Important</td><td>Stream processing, time-series features</td></tr>
+      <tr><td style="color:var(--yellow)">Trees (BST, Trie)</td><td>🟡 Important</td><td>Decision trees, prefix search in autocomplete</td></tr>
+      <tr><td style="color:var(--yellow)">Dynamic Programming (easy/med)</td><td>🟡 Know Basics</td><td>Sequence models, edit distance, string matching</td></tr>
+      <tr><td style="color:var(--red)">Hard Graph DP, Segment Trees</td><td>⚪ Lower priority</td><td>Rarely asked for AI engineer specifically</td></tr>
+      <tr><td style="color:var(--red)">Advanced Math (Number Theory)</td><td>⚪ Skip</td><td>Not relevant</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Where DS&A Appears in Real AI Work</div>
+    <h2>This Is Why It Actually Matters</h2>
+    <p>It's not just interviews. These patterns appear in your daily work as an AI engineer constantly.</p>
+
+    <div class="ai-use">
+      <div class="ai-use-label">Hashmaps</div>
+      <div class="ai-use-text"><strong>Token frequency counting</strong> (build vocabulary for NLP). <strong>Feature lookup tables</strong> (user_id → embedding). <strong>Caching model outputs</strong>. <strong>Deduplication</strong> of training data.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Heaps / Top-K</div>
+      <div class="ai-use-text"><strong>Top-K nearest neighbors</strong> in a vector search. <strong>Top-K recommended items</strong> by score. <strong>Beam search</strong> in sequence generation — keep top-K sequences at each step. <strong>Reservoir sampling</strong> for streaming data.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Graphs / BFS</div>
+      <div class="ai-use-text"><strong>Knowledge graphs</strong> — traverse relationships between entities. <strong>Dependency resolution</strong> in ML pipelines (which feature depends on which). <strong>Social graph</strong> traversal for friend-of-friend recommendations. <strong>DAG execution</strong> in pipeline orchestration (Airflow, Kubeflow).</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Sliding Window</div>
+      <div class="ai-use-text"><strong>User session features</strong> — count actions in the last 30 minutes. <strong>Rolling statistics</strong> for monitoring (7-day rolling mean of model accuracy). <strong>Context window</strong> management for LLM conversation history.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Binary Search</div>
+      <div class="ai-use-text"><strong>Finding optimal threshold</strong> for classification (bisect on sorted score list). <strong>Sorted feature lookups</strong>. <strong>Quantile computation</strong> for monitoring drift thresholds.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Tries</div>
+      <div class="ai-use-text"><strong>Autocomplete systems</strong> — prefix search over vocabulary. <strong>Tokenizer vocabulary lookup</strong>. <strong>IP prefix matching</strong> for model routing rules.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Sorting</div>
+      <div class="ai-use-text"><strong>Ranking candidates</strong> by score before final selection. <strong>Sorting by timestamp</strong> for time-series features. <strong>Merging sorted ranked lists</strong> from multiple rankers.</div>
+    </div>
+  </div>
+
+  <div class="success">
+    <div class="success-label">✅ Your Study Plan</div>
+    <p>Focus on: Arrays, Hashmaps, BFS/DFS, Heaps, Binary Search, Sliding Window. Do 1-2 medium problems per topic. For Google specifically — practice explaining your thought process out loud. They care more about HOW you think than the perfect answer.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Arrays & Hashing →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 2 ══════════════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 02 / 09</div>
+    <div class="ch-title">Arrays,<br><em>Hashing</em><br>&amp; Windows</div>
+    <p class="ch-lead">The bread and butter. If you know these cold, you can solve 40% of interview problems. Every ML pipeline touches these patterns daily.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Core Patterns</div>
+    <h2>HashMap — The Swiss Army Knife</h2>
+    <p>When you see: counting, lookup, deduplication, grouping → reach for a hashmap. O(1) average insert and lookup. Used more than any other structure in real AI engineering code.</p>
+
+    <div class="formula">Python dict / defaultdict / Counter = hashmap
+
+# Counting token frequencies (NLP vocabulary building)
+from collections import Counter
+vocab = Counter(all_tokens)  # O(n) — used in every NLP pipeline
+
+# Feature lookup: user_id → precomputed embedding
+user_embeddings = {}
+user_embeddings[user_id] = embedding_vector  # O(1) insert
+emb = user_embeddings.get(user_id, default)  # O(1) lookup</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions + AI Context</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> Two Sum — find indices of two numbers that add to target. <span class="badge badge-ai">AI use: feature lookup</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Naive:</strong> Check every pair → O(n²). Wrong answer for interviews.<br><br>
+        <strong>Optimal — hashmap:</strong> For each number, check if (target - number) already seen.
+        <div class="formula">def two_sum(nums, target):
+    seen = {}          # value → index
+    for i, n in enumerate(nums):
+        complement = target - n
+        if complement in seen:
+            return [seen[complement], i]
+        seen[n] = i
+    return []
+
+# O(n) time, O(n) space — one pass through array</div>
+        <strong>Pattern:</strong> When you need to check "have I seen X before?" → hashmap.<br><br>
+        <strong>AI context:</strong> This exact pattern appears when checking if a user_id already has an embedding computed, or when deduplicating training examples. The "seen" dictionary is how you build an O(1) lookup from an O(n) search.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Sliding Window — find the longest substring without repeating characters. <span class="badge badge-ai">AI use: session features</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Key insight:</strong> Maintain a window [left, right] and expand right. When a constraint breaks, shrink from left. Never go backwards — O(n) total.
+        <div class="formula">def length_of_longest_substring(s):
+    char_index = {}    # char → most recent index
+    left = 0
+    max_len = 0
+
+    for right, char in enumerate(s):
+        if char in char_index and char_index[char] >= left:
+            left = char_index[char] + 1   # shrink window
+        char_index[char] = right
+        max_len = max(max_len, right - left + 1)
+
+    return max_len   # O(n) time, O(k) space where k = charset size</div>
+        <strong>AI context — this appears constantly:</strong><br>
+        • "Count unique items a user clicked in their last 30-minute session"<br>
+        • "Find longest sequence of non-repeated events in a user log"<br>
+        • "Compute rolling 7-day unique users" — sliding window over time dimension<br><br>
+        <strong>The general pattern:</strong> Any "maximum/minimum subarray/substring satisfying a condition" → sliding window first.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Group Anagrams — group strings that are anagrams of each other. <span class="badge badge-ai">AI use: deduplication</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Key insight:</strong> Two strings are anagrams if they have the same sorted characters. Use sorted string as hashmap key.
+        <div class="formula">from collections import defaultdict
+
+def group_anagrams(strs):
+    groups = defaultdict(list)
+    for s in strs:
+        key = tuple(sorted(s))   # "eat" → ('a','e','t')
+        groups[key].append(s)
+    return list(groups.values())
+
+# O(n * k log k) where k = avg string length</div>
+        <strong>AI context:</strong> This is canonicalization — transforming data to a canonical form to detect duplicates. Exact same pattern:<br>
+        • Deduplicating training data: "The cat sat" and "cat the sat" → same bag-of-words<br>
+        • Detecting paraphrase pairs using sorted word sets as keys<br>
+        • Grouping users with same set of purchased items
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Product of Array Except Self — without division. <span class="badge badge-ai">AI use: feature normalization</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Trick:</strong> Two passes — prefix products left to right, then suffix products right to left.
+        <div class="formula">def product_except_self(nums):
+    n = len(nums)
+    result = [1] * n
+
+    # Left pass: result[i] = product of everything LEFT of i
+    prefix = 1
+    for i in range(n):
+        result[i] = prefix
+        prefix *= nums[i]
+
+    # Right pass: multiply in product of everything RIGHT of i
+    suffix = 1
+    for i in range(n-1, -1, -1):
+        result[i] *= suffix
+        suffix *= nums[i]
+
+    return result   # O(n) time, O(1) extra space</div>
+        <strong>Why this matters for AI engineers:</strong> This pattern of "prefix/suffix computation" is used in:<br>
+        • Computing log-probabilities in sequence models (prefix sums of log probs)<br>
+        • Cumulative feature normalization over a sequence<br>
+        • Leave-one-out feature computation in cross-validation
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Do You Need DS&A</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Graphs & Trees →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 3 ══════════════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 03 / 09</div>
+    <div class="ch-title">Graphs<br>&amp; <em>Trees</em></div>
+    <p class="ch-lead">Graphs are everywhere in AI — knowledge graphs, pipeline DAGs, social networks, dependency trees. BFS and DFS are patterns you will use in real production code.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Why AI Engineers Need Graphs</div>
+    <h2>Real Places Graphs Appear</h2>
+
+    <div class="ai-use">
+      <div class="ai-use-label">Knowledge Graphs</div>
+      <div class="ai-use-text">Entities and relationships (Person → worksAt → Company). <strong>Graph traversal finds paths</strong> between entities. Used in RAG to retrieve related facts, not just similar text. Neo4j, Amazon Neptune.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">ML Pipeline DAGs</div>
+      <div class="ai-use-text">In Airflow, Kubeflow, Metaflow: tasks are nodes, dependencies are edges. <strong>Topological sort</strong> determines execution order. BFS/DFS detects circular dependencies.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Social Graphs</div>
+      <div class="ai-use-text">User → follows → User. <strong>BFS finds friends-of-friends</strong> for "people you may know." Graph neural networks (GNNs) learn from graph structure directly.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Recommendation</div>
+      <div class="ai-use-text">Item co-interaction graphs: users who watched A also watched B. <strong>Graph traversal expands candidates</strong> from seed items. Used in YouTube's candidate generation.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions + AI Context</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> BFS — find shortest path in unweighted graph. <span class="badge badge-ai">AI use: knowledge graph traversal</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>BFS explores level by level</strong> — guarantees shortest path in unweighted graphs. DFS goes deep — good for existence checks, topological sort.
+        <div class="formula">from collections import deque
+
+def bfs_shortest_path(graph, start, end):
+    queue = deque([(start, [start])])   # (node, path so far)
+    visited = {start}
+
+    while queue:
+        node, path = queue.popleft()
+        if node == end:
+            return path
+
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append((neighbor, path + [neighbor]))
+    return None   # no path found
+
+# O(V + E) time and space</div>
+        <strong>AI context — where you'll write this exact code:</strong><br>
+        • Traversing a knowledge graph: "Find the relationship path between 'Python' and 'Machine Learning'"<br>
+        • Finding degrees of separation in a social graph: "Is user A within 2 hops of user B?"<br>
+        • Resolving pipeline dependencies: "Which tasks must run before task X?"
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Number of Islands — count connected components. <span class="badge badge-ai">AI use: cluster detection</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Classic connected components problem.</strong> DFS from each unvisited "1", mark all reachable as visited.
+        <div class="formula">def num_islands(grid):
+    if not grid: return 0
+    rows, cols = len(grid), len(grid[0])
+    count = 0
+
+    def dfs(r, c):
+        if r < 0 or r >= rows or c < 0 or c >= cols:
+            return
+        if grid[r][c] != '1': return
+        grid[r][c] = '0'   # mark visited (in-place)
+        for dr, dc in [(0,1),(0,-1),(1,0),(-1,0)]:
+            dfs(r+dr, c+dc)
+
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '1':
+                dfs(r, c)
+                count += 1
+    return count   # O(m*n) time and space</div>
+        <strong>AI context — connected components appear everywhere:</strong><br>
+        • <strong>Duplicate detection:</strong> Users/items that share many features are "connected" — same cluster = likely duplicates<br>
+        • <strong>Community detection</strong> in social graphs — groups of users with high internal connectivity<br>
+        • <strong>Segment images</strong> into regions — connected pixels of similar color = one object<br>
+        • <strong>Union-Find</strong> data structure is an optimized version of this for large graphs (used in Kruskal's MST)
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Topological Sort — order tasks respecting dependencies. <span class="badge badge-ai">AI use: ML pipeline DAGs</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Topological sort</strong> orders nodes in a DAG (Directed Acyclic Graph) such that all dependencies come before dependents. Used in every pipeline orchestrator.
+        <div class="formula">from collections import deque
+
+def topological_sort(num_tasks, dependencies):
+    # dependencies = [(a, b)] means "a must run before b"
+    graph = {i: [] for i in range(num_tasks)}
+    in_degree = [0] * num_tasks      # how many prereqs each task has
+
+    for prereq, task in dependencies:
+        graph[prereq].append(task)
+        in_degree[task] += 1
+
+    # Start with tasks that have no prerequisites
+    queue = deque([i for i in range(num_tasks) if in_degree[i] == 0])
+    order = []
+
+    while queue:
+        task = queue.popleft()
+        order.append(task)
+        for dependent in graph[task]:
+            in_degree[dependent] -= 1
+            if in_degree[dependent] == 0:
+                queue.append(dependent)
+
+    # If len(order) != num_tasks → cycle detected (invalid pipeline)
+    return order if len(order) == num_tasks else []</div>
+        <strong>This IS how Airflow, Kubeflow, and every ML pipeline orchestrator works.</strong><br>
+        Tasks with in_degree=0 run first (no dependencies). As tasks complete, downstream tasks become eligible. If a cycle exists (A depends on B, B depends on A) → detected and rejected.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Binary Tree — Level Order Traversal (BFS on tree). <span class="badge badge-ai">AI use: decision tree inference</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">from collections import deque
+
+def level_order(root):
+    if not root: return []
+    result, queue = [], deque([root])
+
+    while queue:
+        level_size = len(queue)
+        level = []
+        for _ in range(level_size):
+            node = queue.popleft()
+            level.append(node.val)
+            if node.left:  queue.append(node.left)
+            if node.right: queue.append(node.right)
+        result.append(level)
+    return result</div>
+        <strong>AI context:</strong><br>
+        • <strong>Decision tree inference:</strong> Traverse from root to leaf, making decisions at each node. Level-order traversal = breadth-first = useful for pruning entire subtrees<br>
+        • <strong>Beam search</strong> in text generation is tree BFS with a width limit<br>
+        • <strong>Monte Carlo Tree Search</strong> (used in AlphaGo) — BFS + rollouts<br>
+        • <strong>Trie</strong> (prefix tree) traversal for autocomplete: go level by level to find all words with a given prefix
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Arrays & Hashing</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Heaps & Sorting →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 4 ══════════════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 04 / 09</div>
+    <div class="ch-title">Heaps,<br><em>Sorting</em><br>&amp; Binary Search</div>
+    <p class="ch-lead">Top-K problems are THE most common pattern in AI engineering. Ranking, recommendation, nearest neighbors — they all boil down to "give me the K best items." Heaps are your tool.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Heaps — The Top-K Tool</div>
+    <h2>Why Heaps Matter for AI</h2>
+    <p>A min-heap always gives you the smallest element in O(1). A max-heap gives the largest. For "top K" problems: maintain a min-heap of size K. If current element is bigger than heap top → replace it. Result: K largest elements, in O(n log k) time — much faster than full sort O(n log n) for large n with small k.</p>
+
+    <div class="ai-use">
+      <div class="ai-use-label">Recommendation</div>
+      <div class="ai-use-text">Score 10 million candidate videos. Return top 100 by score. <strong>Heap of size 100</strong> processes all 10M in O(10M × log 100) — no need to sort all 10M.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Vector Search</div>
+      <div class="ai-use-text">Find top-K nearest neighbors by cosine similarity. <strong>Min-heap of size K</strong> — keep the K best, discard the rest.</div>
+    </div>
+    <div class="ai-use">
+      <div class="ai-use-label">Beam Search</div>
+      <div class="ai-use-text">In LLM text generation: keep top K most probable sequences at each step. <strong>Max-heap of sequences</strong> by cumulative log probability.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Kth Largest Element in a Stream. <span class="badge badge-ai">AI use: streaming top-K ranking</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Maintain a min-heap of size K.</strong> The top of the heap is always the Kth largest.
+        <div class="formula">import heapq
+
+class KthLargest:
+    def __init__(self, k, nums):
+        self.k = k
+        self.heap = []           # min-heap of size k
+        for n in nums:
+            self.add(n)
+
+    def add(self, val):
+        heapq.heappush(self.heap, val)
+        if len(self.heap) > self.k:
+            heapq.heappop(self.heap)    # remove smallest
+        return self.heap[0]             # kth largest = min of top-k
+
+# O(log k) per add — crucial for streaming data</div>
+        <strong>Real AI use:</strong> This is exactly how you maintain a "top K recommended items" list as scores come in from a streaming ranker. Each new score → add to heap → heap maintains top K. Used in real-time recommendation systems processing millions of events per second.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Top K Frequent Elements. <span class="badge badge-ai">AI use: vocabulary pruning, feature selection</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">import heapq
+from collections import Counter
+
+def top_k_frequent(nums, k):
+    count = Counter(nums)          # O(n)
+    # Min-heap of size k: (frequency, element)
+    heap = []
+    for elem, freq in count.items():
+        heapq.heappush(heap, (freq, elem))
+        if len(heap) > k:
+            heapq.heappop(heap)    # remove least frequent
+
+    return [elem for freq, elem in heap]
+# O(n log k) — better than O(n log n) full sort when k << n</div>
+        <strong>AI context — you will literally write this code:</strong><br>
+        • <strong>Vocabulary building for NLP:</strong> Keep only top 50,000 most frequent tokens. Rare tokens → UNK.<br>
+        • <strong>Feature selection:</strong> Keep top K most frequently non-null features<br>
+        • <strong>Log analysis:</strong> Top K most common error types in model serving logs<br>
+        • <strong>Training data analysis:</strong> Top K most common labels to check class balance
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Binary Search — find threshold in sorted array. <span class="badge badge-ai">AI use: classification threshold tuning</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Binary search template</strong> — one version covers almost all problems:
+        <div class="formula">def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = left + (right - left) // 2   # avoid overflow
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1   # not found
+
+# For "find leftmost position where condition is true":
+def find_threshold(scores, min_precision):
+    # Binary search over sorted thresholds
+    # Returns smallest threshold where precision >= min_precision
+    left, right = 0, len(scores) - 1
+    result = right
+    while left <= right:
+        mid = (left + right) // 2
+        if compute_precision(scores, mid) >= min_precision:
+            result = mid    # this works, try lower threshold
+            right = mid - 1
+        else:
+            left = mid + 1
+    return scores[result]</div>
+        <strong>AI context:</strong><br>
+        • <strong>Finding optimal classification threshold:</strong> Binary search over sorted score array to find threshold that achieves target precision/recall<br>
+        • <strong>Hyperparameter search:</strong> Binary search over learning rate range to find maximum that doesn't diverge<br>
+        • <strong>Index lookup:</strong> Token ID lookup in sorted vocabulary
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Merge K Sorted Lists — merge sorted outputs from multiple rankers. <span class="badge badge-ai">AI use: merging ranked results</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Classic heap problem.</strong> Use a min-heap with (value, list_index, element_index). Always pop the global minimum across all lists.
+        <div class="formula">import heapq
+
+def merge_k_sorted_lists(lists):
+    heap = []
+    result = []
+
+    # Initialize heap with head of each list
+    for i, lst in enumerate(lists):
+        if lst:
+            heapq.heappush(heap, (lst[0], i, 0))
+
+    while heap:
+        val, list_idx, elem_idx = heapq.heappop(heap)
+        result.append(val)
+        # Add next element from same list
+        if elem_idx + 1 < len(lists[list_idx]):
+            next_val = lists[list_idx][elem_idx + 1]
+            heapq.heappush(heap, (next_val, list_idx, elem_idx + 1))
+
+    return result   # O(N log k) where N=total elements, k=num lists</div>
+        <strong>AI context — this is a CORE recommendation system pattern:</strong><br>
+        You have 5 different rankers (collaborative filter, content-based, trending, location-based, social). Each produces a sorted list of candidates. Merge them into one ranked list efficiently. This pattern is used in every large-scale recommendation system's ranking layer.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Graphs & Trees</button>
+    <button class="nbtn primary" onclick="nextCh(3)">Rec Systems 101 →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 5 ══════════════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 05 / 09</div>
+    <div class="ch-title">Recommendation<br><em>Systems</em><br>101</div>
+    <p class="ch-lead">Recommendation systems are how YouTube, Netflix, Spotify, Instagram, and TikTok generate billions of dollars. Understanding them is essential for any AI engineer role at a consumer tech company.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Big Picture</div>
+    <h2>The Standard 3-Stage Pipeline</h2>
+    <p>Every major recommendation system follows the same architecture. The problem: you have 1 billion items and need to show a user 10 of them in under 200ms. You can't run a heavy model on all 1B items. So you funnel down in stages.</p>
+
+    <div class="flow">
+      <div class="flow-box"><strong>All Items</strong><span>1 Billion+</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><strong>Candidate Generation</strong><span>~1,000 items</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><strong>Ranking</strong><span>~100 items</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><strong>Re-ranking &amp; Filters</strong><span>10–50 shown</span></div>
+    </div>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Stage</th><th>Goal</th><th>Model</th><th>Latency Budget</th><th>Metric</th></tr>
+      <tr><td style="color:var(--cyan)">Candidate Generation</td><td>Recall — don't miss good items</td><td>Approximate nearest neighbor on embeddings, simple matrix factorization</td><td>~50ms</td><td>Recall@1000</td></tr>
+      <tr><td style="color:var(--yellow)">Ranking</td><td>Precision — put best items first</td><td>Deep neural network with rich features (user history, context, item features)</td><td>~100ms</td><td>NDCG, AUC</td></tr>
+      <tr><td style="color:var(--orange)">Re-ranking &amp; Filters</td><td>Diversity, freshness, business rules</td><td>Rules + lightweight model + diversity algorithms</td><td>~20ms</td><td>Business KPIs</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Core Algorithms</div>
+    <h2>The Three Main Approaches</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is Collaborative Filtering? How does it work? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>"Users who liked what you liked also liked X."</strong><br><br>
+        <strong>User-based CF:</strong> Find users similar to you. Recommend what those similar users liked that you haven't seen yet.<br><br>
+        <strong>Item-based CF:</strong> Find items similar to items you liked. Recommend those. More scalable because item similarities are computed offline and cached.<br><br>
+        <strong>Matrix Factorization (the modern version):</strong><br>
+        Build a User × Item matrix where entries are ratings/interactions. Most entries are empty (you haven't seen most items). Learn latent factor vectors for each user and item such that their dot product approximates the known ratings.
+        <div class="formula">R ≈ U × Vᵀ
+U = user embeddings matrix (n_users × k factors)
+V = item embeddings matrix (n_items × k factors)
+
+predicted_rating(user_i, item_j) = U[i] · V[j]   (dot product)
+
+Train by minimizing: Σ (actual_rating - predicted_rating)²
+                     + λ(||U||² + ||V||²)   (regularization)
+
+ALS (Alternating Least Squares): fix U, solve for V → fix V, solve for U → repeat
+SGD: update U and V with gradient descent on observed pairs</div>
+        <strong>Pros:</strong> Works without item content (just interaction data). Finds non-obvious patterns.<br>
+        <strong>Cons:</strong> Cold start — can't recommend to new users or new items with no interactions.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is Content-Based Filtering? When is it better? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>"Recommend items similar to items you've liked, based on their features."</strong><br><br>
+        Use item content (title, description, tags, genre, author) to build an item feature vector. Compare to user's history of liked items.<br><br>
+        <div class="formula">Item features: TF-IDF of description, genre one-hot, duration, director_embedding
+User profile: average of feature vectors of items they liked
+
+Recommendation: items with highest cosine similarity to user profile</div>
+        <strong>Pros:</strong><br>
+        • Works for new items (cold start on items solved — just use features)<br>
+        • Explainable: "We recommended this because you like sci-fi films with Ryan Reynolds"<br>
+        • No need for other users' data (privacy-friendly)<br><br>
+        <strong>Cons:</strong><br>
+        • Cold start on users still exists (no history = can't personalize)<br>
+        • Limited discovery — tends to recommend more of the same. Never surprises you.<br>
+        • Needs rich item features (expensive to create for all items)<br><br>
+        <strong>When to use:</strong> News (content changes fast, new articles appear hourly). Niche domains (limited user overlap). Privacy-sensitive products.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the Cold Start problem and how do you solve it? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Cold start</strong> = the recommendation system doesn't work well for new users or new items because there's no interaction data yet.<br><br>
+        <strong>New User Cold Start:</strong><br>
+        1. <strong>Onboarding:</strong> Ask user to pick interests, rate a few items (Spotify's "pick your favorite artists")<br>
+        2. <strong>Demographics:</strong> Use age, location, language to assign to a user cluster<br>
+        3. <strong>Popularity-based:</strong> Show globally popular content. Not personalized but better than nothing.<br>
+        4. <strong>Content-based bootstrap:</strong> As soon as user watches/clicks one thing, use content similarity immediately<br><br>
+        <strong>New Item Cold Start:</strong><br>
+        1. <strong>Content features:</strong> Use item's text, category, author to generate initial embedding<br>
+        2. <strong>Exploration boost:</strong> Artificially increase probability of showing new items to some users (exploration)<br>
+        3. <strong>Author embedding:</strong> New video from a popular creator → inherit creator's embedding<br>
+        4. <strong>Contextual bandit:</strong> Treat it as an exploration problem — show new item to a diverse slice of users, collect signals, update model
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is Two-Tower Architecture? Why is it used for candidate generation? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Two-Tower (Dual Encoder):</strong> Train two separate neural networks — one encodes users, one encodes items. Both produce dense embedding vectors in the same space. Similarity = dot product of embeddings.
+        <div class="formula">User Tower:  user_features → DNN → user_embedding (128-dim)
+Item Tower:  item_features → DNN → item_embedding (128-dim)
+
+score(user, item) = dot(user_embedding, item_embedding)
+
+Training: minimize contrastive loss
+  - Positive pairs: (user, item they interacted with)
+  - Negative pairs: (user, random uninteracted item)
+  Goal: pull positive pairs close, push negatives apart</div>
+        <strong>Why two towers is perfect for candidate generation:</strong><br><br>
+        1. <strong>Pre-compute item embeddings offline.</strong> All 1B item embeddings computed once, stored in vector DB.<br>
+        2. <strong>At query time:</strong> Compute user embedding (fast, one forward pass). Do ANN search against all pre-computed item embeddings. Return top 1000 candidates in ~50ms.<br>
+        3. <strong>Decoupled towers</strong> = you can retrain user tower more frequently (user preferences change daily) than item tower (items are more stable).<br><br>
+        <strong>Used by:</strong> YouTube, Pinterest, Google Play, LinkedIn. This architecture IS the industry standard for candidate generation at scale.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Heaps & Sorting</button>
+    <button class="nbtn primary" onclick="nextCh(4)">YouTube →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 6 ══════════════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 06 / 09</div>
+    <div class="ch-title">YouTube<br><em>Recommendations</em></div>
+    <p class="ch-lead">YouTube serves 2 billion users, 800 million videos, 500 hours of video uploaded every minute. Their recommendation paper (2016) is one of the most influential in the field. Know it.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Full System</div>
+
+    <div class="platform-block">
+      <div class="platform-header">
+        <div class="platform-icon">▶️</div>
+        <div>
+          <div class="platform-name">YouTube Recommendation System</div>
+          <div class="platform-sub">2B users · 800M videos · Homepage + Up Next</div>
+        </div>
+      </div>
+      <div class="platform-body">
+        <div class="stage">
+          <div class="stage-label">Stage 1 — Candidate Generation (Deep Neural Network)</div>
+          <strong>Goal:</strong> From 800M videos, retrieve ~1,000 candidates relevant to this user.<br><br>
+          <strong>Model:</strong> Two-Tower architecture. User tower processes: watch history (embedded videos, averaged), search history, demographic features (country, device, time of day). Item tower: video embeddings.<br><br>
+          <strong>Training signal:</strong> What videos did the user watch, and for how long? Long watch time = strong positive signal. Skip after 5 seconds = negative signal.<br><br>
+          <strong>Key insight:</strong> YouTube does NOT just optimize for clicks. They found click-optimized models led to "clickbait" content that users hated. They optimize for <em>watch time</em> — a much better proxy for satisfaction.
+        </div>
+
+        <div class="stage" style="margin-top:18px; padding-top:18px; border-top:1px solid var(--border)">
+          <div class="stage-label">Stage 2 — Ranking (Wide & Deep + DNN)</div>
+          <strong>Goal:</strong> From 1,000 candidates, rank to top 10-50 for the user's current context.<br><br>
+          <strong>Features used:</strong><br>
+          • <em>User features:</em> watch history, search history, device, time of day, previously clicked channels<br>
+          • <em>Item features:</em> video age, number of views in last 24h, CTR, average watch percentage, creator history<br>
+          • <em>Context features:</em> Previous video in session, how user arrived (search vs browse), user's current "mood" (binge mode vs casual)<br>
+          • <em>Cross features:</em> User's historical watch percentage × video's average watch percentage<br><br>
+          <strong>Output:</strong> Expected watch time for this user watching this video right now. Sorted descending = ranking.
+        </div>
+
+        <div class="stage" style="margin-top:18px; padding-top:18px; border-top:1px solid var(--border)">
+          <div class="stage-label">Stage 3 — Re-ranking &amp; Business Logic</div>
+          <strong>Freshness:</strong> Boost recently uploaded videos — users like new content.<br>
+          <strong>Diversity:</strong> Don't show 10 videos from the same channel. Enforce variety.<br>
+          <strong>Safety:</strong> Filter flagged, age-restricted, or copyright-claimed content.<br>
+          <strong>Exploration:</strong> 5-10% of slots reserved for candidate exploration (new/unexpected content) — prevents filter bubble.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What does YouTube optimize for and why not just clicks? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>The clicks problem:</strong> Optimizing for clicks creates clickbait. Thumbnails with shocking images, misleading titles. Users click, watch 10 seconds, leave feeling worse. High CTR, bad experience. YouTube learned this the hard way.<br><br>
+        <strong>What YouTube actually optimizes:</strong><br>
+        • <strong>Watch time</strong> — how many seconds/minutes did the user actually watch?<br>
+        • <strong>Post-watch survey satisfaction</strong> — "Did you enjoy this video?" thumbs up/down<br>
+        • <strong>Return visit rate</strong> — did the user come back to YouTube?<br>
+        • <strong>Don't recommend regret</strong> — users who report regretting watching content (click-bait) → negative training signal<br><br>
+        <strong>The technical implementation:</strong> Ranking model predicts <em>expected watch time</em> as a regression output, not just binary "will click". This naturally deprioritizes videos that get clicked but not watched.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How does YouTube handle the exploration vs exploitation tradeoff? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>The problem:</strong> If YouTube only recommends videos it already knows the user likes, the user is stuck in a filter bubble. Discovery dies. But recommending unknown content is risky — it might be bad.<br><br>
+        <strong>Exploitation:</strong> Recommend based on known preferences. Safe, accurate, boring long-term.<br>
+        <strong>Exploration:</strong> Try new content, new genres, new creators. Risky but necessary for discovery.<br><br>
+        <strong>YouTube's approaches:</strong><br><br>
+        1. <strong>ε-greedy:</strong> With probability ε (say 10%), ignore the ranker and pick a random candidate. Simple but wasteful.<br><br>
+        2. <strong>Thompson Sampling / UCB:</strong> For videos with few impressions, their true quality is uncertain. Use the upper confidence bound of quality estimate — optimistically assume uncertain videos might be great. Naturally explores underexposed content.<br><br>
+        3. <strong>Dedicated exploration slots:</strong> Reserve N positions in the feed explicitly for exploration. Don't compete with exploitation slots.<br><br>
+        4. <strong>User model of "exploration appetite":</strong> Some users love discovering new content (high exploration). Others only want familiar content (low exploration). Model this per-user and adjust ε accordingly.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← Rec Systems 101</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Instagram / TikTok →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 7 ══════════════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 07 / 09</div>
+    <div class="ch-title">Instagram<br>&amp; <em>TikTok</em></div>
+    <p class="ch-lead">Instagram (Meta) and TikTok are the two most advanced recommendation systems ever built. TikTok's algorithm is often called the most effective content distribution system in history.</p>
+  </div>
+
+  <div class="section">
+
+    <div class="platform-block">
+      <div class="platform-header">
+        <div class="platform-icon">📸</div>
+        <div>
+          <div class="platform-name">Instagram / Meta Reels</div>
+          <div class="platform-sub">2B+ users · Feed + Stories + Reels + Explore</div>
+        </div>
+      </div>
+      <div class="platform-body">
+        <div class="stage">
+          <div class="stage-label">What Makes Instagram Different from YouTube</div>
+          <strong>Multi-surface:</strong> Instagram has 4 surfaces — Feed (people you follow), Stories, Reels (discovery), Explore (discovery). Each has a different objective and model.<br><br>
+          <strong>Social graph is the core signal:</strong> Unlike YouTube (interest-based), Instagram is fundamentally social. Your connections shape your feed. This means the <em>social graph</em> is a first-class feature in every model.
+        </div>
+
+        <div class="stage" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
+          <div class="stage-label">Feed Ranking — What Happens When You Open Instagram</div>
+          <strong>Candidate sources:</strong><br>
+          1. Posts from people you follow (last 48-72 hours)<br>
+          2. Posts that people similar to you interacted with<br>
+          3. Suggested posts (from Explore, creator recommendations)<br><br>
+          <strong>Signals used (in order of importance, per Meta's research):</strong><br>
+          • Time you typically spend viewing similar posts<br>
+          • Your history with this creator (DMs, comments, profile visits)<br>
+          • Your history with this content type (videos vs photos, topics)<br>
+          • Post popularity in the last 1-2 hours (early viral signal)<br>
+          • Device type and connection speed (affects video buffering tolerance)<br><br>
+          <strong>Multi-objective optimization:</strong> Instagram simultaneously optimizes for likes, comments, shares, saves, and "didn't want to see this" reports. These are combined into a single score using a weighted sum (weights tuned via A/B tests to maximize long-term retention).
+        </div>
+
+        <div class="stage" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
+          <div class="stage-label">Reels — The Discovery Algorithm</div>
+          <strong>Most similar to TikTok's For You page.</strong><br><br>
+          • Heavy emphasis on <em>completion rate</em> (did you watch the full reel?)<br>
+          • <em>Re-watches</em> are very strong signal — you watched twice = loved it<br>
+          • <em>Shares</em> are the strongest single signal — sharing = strong endorsement<br>
+          • Content classifier: video understanding model tags every reel with topics, objects, audio, text overlay<br>
+          • User interest model is updated in near-real-time as you interact
+        </div>
+      </div>
+    </div>
+
+    <div class="platform-block" style="margin-top:20px">
+      <div class="platform-header">
+        <div class="platform-icon">🎵</div>
+        <div>
+          <div class="platform-name">TikTok For You Page</div>
+          <div class="platform-sub">1B+ users · The most powerful content distribution algorithm ever built</div>
+        </div>
+      </div>
+      <div class="platform-body">
+        <div class="stage">
+          <div class="stage-label">Why TikTok is Different — Interest Graph, Not Social Graph</div>
+          <strong>TikTok's core insight:</strong> YouTube and Instagram are both primarily social-graph based. Who you follow shapes what you see. This creates a chicken-and-egg problem — you need to follow people to get a good feed, and you need a good feed to know who to follow.<br><br>
+          <strong>TikTok completely broke from this.</strong> TikTok's For You Page is purely <em>interest-graph based</em>. It doesn't care who you follow. It cares only about what content you engage with. A brand new account with zero followers gets personalized content in 30 minutes.
+        </div>
+
+        <div class="stage" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
+          <div class="stage-label">The Algorithm — Step by Step</div>
+          <strong>1. New video uploaded:</strong> Content understanding model analyzes: audio (speech-to-text, music genre), visual (objects, scenes, text overlay), description, hashtags, creator history. Video gets initial category tags.<br><br>
+          <strong>2. Small cohort testing:</strong> New video is shown to a small test group (~200-500 users) matched to the content's predicted audience. This is exploration.<br><br>
+          <strong>3. Signals measured in first cohort:</strong> Completion rate (most important). Like rate, comment rate, share rate, re-watch rate. Follows from this video. Reports ("not interested").<br><br>
+          <strong>4. Cascade amplification:</strong> If cohort signals are strong → show to a bigger cohort. If those are strong → bigger still. Videos can go from 0 to 100M views in 48 hours through this cascade. Videos with weak signals die quietly with no penalty to the creator.<br><br>
+          <strong>5. Personalization:</strong> Your For You page = intersection of content that performs well globally AND content that matches your specific interest profile. Both signals combined.
+        </div>
+
+        <div class="stage" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
+          <div class="stage-label">Why It's So Addictive — Variable Reward Scheduling</div>
+          The cascade system means every video is a surprise. You don't know if the next one will be amazing or boring. This is <strong>variable ratio reinforcement</strong> — the same psychological mechanism as slot machines. The unpredictability is what makes it extremely hard to stop scrolling. Most recommendation systems optimize for prediction accuracy. TikTok accidentally (or deliberately) built in the most addictive UX pattern in psychology.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Compare YouTube vs TikTok recommendation philosophies. What can each learn from the other? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>YouTube (interest + social, watch time focused):</strong><br>
+        Strengths: Rich content understanding, long session optimization, great for long-form content<br>
+        Weakness: Filter bubbles, harder onboarding for new users<br><br>
+        <strong>TikTok (pure interest graph, completion rate focused):</strong><br>
+        Strengths: Perfect cold start, viral distribution for any creator, ultra-fast personalization<br>
+        Weakness: Can create extreme filter bubbles (pure interest graph → you only see what you already like, amplified), no social connection to real friends<br><br>
+        <strong>What YouTube learned from TikTok:</strong> YouTube Shorts adopted TikTok's cascade testing model for new videos. Shorts treats each new upload like TikTok — small test cohort first, amplify on positive signals.<br><br>
+        <strong>What TikTok learned from YouTube:</strong> TikTok now has a "Following" tab (social graph), long-form videos, LIVE content — diversifying beyond pure interest graph.<br><br>
+        <strong>The convergence:</strong> All platforms are converging on hybrid interest + social graph. Pure social (Facebook) is dying. Pure interest (TikTok early days) works but isolates people. The future is contextual: interest graph weighted by social proximity.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← YouTube</button>
+    <button class="nbtn primary" onclick="nextCh(6)">How Models Learn →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 8 ══════════════════════════ -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 08 / 09</div>
+    <div class="ch-title">How<br><em>Rec Models</em><br>Actually Learn</div>
+    <p class="ch-lead">What signals does the model train on? What is the loss function? How do you avoid pitfalls like popularity bias and position bias? This is the deep ML side of recommendation.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Training Signals</div>
+    <h2>What "Learning" Means in Recommendation</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Signal</th><th>Strength</th><th>Problem</th><th>Used By</th></tr>
+      <tr><td style="color:var(--green)">Long watch time (&gt;70%)</td><td>Very Strong ✅</td><td>Boring long videos game this</td><td>YouTube, TikTok</td></tr>
+      <tr><td style="color:var(--green)">Share / Send to friend</td><td>Strongest ✅✅</td><td>Rare — sparsely observed</td><td>Instagram, WhatsApp</td></tr>
+      <tr><td style="color:var(--cyan)">Re-watch / re-read</td><td>Strong ✅</td><td>Hard to measure for text</td><td>TikTok, Spotify</td></tr>
+      <tr><td style="color:var(--yellow)">Like / Upvote</td><td>Medium</td><td>Users don't always like things they enjoy</td><td>All platforms</td></tr>
+      <tr><td style="color:var(--yellow)">Comment</td><td>Medium</td><td>Negative comments count too</td><td>YouTube, Instagram</td></tr>
+      <tr><td style="color:var(--orange)">Click</td><td>Weak ⚠️</td><td>Clickbait — high CTR ≠ good content</td><td>Baseline only</td></tr>
+      <tr><td style="color:var(--red)">Dwell time (hover)</td><td>Weak ⚠️</td><td>Reading page slowly ≠ enjoyment</td><td>Twitter/X, news</td></tr>
+      <tr><td style="color:var(--red)">"Not interested" / Report</td><td>Strong negative ✅</td><td>Rare, extreme feedback</td><td>All platforms</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — The Learning Setup</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the loss function for a recommendation model? How do you train it? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Candidate Generation (Two-Tower) — Contrastive Loss:</strong>
+        <div class="formula"># For each user u and item i they interacted with (positive pair):
+# Sample K random items the user did NOT interact with (negatives)
+
+# Contrastive (InfoNCE) Loss:
+loss = -log( exp(score(u, pos)) / sum(exp(score(u, neg_k)) for all k) )
+
+# Goal: positive item score >> negative item scores
+# This is the same loss as CLIP (image-text contrastive learning)</div>
+        <strong>Ranking — Pointwise, Pairwise, or Listwise:</strong><br><br>
+        <strong>Pointwise:</strong> Predict a scalar score for each (user, item) pair independently. Simple regression or binary classification.<br>
+        Loss = MSE(predicted_watch_time, actual_watch_time)<br><br>
+        <strong>Pairwise (BPR — Bayesian Personalized Ranking):</strong> For each user, for each positive item, sample a negative. Predict that positive scores higher than negative.
+        <div class="formula">Loss = -log(σ(score(u, pos) - score(u, neg)))
+Intuition: "I watched video A but not video B → A should rank higher for me"
+BPR is standard for implicit feedback (clicks, watches — no explicit ratings)</div>
+        <strong>Listwise:</strong> Optimize the full ranking directly. Loss = something that measures if your ranked list has the right order globally (e.g., NDCG-based loss). Most complex but directly optimizes the metric you care about.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is popularity bias and how do you debias a recommendation model? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Popularity bias:</strong> Popular items appear more in training data (more interactions = more training examples). Model learns to recommend popular items regardless of fit. Long-tail items (niche but potentially perfect matches) get ignored.<br><br>
+        Result: Recommendation = just show popular content to everyone. The model is not actually personalizing — it's just showing viral content.<br><br>
+        <strong>Debiasing techniques:</strong><br><br>
+        <strong>1. Inverse Propensity Scoring (IPS):</strong> Weight each training example by 1/P(exposure). Popular items are shown more → lower weight in training. Rare items shown rarely → higher weight. Model learns to recommend items that USERS WOULD LIKE if they saw them, not just items they happened to see.
+        <div class="formula">Debiased Loss = Σ (loss(user, item) / P(item was shown to user))</div>
+        <strong>2. Hard negative sampling:</strong> Sample negatives not uniformly randomly, but from a popularity-weighted distribution. Forces model to distinguish popular items from each other.<br><br>
+        <strong>3. Causal debiasing:</strong> Model what would have happened if we had shown item X to user U, even if we didn't. Counterfactual reasoning.<br><br>
+        <strong>4. Exposure-aware training:</strong> Only use (user, item) pairs where you're confident the user actually had a chance to see the item. If an item was never shown to the user, their "non-click" is not a negative signal.<br><br>
+        <div class="tag red">This is a hard problem</div> Even large companies deal with popularity bias constantly. Mentioning this shows deep understanding of recommendation systems.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is position bias and how does it affect recommendation training? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Position bias:</strong> Users are more likely to click item #1 than item #5, simply because it's at the top — not because it's better. If you train on clicks without accounting for position, the model learns to recommend items that are good at position 1, not items that are genuinely high quality.<br><br>
+        <strong>Example:</strong> You show Item A at position 1 (CTR: 30%) and Item B at position 5 (CTR: 10%). Is A really 3× better? Not necessarily — A might only be 20% better, but the remaining 10% gap is pure position effect.<br><br>
+        <strong>Debiasing solutions:</strong><br><br>
+        <strong>1. Position as a feature (during training only):</strong> Include position in the model as an input during training. The model learns to separate item quality from position effect. At inference, set position to a fixed value (e.g., 0) so the model ignores position and ranks by true quality.<br><br>
+        <strong>2. Randomized position experiments:</strong> Randomly shuffle items for a small % of users. This breaks the correlation between position and quality, giving clean training data.<br><br>
+        <strong>3. PAL (Position-Aware Learning):</strong> Model = P(click | item, user) × P(observe | position). Learn the observation model separately from the relevance model.<br><br>
+        <div class="tag">Why it matters</div> Without debiasing, your model is not measuring "what users like" — it's measuring "what users click when shown at the top." Very different things.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is NDCG and why is it the right metric for ranking? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>NDCG = Normalized Discounted Cumulative Gain</strong><br><br>
+        The right metric for ranking because: (1) it rewards putting better items higher, (2) it cares more about the top positions than lower ones (discounting), (3) it normalizes across users.<br>
+        <div class="formula">DCG@K = Σᵢ₌₁ᴷ  relevance(item_i) / log₂(i + 1)
+
+Relevance: can be binary (clicked=1, not=0) or graded (5=loved, 1=glanced)
+log₂(i+1): position discount — item at rank 1 counts 3× more than rank 3
+
+NDCG@K = DCG@K / IDCG@K
+IDCG@K = perfect DCG (ideal ranking, best items at top)
+NDCG = 1.0 → perfect ranking. 0.0 → worst possible.
+
+Example:
+Relevant items at positions [1, 2, 4] in your ranking:
+DCG = 1/log(2) + 1/log(3) + 1/log(5) = 1 + 0.63 + 0.43 = 2.06</div>
+        <strong>Why not just use accuracy or AUC?</strong><br>
+        • Accuracy: doesn't care if the good item is #1 or #100<br>
+        • AUC: measures pairwise ordering across all pairs equally. Doesn't weight top positions more.<br>
+        • NDCG: specifically designed to reward top-of-list quality. Matches what users actually experience.<br><br>
+        <strong>In practice:</strong> Evaluate NDCG@10 (top 10 results) since most users don't scroll further.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← TikTok & Instagram</button>
+    <button class="nbtn primary" onclick="nextCh(7)">System Design →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 9 ══════════════════════════ -->
+<div class="chapter" id="ch8">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 09 / 09</div>
+    <div class="ch-title">System<br><em>Design:</em><br>RecSys</div>
+    <p class="ch-lead">The most common AI system design question: "Design YouTube's recommendation system" or "Design a news feed for a social app." Here is the complete framework to answer it.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Framework</div>
+    <h2>How to Answer Any RecSys Design Question</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p><strong>Clarify requirements.</strong> "How many users? How many items? What is the latency budget? What surface — homepage feed, search results, 'you may also like'? What behavior do we optimize for — clicks, watch time, purchases?"</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p><strong>Define the data.</strong> What interaction data do we have? Explicit ratings, implicit (clicks, watches, purchases)? What item metadata? What user features? Cold start problem?</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p><strong>Design the 3-stage funnel.</strong> Candidate Generation → Ranking → Re-ranking. Justify your model choice at each stage.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <p><strong>Training pipeline.</strong> How do you collect training data? What is the label? How do you handle bias? How often do you retrain?</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <p><strong>Serving infrastructure.</strong> Offline precomputation vs online computation. Latency budget breakdown per stage. Caching strategy.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <p><strong>Metrics and evaluation.</strong> Offline metrics (NDCG, AUC). Online metrics (CTR, watch time, retention). How do you A/B test changes?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Full Design: YouTube-Like Video Recommendation</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Design a recommendation system for a video platform (100M users, 50M videos). Target: &lt;200ms. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Requirements clarified:</strong> Homepage feed, optimize for watch time, 100M DAU, 50M videos, &lt;200ms p99.<br><br>
+        <strong>━━ DATA LAYER ━━</strong><br>
+        <strong>User interactions:</strong> (user_id, video_id, watch_seconds, total_duration, timestamp, action_type) → written to Kafka → processed by Flink → stored in feature store (Redis for online, BigQuery for offline)<br>
+        <strong>Video metadata:</strong> title, description, tags, category, creator_id, upload_time, duration → embedded offline<br><br>
+        <strong>━━ STAGE 1: CANDIDATE GENERATION (~50ms) ━━</strong><br>
+        <strong>Model:</strong> Two-Tower with user and video towers (128-dim output)<br>
+        <strong>User features:</strong> Last 50 watched videos (averaged embeddings), top 10 search queries, device type, time of day bucket, language<br>
+        <strong>Video features:</strong> video_id embedding, category one-hot, creator embedding, age bucket<br>
+        <strong>Training:</strong> Contrastive loss, positives = watched &gt;50%, in-batch negatives + hard negatives<br>
+        <strong>Serving:</strong> Precompute all 50M video embeddings → store in Qdrant (ANN vector search). At query time: compute user embedding (1 DNN forward pass) → ANN search → top 1000 candidates in &lt;50ms<br><br>
+        <strong>━━ STAGE 2: RANKING (~100ms) ━━</strong><br>
+        <strong>Model:</strong> Wide & Deep network — wide part (memorization, cross features), deep part (generalization)<br>
+        <strong>Input features (1000 candidates × features):</strong><br>
+        User × Video cross features: user's historical CTR on this category, user's avg watch% on this creator<br>
+        Video freshness: hours since upload<br>
+        Video momentum: views in last 1h, 24h<br>
+        Context: time of day, device, session length so far<br>
+        <strong>Output:</strong> Predicted watch time (regression). Rank 1000 by predicted watch time → top 100<br>
+        <strong>Training frequency:</strong> Retrain daily. Feature store updated in near-real-time (Kafka events → Redis).<br><br>
+        <strong>━━ STAGE 3: RE-RANKING (~30ms) ━━</strong><br>
+        • Diversity: max 2 videos per creator in top 20<br>
+        • Freshness boost: videos uploaded in last 24h get +X score<br>
+        • Safety filter: apply content policy model, filter flagged videos<br>
+        • Exploration: 5% slots = random from top 200 (not top 100) for exploration<br><br>
+        <strong>━━ METRICS ━━</strong><br>
+        Offline: NDCG@10, AUC on holdout set, coverage (% of items ever recommended)<br>
+        Online: avg watch time per session, 7-day retention, "don't recommend" click rate<br>
+        A/B: 50/50 split, min 2 weeks (accounts for weekly seasonality), measure all metrics<br><br>
+        <strong>━━ DEBIASING ━━</strong><br>
+        Position bias: include position as feature during training, set to 0 at inference<br>
+        Popularity bias: IPS weighting, ensure long-tail coverage monitored via Coverage@1000 metric
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Design Instagram's Feed — social graph + interest graph hybrid. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Key difference from YouTube: social graph matters here.</strong> Instagram Feed ≠ pure interest. Users want to see their friends first, discovery second.<br><br>
+        <strong>CANDIDATE SOURCES (mixed):</strong><br>
+        1. <strong>Social candidates:</strong> Posts from accounts you follow (last 72h). Retrieved from social graph DB (graph DB like TAO/Facebook's internal graph store). ~300 candidates<br>
+        2. <strong>Interest candidates:</strong> Posts similar users interacted with. Two-Tower model on interest graph. ~500 candidates<br>
+        3. <strong>Creator candidates:</strong> Posts from creators you interact with but don't follow. ~200 candidates<br>
+        Total: ~1000 candidates, retrieved in &lt;50ms<br><br>
+        <strong>RANKING MODEL:</strong><br>
+        <strong>Multi-task learning</strong> — single model with multiple output heads:<br>
+        • P(like) — probability user likes this post<br>
+        • P(comment) — probability user comments<br>
+        • P(share) — probability user shares<br>
+        • P(save) — probability user saves<br>
+        • P(not interested) — probability user hides this<br><br>
+        Final score = weighted combination of all heads<br>
+        Weights: learned via offline optimization to maximize long-term retention<br><br>
+        <strong>SOCIAL RECENCY BOOST:</strong><br>
+        Posts from close friends (frequent DM/comment interactions) get a time decay applied more slowly — they stay relevant longer. Posts from casual follows decay faster.<br><br>
+        <strong>THE HARD PROBLEM — social vs interest balance:</strong><br>
+        User says: "I want to see my friends." But engagement data shows: "Users actually click more on interest-based content." What do you optimize?<br>
+        Instagram's answer: A/B test both. Measure long-term retention (30-day), not just session engagement. Users who see ONLY interest content churn faster (feel disconnected). Balance is ~60% social, 40% interest for typical users.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> How do you measure success of a recommendation system beyond CTR? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Short-term metrics (can be measured in A/B test):</strong><br>
+        • Session time — how long does the user stay?<br>
+        • Content consumed per session — videos watched, posts scrolled<br>
+        • Positive interaction rate — likes, comments, shares per session<br>
+        • Negative feedback rate — "not interested", unfollows, reports<br><br>
+        <strong>Long-term metrics (require longer measurement window):</strong><br>
+        • D7, D30 retention — are users coming back?<br>
+        • Creator diversity — are users' feeds becoming broader or narrower over time?<br>
+        • Discovery rate — % of new creators/content types the user hasn't seen before<br>
+        • User satisfaction surveys — "Did you enjoy your time on the platform today?"<br><br>
+        <strong>Business metrics:</strong><br>
+        • Ad revenue per user (for ad-supported platforms)<br>
+        • Subscription conversion / retention (for paid platforms)<br><br>
+        <strong>Ecosystem metrics (often ignored but critical):</strong><br>
+        • Creator satisfaction — are new creators getting distribution?<br>
+        • Content diversity — is the platform amplifying a narrow set of voices or a wide range?<br>
+        • User wellbeing indicators — time well spent, regret survey<br><br>
+        <div class="tag yellow">Senior answer</div> Mentioning long-term retention over short-term CTR, and ecosystem health metrics (creator fairness, diversity), signals that you think like a senior engineer who has seen recommendation systems cause unintended harm.
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-label">⚡ The One Thing That Ties DS&A and RecSys Together</div>
+    <p>Every single recommendation system is, at its core, a <strong>Top-K problem solved with a heap</strong>, over a <strong>graph of users and items</strong>, with candidates found via <strong>hashing and ANN search</strong>, and results merged via <strong>merge-K-sorted-lists</strong>. When you see a heap question in an interview, you're being tested on the exact algorithm that runs inside YouTube. The DS&A is not abstract — it IS the recommendation system.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(8)">← How Models Learn</button>
+    <button class="nbtn primary" onclick="alert('🎉 Complete!\n\nYou now have the full AI Engineer series:\n\n📘 Deep Learning Core\n🤖 AI Engineer Q&A (LLMs, RAG, Fine-tuning)\n⚙️ MLOps Mastery\n🧠 DS&A + Recommendation Systems\n\nNext: ML Systems & Frontier AI')">Series Complete 🚀</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let cur = 0;
+const total = 9;
+
+function toggle(el) {
+  const ans = el.nextElementSibling;
+  const isOpen = ans.style.display === 'block';
+  ans.style.display = isOpen ? 'none' : 'block';
+  el.classList.toggle('open', !isOpen);
+}
+
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  el.classList.add('active');
+  cur = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextCh(c) {
+  if (c + 1 < total) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c + 1, items[c + 1]);
+  }
+}
+
+function prevCh(c) {
+  if (c - 1 >= 0) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c - 1, items[c - 1]);
+  }
+}
+</script>
+</body>
+</html>

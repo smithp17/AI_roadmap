@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Refresher for ML Engineers</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #f1f5f9;
+    line-height: 1.7;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 40px 0;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.8rem;
+    margin-bottom: 40px;
+    background: linear-gradient(90deg, #38bdf8, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section {
+    background: #1e293b;
+    padding: 30px;
+    margin-bottom: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+}
+
+.section:hover {
+    transform: translateY(-5px);
+}
+
+.section h2 {
+    color: #38bdf8;
+    margin-bottom: 20px;
+}
+
+.topic {
+    margin-bottom: 25px;
+}
+
+.topic h3 {
+    color: #a78bfa;
+    margin-bottom: 10px;
+}
+
+.code {
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: monospace;
+    color: #38bdf8;
+    margin: 10px 0;
+}
+
+.highlight {
+    background: rgba(56,189,248,0.1);
+    padding: 10px;
+    border-left: 4px solid #38bdf8;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.tradeoff {
+    background: rgba(167,139,250,0.1);
+    padding: 10px;
+    border-left: 4px solid #a78bfa;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+footer {
+    text-align: center;
+    margin-top: 50px;
+    color: #94a3b8;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>🧮 Math Refresher for ML & AI Engineers</h1>
+
+<div class="section">
+<h2>Part 1: Linear Algebra</h2>
+
+<div class="topic">
+<h3>Vectors & Matrices — The Real Intuition</h3>
+<p>A vector is a point in high-dimensional space. Your data, weights, and embeddings all live here.</p>
+<p>A matrix is a transformation — it rotates, scales, or projects vectors into new spaces.</p>
+<div class="highlight">
+When a neural net computes <span class="code">Wx + b</span>, it is warping the space your data lives in.
+</div>
+</div>
+
+<div class="topic">
+<h3>Matrix Multiplication — Why It's Everywhere</h3>
+<div class="code">Wx + b</div>
+<p>You are projecting input onto new axes defined by rows of W.</p>
+<div class="tradeoff">
+Matrix multiplication is O(n²·m). This is why Transformer attention is expensive at O(n²).
+</div>
+</div>
+
+<div class="topic">
+<h3>Eigenvalues & Eigenvectors</h3>
+<p>An eigenvector doesn't rotate — it only scales.</p>
+<p>Eigenvalue tells how much it scales.</p>
+<div class="highlight">
+Large Hessian eigenvalues = sharp curvature = training instability.
+</div>
+</div>
+
+<div class="topic">
+<h3>SVD — The Most Important Decomposition</h3>
+<div class="code">A = UΣVᵀ</div>
+<p>U and V rotate. Σ scales.</p>
+<div class="tradeoff">
+Low-rank approximations power PCA, LoRA, and model compression.
+</div>
+</div>
+
+<div class="topic">
+<h3>Dot Product & Cosine Similarity</h3>
+<div class="code">a · b = |a||b|cos(θ)</div>
+<p>Measures alignment between vectors.</p>
+<div class="highlight">
+Attention = Q·Kᵀ → alignment scoring.
+</div>
+</div>
+
+</div>
+
+<div class="section">
+<h2>Part 2: Calculus & Optimization</h2>
+
+<div class="topic">
+<h3>Gradients</h3>
+<p>Gradient ∇L points in steepest ascent direction.</p>
+<div class="highlight">
+Gradient is local. Learning rate controls step size.
+</div>
+</div>
+
+<div class="topic">
+<h3>The Chain Rule — Backprop</h3>
+<div class="code">∂L/∂w = ∂L/∂y · ∂y/∂w</div>
+<div class="tradeoff">
+Training uses more memory because activations must be stored.
+</div>
+</div>
+
+<div class="topic">
+<h3>Second-Order Methods</h3>
+<p>Newton's method uses Hessian.</p>
+<div class="tradeoff">
+Hessian is n×n. Impossible for trillion-parameter models.
+</div>
+</div>
+
+<div class="topic">
+<h3>Learning Rate</h3>
+<div class="highlight">
+Too high → divergence. Too low → slow training.
+</div>
+<div class="tradeoff">
+Warmup + decay schedules stabilize training.
+</div>
+</div>
+
+<div class="topic">
+<h3>Adam & AdamW</h3>
+<p>Adam adapts learning rate per parameter.</p>
+<div class="tradeoff">
+3x memory usage vs SGD. Always prefer AdamW over Adam.
+</div>
+</div>
+
+</div>
+
+<div class="section">
+<h2>Part 3: Probability & Information Theory</h2>
+
+<div class="topic">
+<h3>MLE vs MAP</h3>
+<p>MLE maximizes likelihood.</p>
+<p>MAP includes prior (regularization).</p>
+<div class="highlight">
+L2 = Gaussian prior. L1 = Laplacian prior.
+</div>
+</div>
+
+<div class="topic">
+<h3>KL Divergence</h3>
+<p>KL(P||Q) ≠ KL(Q||P)</p>
+<div class="tradeoff">
+Forward KL → mean-seeking (VAEs).  
+Reverse KL → mode-seeking (RLHF).
+</div>
+</div>
+
+<div class="topic">
+<h3>Cross-Entropy Loss</h3>
+<div class="code">L = -Σ p(x) log q(x)</div>
+<p>Confidently wrong predictions are heavily punished.</p>
+</div>
+
+</div>
+
+<footer>
+Built for Deep Learning Mastery • Designed for Concept Clarity 🚀
+</footer>
+
+</div>
+
+</body>
+</html>

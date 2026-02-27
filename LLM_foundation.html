@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLMs & Foundation Models — Google-Level</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700;1,900&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f4ef;
+  --paper: #fffef9;
+  --ink: #1a1408;
+  --ink2: #3d3520;
+  --muted: #8a7d65;
+  --border: #ddd5c0;
+  --border2: #c9bda5;
+  --rust: #b84c1c;
+  --teal: #0d6e6e;
+  --gold: #c49a00;
+  --plum: #6b2d6b;
+  --navy: #1a3a5c;
+  --moss: #3d6b3d;
+  --surface: #f0ebe0;
+  --surface2: #e8e0d0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'IBM Plex Sans',sans-serif;
+  font-weight:300;
+  line-height:1.7;
+  min-height:100vh;
+}
+/* paper grain overlay */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9998;opacity:0.4;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(248,244,239,0.95);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+  height:54px;display:flex;align-items:center;
+  padding:0 36px;gap:0;
+  overflow-x:auto;scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none;}
+.nav-brand{
+  font-family:'Playfair Display',serif;
+  font-weight:900;font-size:14px;
+  color:var(--rust);white-space:nowrap;
+  margin-right:28px;letter-spacing:-0.01em;
+  font-style:italic;
+}
+.nav-item{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;color:var(--muted);
+  padding:0 12px;height:54px;
+  display:flex;align-items:center;cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all 0.2s;
+  letter-spacing:0.04em;text-transform:uppercase;
+}
+.nav-item:hover{color:var(--ink);}
+.nav-item.active{color:var(--rust);border-bottom-color:var(--rust);}
+
+/* MAIN */
+main{max-width:860px;margin:0 auto;padding:82px 24px 80px;}
+
+/* CHAPTER */
+.chapter{display:none;animation:rise 0.4s ease both;}
+.chapter.active{display:block;}
+@keyframes rise{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* CHAPTER HEADER */
+.ch-header{
+  margin-bottom:52px;padding-bottom:32px;
+  border-bottom:1px solid var(--border);
+}
+.ch-eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:16px;
+}
+.ch-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,6vw,72px);
+  font-weight:900;line-height:0.92;
+  letter-spacing:-0.03em;margin-bottom:22px;
+}
+.ch-title em{font-style:italic;color:var(--rust);}
+.ch-lead{font-size:16px;color:var(--ink2);max-width:580px;line-height:1.65;}
+
+/* SECTION */
+.section{margin-bottom:56px;}
+.sec-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:0.28em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px;
+}
+h2{
+  font-family:'Playfair Display',serif;
+  font-size:27px;font-weight:700;
+  letter-spacing:-0.02em;margin-bottom:16px;line-height:1.2;
+}
+h3{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:700;
+  margin-bottom:10px;margin-top:28px;
+}
+p{margin-bottom:14px;font-size:15.5px;color:var(--ink2);}
+p strong{color:var(--ink);font-weight:500;}
+p:last-child{margin-bottom:0;}
+hr.div{border:none;border-top:1px solid var(--border);margin:44px 0;}
+
+/* ANALOGY */
+.analogy{
+  border-left:3px solid var(--gold);
+  background:rgba(196,154,0,0.05);
+  padding:16px 20px;margin:20px 0;
+}
+.analogy-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.analogy p{font-size:14.5px;margin:0;}
+
+/* INSIGHT */
+.insight{
+  background:var(--ink);color:#f8f4ef;
+  padding:22px 26px;margin:24px 0;
+}
+.insight-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.insight p{font-size:14.5px;margin:0;color:#d8d0c0;}
+.insight strong{color:var(--gold);}
+
+/* WARNING */
+.warn{
+  background:rgba(184,76,28,0.06);
+  border:1px solid rgba(184,76,28,0.2);
+  border-left:3px solid var(--rust);
+  padding:16px 20px;margin:20px 0;
+}
+.warn-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:6px;}
+.warn p{font-size:14.5px;margin:0;}
+
+/* FORMULA */
+.formula{
+  font-family:'IBM Plex Mono',monospace;
+  background:var(--paper);
+  border:1px solid var(--border);
+  border-left:3px solid var(--navy);
+  padding:14px 18px;margin:16px 0;
+  font-size:13px;color:var(--navy);
+  overflow-x:auto;white-space:pre-wrap;
+  line-height:1.7;
+}
+
+/* TABLE */
+.tbl{margin:20px 0;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{
+  background:var(--ink);color:#f0ebe0;
+  padding:9px 14px;text-align:left;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:0.08em;text-transform:uppercase;
+  border-bottom:2px solid var(--border2);font-weight:400;
+}
+td{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  vertical-align:top;color:var(--ink2);line-height:1.5;
+}
+tr:nth-child(even) td{background:var(--surface);}
+tr:last-child td{border-bottom:none;}
+td:first-child{color:var(--ink);font-weight:500;}
+
+/* VBOX */
+.vbox{
+  background:var(--surface);border:1px solid var(--border);
+  padding:22px 24px;margin:20px 0;position:relative;
+}
+.vbox::before{
+  content:attr(data-label);
+  position:absolute;top:-1px;left:20px;
+  background:var(--rust);color:#fff;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8px;letter-spacing:0.15em;text-transform:uppercase;
+  padding:3px 10px;font-weight:500;
+}
+
+/* TRADEOFF */
+.tradeoff{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;}
+.tc{background:var(--paper);border:1px solid var(--border);padding:18px;}
+.tc h4{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;}
+.tc.pro h4{color:var(--moss);}
+.tc.con h4{color:var(--rust);}
+.tc ul{padding-left:16px;}
+.tc li{margin-bottom:5px;color:var(--ink2);line-height:1.5;font-size:14px;}
+
+/* STEPS */
+.steps{margin:20px 0;}
+.step{display:flex;gap:14px;margin-bottom:18px;align-items:flex-start;}
+.step-n{
+  width:26px;height:26px;flex-shrink:0;margin-top:2px;
+  background:var(--rust);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;
+}
+.step p{font-size:15px;margin:0;}
+
+/* CANVAS */
+.canvas{background:var(--paper);border:1px solid var(--border);margin:20px 0;overflow:hidden;}
+.canvas svg{width:100%;display:block;}
+
+/* COMPARE COLS */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;}
+.col-card{background:var(--paper);border:1px solid var(--border);padding:18px;}
+.col-card h4{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;color:var(--ink);}
+.col-card p{font-size:13.5px;margin:0;}
+
+/* NAV BTNS */
+.nav-btns{
+  display:flex;justify-content:space-between;
+  margin-top:56px;padding-top:28px;border-top:1px solid var(--border);
+}
+.nbtn{
+  background:transparent;border:1px solid var(--border2);
+  color:var(--ink2);font-family:'IBM Plex Mono',monospace;
+  font-size:11px;padding:11px 20px;cursor:pointer;
+  transition:all 0.2s;letter-spacing:0.04em;text-transform:uppercase;
+}
+.nbtn:hover{border-color:var(--rust);color:var(--rust);}
+.nbtn.primary{background:var(--ink);color:#f8f4ef;border-color:var(--ink);}
+.nbtn.primary:hover{background:var(--rust);border-color:var(--rust);}
+.nbtn:disabled{opacity:0.25;cursor:not-allowed;}
+
+/* BAR CHART */
+.bar-chart{margin:20px 0;}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.bar-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);min-width:130px;text-align:right;}
+.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:0;}
+.bar-fill{height:100%;}
+.bar-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);min-width:40px;}
+
+/* tag pills */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 10px;border:1px solid;}
+.p-rust{border-color:var(--rust);color:var(--rust);}
+.p-teal{border-color:var(--teal);color:var(--teal);}
+.p-gold{border-color:var(--gold);color:var(--gold);}
+.p-navy{border-color:var(--navy);color:var(--navy);}
+.p-plum{border-color:var(--plum);color:var(--plum);}
+.p-moss{border-color:var(--moss);color:var(--moss);}
+
+/* diagram box */
+.dbox{
+  background:var(--paper);border:1px solid var(--border);
+  padding:24px;margin:20px 0;text-align:center;
+}
+.dbox-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-top:12px;}
+
+/* flow arrow */
+.flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin:20px 0;}
+.flow-box{
+  background:var(--surface);border:1px solid var(--border);
+  padding:10px 16px;font-size:13px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;color:var(--ink2);
+  min-width:90px;
+}
+.flow-arrow{color:var(--muted);font-size:18px;padding:0 4px;}
+.flow-box.highlight{background:var(--rust);color:#fff;border-color:var(--rust);}
+.flow-box.highlight2{background:var(--navy);color:#fff;border-color:var(--navy);}
+.flow-box.highlight3{background:var(--teal);color:#fff;border-color:var(--teal);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">LLMs &amp; Foundation Models</div>
+  <div class="nav-item active" onclick="goTo(0,this)">① Pretraining</div>
+  <div class="nav-item" onclick="goTo(1,this)">② Tokenization</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ Scaling Laws</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ Fine-Tuning &amp; LoRA</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ RLHF &amp; Alignment</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ RAG</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ Agents</div>
+  <div class="nav-item" onclick="goTo(7,this)">⑧ Quantization</div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 1: PRETRAINING                       -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 01 / 08 — LLMs &amp; Foundation Models</div>
+    <div class="ch-title">Pre-<br><em>training</em><br>Objectives</div>
+    <p class="ch-lead">Before fine-tuning, alignment, or prompting — a model must first learn language. Pretraining is where 99% of a model's knowledge and capability comes from.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — What Pretraining Actually Is</div>
+    <h2>Learning to Predict — At Massive Scale</h2>
+    <p>Pretraining is self-supervised learning on enormous text corpora — no human labels needed. The model is given a learning signal entirely from the text itself. This is why you can train on trillions of tokens scraped from the internet.</p>
+    <p>The key insight: <strong>predicting text is a proxy task that forces the model to learn everything about language, facts, reasoning, and the world</strong> — because doing it well requires understanding all of those things.</p>
+
+    <div class="analogy">
+      <div class="analogy-tag">🧠 Analogy</div>
+      <p>Imagine learning to be a doctor by reading every medical textbook, research paper, patient record, and clinical note ever written — and your only task is to predict the next sentence. To do that well, you'd inevitably need to learn anatomy, diagnosis patterns, drug interactions, and clinical reasoning. That's pretraining.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — The Three Objectives</div>
+    <h2>How You Frame "Predict Text" Changes Everything</h2>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Objective</th><th>Task</th><th>Architecture</th><th>What the Model Learns</th><th>Examples</th></tr>
+      <tr>
+        <td style="color:var(--rust)">Causal LM (CLM)</td>
+        <td>Predict next token given all previous tokens</td>
+        <td>Decoder-only, causal mask</td>
+        <td>How language flows forward. Generation. In-context reasoning.</td>
+        <td>GPT, LLaMA, Claude, Mistral, Falcon</td>
+      </tr>
+      <tr>
+        <td style="color:var(--teal)">Masked LM (MLM)</td>
+        <td>Predict masked tokens using both left AND right context</td>
+        <td>Encoder-only, bidirectional</td>
+        <td>Deep contextual understanding. Relationships between words.</td>
+        <td>BERT, RoBERTa, DeBERTa</td>
+      </tr>
+      <tr>
+        <td style="color:var(--plum)">Span Corruption</td>
+        <td>Mask spans of tokens, reconstruct them</td>
+        <td>Encoder-Decoder</td>
+        <td>Both understanding (encode) and generation (decode)</td>
+        <td>T5, BART, mT5</td>
+      </tr>
+    </table>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 580 170" xmlns="http://www.w3.org/2000/svg">
+        <rect width="580" height="170" fill="#fffef9"/>
+        <!-- CLM -->
+        <text x="10" y="20" font-family="IBM Plex Mono" font-size="10" fill="#b84c1c" letter-spacing="0.1em">CLM — "What comes next?"</text>
+        <rect x="10" y="28" width="50" height="24" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="35" y="44" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#3d3520">The</text>
+        <rect x="64" y="28" width="50" height="24" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="89" y="44" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#3d3520">cat</text>
+        <rect x="118" y="28" width="50" height="24" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="143" y="44" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#3d3520">sat</text>
+        <rect x="172" y="28" width="50" height="24" rx="1" fill="#b84c1c"/>
+        <text x="197" y="44" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="white">on?</text>
+        <text x="230" y="44" font-family="IBM Plex Mono" font-size="10" fill="#8a7d65">← predict "on" from left context only</text>
+
+        <!-- MLM -->
+        <text x="10" y="85" font-family="IBM Plex Mono" font-size="10" fill="#0d6e6e" letter-spacing="0.1em">MLM — "Fill in the blank"</text>
+        <rect x="10" y="93" width="50" height="24" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="35" y="109" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#3d3520">The</text>
+        <rect x="64" y="93" width="50" height="24" rx="1" fill="#0d6e6e"/>
+        <text x="89" y="109" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="white">[MASK]</text>
+        <rect x="118" y="93" width="50" height="24" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="143" y="109" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#3d3520">sat</text>
+        <rect x="172" y="93" width="50" height="24" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="197" y="109" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="#3d3520">on</text>
+        <text x="230" y="109" font-family="IBM Plex Mono" font-size="10" fill="#8a7d65">← predict "cat" using both sides</text>
+
+        <!-- Span -->
+        <text x="10" y="150" font-family="IBM Plex Mono" font-size="10" fill="#6b2d6b" letter-spacing="0.1em">Span Corruption — "Reconstruct the gaps"</text>
+        <rect x="10" y="155" width="50" height="14" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="35" y="166" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" fill="#3d3520">The</text>
+        <rect x="64" y="155" width="80" height="14" rx="1" fill="#6b2d6b"/>
+        <text x="104" y="166" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" fill="white">&lt;X&gt;</text>
+        <rect x="148" y="155" width="50" height="14" rx="1" fill="#f0ebe0" stroke="#ddd5c0"/>
+        <text x="173" y="166" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" fill="#3d3520">on</text>
+        <rect x="202" y="155" width="80" height="14" rx="1" fill="#6b2d6b"/>
+        <text x="242" y="166" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" fill="white">&lt;Y&gt;</text>
+        <text x="290" y="166" font-family="IBM Plex Mono" font-size="9" fill="#8a7d65">→ decode: "cat sat" | "the mat"</text>
+      </svg>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ Why CLM Became the Dominant Paradigm</div>
+      <p>BERT (MLM) dominated 2018–2020 for understanding tasks. Then GPT-3 showed that <strong>CLM at scale generalizes to everything</strong> — including tasks that look like "understanding." The insight: if you're good enough at next-token prediction, you can do classification, translation, coding, reasoning — just by prompting. Generation is the universal interface. That's why every major LLM today (GPT, Claude, LLaMA, Gemini) is decoder-only CLM.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">03 — Training Data</div>
+    <h2>Data Is the Model</h2>
+    <p>Modern LLMs are trained on trillions of tokens. The composition, quality, and filtering of that data has a larger impact on model quality than almost any architectural choice.</p>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Data Source</th><th>What It Teaches</th><th>Typical Weight</th><th>Key Issues</th></tr>
+      <tr><td>CommonCrawl / Web</td><td>General language, facts, world knowledge</td><td>50–70%</td><td>Noisy, biased, repetitive content. Heavy filtering needed.</td></tr>
+      <tr><td>Books / Literature</td><td>Long-range coherence, narrative, diverse vocab</td><td>10–20%</td><td>Copyright. GPT-3 used Books1+2, LLaMA used Gutenberg+Books3.</td></tr>
+      <tr><td>Wikipedia</td><td>Factual knowledge, encyclopedic structure</td><td>3–5%</td><td>English-heavy. Facts freeze at crawl date.</td></tr>
+      <tr><td>Code (GitHub)</td><td>Structured reasoning, step-by-step logic, algorithms</td><td>5–15%</td><td>License issues. Code training improves reasoning across all tasks.</td></tr>
+      <tr><td>Scientific papers (ArXiv, PubMed)</td><td>Technical reasoning, domain knowledge</td><td>2–5%</td><td>LaTeX/formula heavy — needs special tokenization</td></tr>
+      <tr><td>Curated high-quality sources</td><td>Instruction-following style, formatting</td><td>Upweighted</td><td>Small in volume but large in impact — repeated many times</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ Code Training Improves Reasoning — Everywhere</div>
+      <p>Models trained with code data show dramatically improved performance on <strong>mathematical reasoning, logical tasks, and chain-of-thought</strong> — even on pure-text tasks with no code. Why? Code is language that must be precisely structured, with explicit step-by-step logic. The model learns to think sequentially and precisely. This is why all frontier models today are trained on large code corpora.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Tokenization →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 2: TOKENIZATION                      -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 02 / 08</div>
+    <div class="ch-title">Token-<br><em>ization</em></div>
+    <p class="ch-lead">Every LLM sees text as a sequence of tokens — not characters, not words. How you split text into tokens has profound consequences for what the model can and can't do.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — Why Not Characters or Words?</div>
+    <h2>The Goldilocks Problem</h2>
+    <p><strong>Characters</strong> — too granular. "Hello" = 5 tokens. Sequences become very long, attention is expensive O(n²), and the model must learn spelling from scratch at every step.</p>
+    <p><strong>Words</strong> — too coarse. Vocabulary explodes (millions of words, names, compounds). Out-of-vocabulary words are unhandled. Every language needs its own vocabulary.</p>
+    <p><strong>Subwords</strong> — just right. Common words get one token. Rare words are split into meaningful pieces. The vocabulary stays manageable (~32K–100K tokens). Unknown words are handled gracefully.</p>
+
+    <div class="canvas">
+      <svg viewBox="0 0 560 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="560" height="120" fill="#fffef9"/>
+        <text x="10" y="18" font-family="IBM Plex Mono" font-size="10" fill="#8a7d65">Input: "unhappiness"</text>
+        <!-- chars -->
+        <text x="10" y="40" font-family="IBM Plex Mono" font-size="9" fill="#b84c1c" letter-spacing="0.1em">CHARS (11 tokens):</text>
+        <text x="165" y="40" font-family="IBM Plex Mono" font-size="11" fill="#3d3520">u | n | h | a | p | p | i | n | e | s | s</text>
+        <!-- words -->
+        <text x="10" y="65" font-family="IBM Plex Mono" font-size="9" fill="#0d6e6e" letter-spacing="0.1em">WORD (1 token, but fails on unknown):</text>
+        <rect x="300" y="52" width="96" height="20" rx="1" fill="#0d6e6e"/>
+        <text x="348" y="66" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="white">unhappiness</text>
+        <!-- BPE subword -->
+        <text x="10" y="95" font-family="IBM Plex Mono" font-size="9" fill="#6b2d6b" letter-spacing="0.1em">BPE (3 tokens — best of both):</text>
+        <rect x="200" y="82" width="36" height="22" rx="1" fill="#6b2d6b"/>
+        <text x="218" y="97" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="white">un</text>
+        <rect x="240" y="82" width="52" height="22" rx="1" fill="#6b2d6b" opacity="0.7"/>
+        <text x="266" y="97" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="white">happy</text>
+        <rect x="296" y="82" width="44" height="22" rx="1" fill="#6b2d6b" opacity="0.5"/>
+        <text x="318" y="97" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="white">ness</text>
+        <text x="350" y="97" font-family="IBM Plex Sans" font-size="11" fill="#8a7d65">← meaningful pieces</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — BPE and Variants</div>
+    <h2>How Subword Tokenization Works</h2>
+
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><p><strong>Start with characters.</strong> Every character in the training corpus is a token. Vocabulary = {a, b, c, …}</p></div>
+      <div class="step"><div class="step-n">2</div><p><strong>Count all adjacent pairs.</strong> Which two tokens appear next to each other most often? E.g., ("e","s") appears 50,000 times.</p></div>
+      <div class="step"><div class="step-n">3</div><p><strong>Merge the most frequent pair</strong> into a new single token. ("e","s") → "es". Add to vocabulary.</p></div>
+      <div class="step"><div class="step-n">4</div><p><strong>Repeat</strong> until vocabulary reaches target size (e.g., 50,257 for GPT-2, 32,000 for LLaMA).</p></div>
+    </div>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Method</th><th>How It Works</th><th>Used By</th><th>Key Property</th></tr>
+      <tr><td style="color:var(--rust)">BPE</td><td>Greedily merge most frequent pairs</td><td>GPT-2, GPT-4, LLaMA (byte-level BPE)</td><td>Deterministic. No pre-tokenization needed with byte-level.</td></tr>
+      <tr><td style="color:var(--teal)">WordPiece</td><td>Maximize likelihood of training data</td><td>BERT, DistilBERT</td><td>Splits on ## prefix for subword continuations</td></tr>
+      <tr><td style="color:var(--plum)">SentencePiece</td><td>Language-agnostic, trains on raw text</td><td>T5, Gemma, mT5, many multilingual models</td><td>No language-specific pre-processing needed. Handles any script.</td></tr>
+      <tr><td style="color:var(--navy)">Tiktoken (cl100k)</td><td>Byte-level BPE, very large vocab</td><td>GPT-3.5, GPT-4, Claude</td><td>100K+ vocab → fewer tokens per word → longer context efficiency</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ Token Fertility — The Hidden Efficiency Metric</div>
+      <p>Token fertility = how many tokens does the tokenizer use per word, on average. <strong>Lower = more efficient</strong> (fewer tokens for the same text = longer effective context at same cost). English is well-served by most tokenizers (~1.3 tokens/word). But some languages are badly served — Korean, Arabic, or code in non-Latin scripts can use 3-5× more tokens per word. This means <strong>non-English languages effectively get a smaller context window and higher API cost per sentence</strong>. A known fairness issue with current LLMs.</p>
+    </div>
+
+    <div class="warn">
+      <div class="warn-tag">⚠️ Tokenization Quirks That Break LLMs</div>
+      <p>Tokenizers split numbers character by character — "1,234,567" might be 7+ tokens. This is why LLMs struggle with arithmetic: they never see numbers as atomic units. Similarly, reversing a string or counting letters is hard — "strawberry" might split as "st|raw|berry" — the model doesn't see individual characters unless you prompt it carefully.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Pretraining</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Scaling Laws →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 3: SCALING LAWS                      -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 03 / 08</div>
+    <div class="ch-title">Scaling<br><em>Laws</em></div>
+    <p class="ch-lead">One of the most important empirical discoveries in AI. Scaling laws tell you exactly how much better your model will get if you double compute — before you spend a dollar training it.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — The OpenAI Scaling Laws (2020)</div>
+    <h2>Performance Is a Power Law of Scale</h2>
+    <p>OpenAI found that language model loss decreases predictably as you scale three things: <strong>parameters (N)</strong>, <strong>training tokens (D)</strong>, and <strong>compute (C)</strong>. Each follows a smooth power law — no sudden jumps, no plateaus. Just a steady, predictable improvement.</p>
+
+    <div class="formula">L(N) ∝ N^(-α)    [loss vs parameters, α ≈ 0.076]
+L(D) ∝ D^(-β)    [loss vs data tokens, β ≈ 0.095]
+L(C) ∝ C^(-γ)    [loss vs compute (FLOPs)]
+
+Implication: double parameters → loss drops by a predictable, reliable amount
+No matter what task, dataset, or architecture — the law holds</div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 540 220" xmlns="http://www.w3.org/2000/svg">
+        <rect width="540" height="220" fill="#fffef9"/>
+        <!-- axes -->
+        <line x1="60" y1="180" x2="500" y2="180" stroke="#ddd5c0" stroke-width="1.5"/>
+        <line x1="60" y1="20" x2="60" y2="180" stroke="#ddd5c0" stroke-width="1.5"/>
+        <text x="280" y="205" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#8a7d65">log(Compute / Parameters / Data) →</text>
+        <text x="22" y="105" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#8a7d65" transform="rotate(-90,22,105)">log(Loss) →</text>
+        <!-- power law curves -->
+        <path d="M70,30 Q150,60 250,110 Q350,145 490,168" fill="none" stroke="#b84c1c" stroke-width="2.5"/>
+        <path d="M70,45 Q150,75 250,118 Q350,152 490,172" fill="none" stroke="#0d6e6e" stroke-width="2" stroke-dasharray="6,3"/>
+        <path d="M70,60 Q150,88 250,126 Q350,158 490,175" fill="none" stroke="#6b2d6b" stroke-width="2" stroke-dasharray="3,3"/>
+        <!-- legend -->
+        <rect x="340" y="30" width="12" height="3" fill="#b84c1c"/>
+        <text x="358" y="36" font-family="IBM Plex Mono" font-size="10" fill="#3d3520">Parameters (N)</text>
+        <rect x="340" y="50" width="12" height="3" fill="#0d6e6e"/>
+        <text x="358" y="56" font-family="IBM Plex Mono" font-size="10" fill="#3d3520">Training Data (D)</text>
+        <rect x="340" y="70" width="12" height="3" fill="#6b2d6b"/>
+        <text x="358" y="76" font-family="IBM Plex Mono" font-size="10" fill="#3d3520">Compute (C)</text>
+        <!-- annotation -->
+        <text x="175" y="80" font-family="IBM Plex Sans" font-size="11" fill="#8a7d65">Smooth power law.</text>
+        <text x="175" y="95" font-family="IBM Plex Sans" font-size="11" fill="#8a7d65">No sudden walls.</text>
+        <text x="175" y="110" font-family="IBM Plex Sans" font-size="11" fill="#8a7d65">Predictable.</text>
+      </svg>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ Why This Was Revolutionary</div>
+      <p>Before scaling laws, model training felt like alchemy — you'd spend weeks training a model and hope it worked. With scaling laws, you can <strong>train tiny models at different scales, fit the power law, and predict exactly how well your 100B-parameter model will perform before training it</strong>. This lets you make trillion-dollar compute decisions with empirical confidence. It's why OpenAI, Google, and Anthropic invest so heavily in small-scale experimentation.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — Chinchilla (DeepMind, 2022)</div>
+    <h2>The Most Important Paper in LLM History</h2>
+    <p>The OpenAI scaling laws suggested scaling parameters was most important. But DeepMind's Chinchilla paper showed something shocking: <strong>most models at the time were massively undertrained</strong>. They had too many parameters relative to training tokens.</p>
+
+    <div class="formula">Chinchilla Optimal: N ∝ C^0.5,  D ∝ C^0.5
+
+For a compute budget C:
+  Optimal tokens = 20 × parameters
+
+Example:
+  10B parameter model → train on 200B tokens  (most teams were using 300B)
+  70B parameter model → train on 1.4T tokens
+  GPT-3 (175B params, 300B tokens) → was ~7× undertrained on data!</div>
+
+    <div class="cols">
+      <div class="col-card">
+        <h4>Before Chinchilla</h4>
+        <p>Train massive models (175B+) on a fixed token budget (~300B). Maximize parameters. Gopher (280B), GPT-3 (175B) — both undertrained.</p>
+      </div>
+      <div class="col-card">
+        <h4>After Chinchilla</h4>
+        <p>Use a smaller model trained on far more tokens. Chinchilla (70B, 1.4T tokens) outperformed Gopher (280B, 300B tokens). LLaMA-2 (7B, 2T tokens) is another example.</p>
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ The Inference-Optimal vs Training-Optimal Tradeoff</div>
+      <p>Chinchilla optimal is <em>training compute optimal</em> — it minimizes loss for a given training budget. But if you plan to run a model for millions of inference calls, the math changes. A <strong>smaller model trained on more data</strong> is cheaper per inference call — even if it cost the same to train as a larger model. LLaMA's design philosophy explicitly optimizes for inference cost, not training cost. This is why 7B models trained on 2T+ tokens are so popular commercially.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">03 — Emergent Abilities</div>
+    <h2>Capabilities That Appear Suddenly at Scale</h2>
+    <p>Some abilities appear to be absent in smaller models and then suddenly emerge in larger ones — not a gradual improvement but a phase transition. Examples: multi-step arithmetic, chain-of-thought reasoning, multi-language translation without explicit training, passing coding interviews.</p>
+
+    <div class="warn">
+      <div class="warn-tag">⚠️ Are Emergent Abilities Real?</div>
+      <p>A 2023 Stanford paper argued that "emergence" is partly a measurement artifact — when you use a coarser metric (pass/fail), you miss the gradual improvement underneath. Switch to a continuous metric (log-probability) and the improvement is smooth all along. The debate is ongoing. What's clear: <strong>some capabilities require a threshold of capability in multiple sub-skills simultaneously, which may look sudden even if each sub-skill improved gradually.</strong></p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Tokenization</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Fine-Tuning &amp; LoRA →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 4: FINE-TUNING & LoRA                -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 04 / 08</div>
+    <div class="ch-title">Fine-Tuning<br>&amp; <em>LoRA</em></div>
+    <p class="ch-lead">Pretraining gives a model knowledge. Fine-tuning gives it behavior. LoRA makes fine-tuning cheap enough to run on a single GPU.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — Fine-Tuning Spectrum</div>
+    <h2>From Full Retraining to Just the Prompt</h2>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Method</th><th>What Changes</th><th>GPU Memory</th><th>Quality</th><th>When to Use</th></tr>
+      <tr><td style="color:var(--rust)">Full Fine-Tune</td><td>All parameters updated</td><td>Highest — full model + optimizer states</td><td>Best possible</td><td>Huge compute budget, major behavior change needed</td></tr>
+      <tr><td style="color:var(--teal)">LoRA</td><td>Low-rank adapters added to weight matrices</td><td>Low — only train adapters</td><td>Near full-tune quality</td><td>Standard choice for most fine-tuning today</td></tr>
+      <tr><td style="color:var(--plum)">QLoRA</td><td>LoRA on quantized (4-bit) base model</td><td>Very low — 7B model fits on 1× 24GB GPU</td><td>Slightly below LoRA</td><td>Single-GPU fine-tuning, low-resource settings</td></tr>
+      <tr><td style="color:var(--navy)">Prefix Tuning</td><td>Prepend trainable tokens to every layer</td><td>Very low</td><td>Good for generation tasks</td><td>When you want task-specific input but keep model frozen</td></tr>
+      <tr><td style="color:var(--gold)">Adapter Layers</td><td>Small trainable modules inserted between layers</td><td>Low</td><td>Good</td><td>Multi-task: swap adapters per task</td></tr>
+      <tr><td style="color:var(--moss)">Prompt Tuning</td><td>Only trainable soft prompt tokens</td><td>Minimal</td><td>OK for large models, poor for small</td><td>Very limited compute, large base model only</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — LoRA Deep Dive</div>
+    <h2>Low-Rank Adaptation — The Key Idea</h2>
+    <p>When you fine-tune a model, the <em>change</em> in weights (ΔW) tends to be low-rank — it lives in a much smaller subspace than the full weight matrix. LoRA exploits this: instead of updating the full weight matrix W (which might be 4096×4096 = 16M parameters), you learn two small matrices A and B whose product approximates the update.</p>
+
+    <div class="formula">W' = W + ΔW = W + B·A
+
+Where:
+  W  ∈ ℝ^(d×k)   original frozen weight matrix  (e.g., 4096×4096 = 16.7M params)
+  A  ∈ ℝ^(r×k)   down-projection              (e.g., rank r=8 → 8×4096 = 32K params)
+  B  ∈ ℝ^(d×r)   up-projection               (e.g., 4096×8 = 32K params)
+
+Total LoRA params: 2 × r × d  (64K vs 16.7M — 260× smaller!)
+
+At inference: W' = W + B·A merged back in — zero latency overhead</div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 540 160" xmlns="http://www.w3.org/2000/svg">
+        <rect width="540" height="160" fill="#fffef9"/>
+        <!-- frozen W -->
+        <rect x="40" y="30" width="100" height="100" rx="1" fill="#f0ebe0" stroke="#ddd5c0" stroke-width="1.5"/>
+        <text x="90" y="78" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#8a7d65">W</text>
+        <text x="90" y="94" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#8a7d65">(frozen)</text>
+        <text x="90" y="145" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="#8a7d65">16.7M params</text>
+        <!-- plus -->
+        <text x="155" y="88" font-family="IBM Plex Sans" font-size="22" fill="#ddd5c0" font-weight="300">+</text>
+        <!-- B matrix (tall thin) -->
+        <rect x="175" y="30" width="28" height="100" rx="1" fill="#b84c1c" opacity="0.15" stroke="#b84c1c" stroke-width="1.5"/>
+        <text x="189" y="82" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#b84c1c">B</text>
+        <!-- multiply -->
+        <text x="210" y="88" font-family="IBM Plex Sans" font-size="18" fill="#ddd5c0">×</text>
+        <!-- A matrix (short wide) -->
+        <rect x="225" y="70" width="100" height="28" rx="1" fill="#b84c1c" opacity="0.15" stroke="#b84c1c" stroke-width="1.5"/>
+        <text x="275" y="88" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#b84c1c">A</text>
+        <!-- labels -->
+        <text x="189" y="145" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="#b84c1c">d×r</text>
+        <text x="275" y="115" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="#b84c1c">r×k  (rank r≪d,k)</text>
+        <!-- equals -->
+        <text x="345" y="88" font-family="IBM Plex Sans" font-size="22" fill="#ddd5c0" font-weight="300">=</text>
+        <!-- result -->
+        <rect x="368" y="30" width="100" height="100" rx="1" fill="#b84c1c" opacity="0.1" stroke="#b84c1c" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="418" y="78" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#b84c1c">W'</text>
+        <text x="418" y="94" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#b84c1c">W + BA</text>
+        <text x="418" y="145" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="#b84c1c">only 64K trained!</text>
+      </svg>
+    </div>
+
+    <h3>Key LoRA Hyperparameters</h3>
+    <div class="tbl">
+    <table>
+      <tr><th>Parameter</th><th>What It Controls</th><th>Typical Values</th><th>Tradeoff</th></tr>
+      <tr><td>rank (r)</td><td>Size of the low-rank bottleneck — expressiveness of the update</td><td>4, 8, 16, 32, 64</td><td>Higher r → more params → better quality but more memory. r=8 is a common sweet spot.</td></tr>
+      <tr><td>alpha (α)</td><td>Scaling factor: ΔW = (α/r) · BA</td><td>Usually = r or 2r</td><td>α/r is the effective learning rate scale. Keeping α=r means the scale is 1.0.</td></tr>
+      <tr><td>target_modules</td><td>Which weight matrices to apply LoRA to</td><td>q_proj, v_proj (attention); or all linear layers</td><td>More modules = more params, better quality. Start with query+value projections.</td></tr>
+      <tr><td>dropout</td><td>Dropout inside LoRA layers</td><td>0.0–0.1</td><td>Small regularization. Often 0 for short fine-tuning runs.</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ Why LoRA Works — The Intrinsic Dimensionality Hypothesis</div>
+      <p>Fine-tuning moves the model in weight space. The hypothesis: this movement lies in a very low-dimensional subspace of the full weight space — even if the model has billions of parameters. Tasks don't need to update every direction of weight space — just a few key directions. LoRA finds those directions efficiently. Empirically, <strong>r=8 often achieves 90%+ of full fine-tune quality at 0.1% of the trainable parameters.</strong></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">03 — Supervised Fine-Tuning</div>
+    <h2>SFT — Teaching the Format, Not Just the Facts</h2>
+    <p>Supervised Fine-Tuning (SFT) trains the model on curated instruction-response pairs. The base model already knows the facts — SFT teaches it <strong>how to respond</strong>: follow instructions, be helpful, format properly, stay on topic.</p>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ The LIMA Paper — "Less Is More"</div>
+      <p>A 2023 Meta paper trained a 65B model on only <strong>1,000 carefully curated examples</strong> and achieved performance near GPT-4-level on many tasks. The lesson: <strong>data quality utterly dominates data quantity for SFT</strong>. 1,000 perfect examples beats 100,000 mediocre ones. The base model already has the knowledge — SFT is about teaching the style and format of helpfulness.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Scaling Laws</button>
+    <button class="nbtn primary" onclick="nextCh(3)">RLHF &amp; Alignment →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 5: RLHF & ALIGNMENT                 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 05 / 08</div>
+    <div class="ch-title">RLHF &amp;<br><em>Alignment</em></div>
+    <p class="ch-lead">Pretraining and SFT give a capable model. RLHF makes it a model you'd actually want to use — one that is helpful, honest, and avoids harm. The pipeline that powers Claude, ChatGPT, and Gemini.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — The Full Pipeline</div>
+    <h2>Three Stages: SFT → RM → PPO</h2>
+
+    <div class="flow">
+      <div class="flow-box highlight2">Pretrained<br>Base LM</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box highlight">Stage 1<br>SFT</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="background:var(--surface);border-color:var(--gold);color:var(--gold)">Stage 2<br>Reward Model</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box highlight3">Stage 3<br>PPO / DPO</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="background:var(--surface);border-color:var(--moss);color:var(--moss)">Aligned<br>Model</div>
+    </div>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Stage</th><th>What Happens</th><th>Data Needed</th><th>What It Teaches</th></tr>
+      <tr><td style="color:var(--rust)">1 — SFT</td><td>Fine-tune on high-quality instruction-response pairs</td><td>~10K–100K human-written (prompt, response) pairs</td><td>How to follow instructions, appropriate format and tone</td></tr>
+      <tr><td style="color:var(--gold)">2 — Reward Model</td><td>Train a separate model to score responses by human preference</td><td>Human comparisons: "response A or B is better?"</td><td>A proxy for human values and preferences</td></tr>
+      <tr><td style="color:var(--teal)">3 — PPO/DPO</td><td>Use RL to fine-tune the SFT model to maximize reward</td><td>The reward model's scores as the signal</td><td>Optimize behavior toward what humans prefer</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — Reward Modeling</div>
+    <h2>Teaching a Model What "Good" Means</h2>
+    <p>You can't easily write a loss function for "helpfulness" or "harmlessness." Instead, you collect human preference data: show two responses to the same prompt, ask which is better. Then train a model to predict those preferences. This model becomes the <strong>reward model (RM)</strong> — a differentiable proxy for human judgment.</p>
+
+    <div class="formula">Reward Model:  r_θ(prompt, response) → scalar score
+
+Loss: L = -E[log σ(r_θ(prompt, y_w) - r_θ(prompt, y_l))]
+
+y_w = preferred (winning) response
+y_l = rejected (losing) response
+σ  = sigmoid
+
+Intuition: push the score of the preferred response above the rejected one</div>
+
+    <div class="warn">
+      <div class="warn-tag">⚠️ Reward Hacking</div>
+      <p>The RL-trained model will exploit any flaw in the reward model. It learns to produce responses that score high according to the RM — even if they're not actually helpful. Common examples: being verbose (more text feels more thorough), being sycophantic (agreeing with the user), or confidently stating wrong information. The RM is imperfect, and the policy finds those imperfections. This is Goodhart's Law: "When a measure becomes a target, it ceases to be a good measure."</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">03 — PPO vs DPO</div>
+    <h2>The Two Ways to Do Alignment</h2>
+
+    <div class="tradeoff">
+      <div class="tc pro">
+        <h4>PPO — Proximal Policy Optimization</h4>
+        <ul>
+          <li>Classic RL algorithm. Model generates responses, RM scores them, model updates to maximize score.</li>
+          <li>Needs 4 models simultaneously: policy, reference, reward, value. Expensive.</li>
+          <li>KL penalty prevents model from drifting too far from SFT model.</li>
+          <li>Complex to implement and tune stably.</li>
+          <li>Used by: ChatGPT, early Claude, Gemini.</li>
+        </ul>
+      </div>
+      <div class="tc con">
+        <h4>DPO — Direct Preference Optimization</h4>
+        <ul>
+          <li>Skips the reward model entirely. Directly fine-tunes on preference pairs.</li>
+          <li>Mathematically equivalent to PPO under certain assumptions but much simpler.</li>
+          <li>Only needs 2 models: policy + frozen reference. Much cheaper.</li>
+          <li>Sometimes less stable than PPO at scale.</li>
+          <li>Used by: LLaMA-2-Chat, Zephyr, many open-source models.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="formula">DPO Loss:
+L = -E[log σ( β·log(π_θ(y_w)/π_ref(y_w)) - β·log(π_θ(y_l)/π_ref(y_l)) )]
+
+π_θ   = policy being trained
+π_ref = frozen SFT reference model
+β     = temperature (how strongly to enforce preference)
+
+No reward model needed — preference signal directly updates the policy</div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ Constitutional AI — Anthropic's Approach</div>
+      <p>Instead of only using human feedback, Constitutional AI (CAI) uses a <strong>set of principles ("constitution")</strong> to have the AI critique and revise its own responses. This generates synthetic preference data at scale — the AI generates a response, critiques it against the constitution, rewrites it, and that pair becomes training data. Reduces the human annotation bottleneck while embedding explicit values into the training process. Used in Claude's training.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Fine-Tuning &amp; LoRA</button>
+    <button class="nbtn primary" onclick="nextCh(4)">RAG →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 6: RAG                               -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 06 / 08</div>
+    <div class="ch-title">Retrieval<br><em>Augmented</em><br>Generation</div>
+    <p class="ch-lead">LLMs have frozen knowledge. RAG gives them access to live, external information at inference time — without retraining. The dominant pattern for production LLM applications.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — The Core Problem RAG Solves</div>
+    <h2>Knowledge Cutoffs &amp; Hallucination</h2>
+    <p>An LLM's knowledge is frozen at training time. It can't answer questions about yesterday's news. More importantly, if you ask about your company's internal documents, policies, or codebase — it has never seen any of it. And if you push it on facts it doesn't know confidently, it may hallucinate convincing-sounding but false answers.</p>
+    <p>RAG fixes this: <strong>retrieve the relevant documents first, then generate the answer using those documents as context.</strong> The model doesn't need to memorize everything — it just needs to read and reason.</p>
+
+    <div class="analogy">
+      <div class="analogy-tag">🧠 Analogy</div>
+      <p>The difference between a closed-book exam (LLM from memory) and an open-book exam (RAG). The open-book student doesn't need to memorize every fact — they need to know how to find the right page and reason from what they find. That's RAG.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — The RAG Pipeline</div>
+    <h2>Every Step, Every Tradeoff</h2>
+
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><p><strong>Chunk the documents.</strong> Split your corpus into manageable pieces (e.g., 256–512 tokens each). Chunks that are too large dilute relevance. Too small loses context. Overlapping chunks (e.g., 50-token overlap) help preserve context at boundaries.</p></div>
+      <div class="step"><div class="step-n">2</div><p><strong>Embed the chunks.</strong> Pass each chunk through an embedding model (e.g., text-embedding-ada-002, BGE, E5). You get a dense vector representing the chunk's meaning. Store in a vector database (Pinecone, Weaviate, pgvector, Chroma).</p></div>
+      <div class="step"><div class="step-n">3</div><p><strong>Embed the query.</strong> At query time, embed the user's question using the same embedding model.</p></div>
+      <div class="step"><div class="step-n">4</div><p><strong>Retrieve the top-k chunks.</strong> Find the chunks whose embeddings are most similar to the query (cosine similarity or dot product). Typically k=3–10.</p></div>
+      <div class="step"><div class="step-n">5</div><p><strong>Rerank (optional but important).</strong> Use a cross-encoder reranker (e.g., Cohere Rerank) to re-score the top-k chunks with the full query in context — more accurate than embedding similarity alone.</p></div>
+      <div class="step"><div class="step-n">6</div><p><strong>Generate with context.</strong> Stuff the top retrieved chunks into the LLM prompt alongside the user query. The model reads the chunks and answers based on them.</p></div>
+    </div>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Component</th><th>Options</th><th>Tradeoff</th></tr>
+      <tr><td>Chunking strategy</td><td>Fixed-size, sentence, paragraph, semantic, recursive</td><td>Fixed-size is simple but cuts mid-sentence. Semantic chunking (cluster by meaning) is better but slower to build.</td></tr>
+      <tr><td>Embedding model</td><td>OpenAI ada-002, BGE-M3, E5-large, Cohere</td><td>Larger = better quality but slower. Must match embedding model at index time and query time.</td></tr>
+      <tr><td>Vector search</td><td>Exact (brute force) vs ANN (HNSW, IVF, FAISS)</td><td>ANN is fast at scale but approximate. Exact is slow but perfect. HNSW is the go-to for production.</td></tr>
+      <tr><td>Retrieval type</td><td>Dense (embeddings) vs Sparse (BM25) vs Hybrid</td><td>Dense finds semantically similar. Sparse finds keyword matches. Hybrid = best of both. Use hybrid in production.</td></tr>
+      <tr><td>Reranking</td><td>Cross-encoder vs embedding similarity</td><td>Cross-encoder is much more accurate (sees query+doc together) but 10-100× slower. Use for top-k reranking only.</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ The Biggest RAG Failure Modes — In Order</div>
+      <p><strong>1. Retrieval fails</strong> — the right chunk wasn't retrieved. The model then answers from memory and may hallucinate. Fix: better embeddings, hybrid search, query rewriting. <strong>2. Context dilution</strong> — too many chunks stuffed in, the relevant one gets "lost in the middle" (LLMs attend better to start/end of context). Fix: reranking, fewer but more relevant chunks. <strong>3. Chunk boundary problems</strong> — the answer spans two chunks but only one is retrieved. Fix: overlapping chunks, larger chunks, parent-document retrieval. <strong>4. Stale index</strong> — documents updated but embeddings not. Fix: incremental re-indexing triggers on document change.</p>
+    </div>
+
+    <div class="section">
+      <div class="sec-label">03 — Advanced RAG Patterns</div>
+      <h2>Beyond Naive RAG</h2>
+      <div class="tbl">
+      <table>
+        <tr><th>Pattern</th><th>What It Does</th><th>When to Use</th></tr>
+        <tr><td>HyDE</td><td>Generate a hypothetical answer first, then embed THAT to find relevant docs</td><td>When queries are short and abstract — the hypothesis is often more similar to the answer than the question</td></tr>
+        <tr><td>Multi-query retrieval</td><td>Rephrase the query N ways, retrieve for each, merge results</td><td>Increases recall when one phrasing might miss relevant docs</td></tr>
+        <tr><td>Parent-document retrieval</td><td>Index small chunks but return their parent (larger) document</td><td>Preserves context — the chunk scores well, but the model reads more</td></tr>
+        <tr><td>Iterative/agentic RAG</td><td>Model decides when to retrieve, what to retrieve, and reads multiple rounds</td><td>Multi-hop questions that require chaining multiple lookups</td></tr>
+        <tr><td>Corrective RAG (CRAG)</td><td>After retrieval, evaluate relevance of docs — if poor, reformulate query</td><td>Robust fallback when initial retrieval is unreliable</td></tr>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← RLHF &amp; Alignment</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Agents →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 7: AGENTS                            -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 07 / 08</div>
+    <div class="ch-title">LLM<br><em>Agents</em></div>
+    <p class="ch-lead">An LLM that can only generate text is limited. Give it tools, memory, and the ability to plan multi-step actions — and it becomes an agent that can interact with the world.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — What Makes an Agent</div>
+    <h2>The Four Components</h2>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Component</th><th>What It Is</th><th>Examples</th></tr>
+      <tr><td style="color:var(--rust)">LLM (Brain)</td><td>The reasoning engine — decides what to do next</td><td>GPT-4, Claude, Gemini — any capable LLM</td></tr>
+      <tr><td style="color:var(--teal)">Tools</td><td>Functions the LLM can call to interact with the world</td><td>Web search, code execution, database queries, API calls, file I/O</td></tr>
+      <tr><td style="color:var(--gold)">Memory</td><td>Information the agent can read and write across steps</td><td>In-context (conversation), external (vector DB), in-weights (fine-tuned knowledge)</td></tr>
+      <tr><td style="color:var(--navy)">Planning</td><td>Strategy for breaking a task into steps</td><td>ReAct, CoT, tree-of-thought, plan-and-execute</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — ReAct Pattern</div>
+    <h2>Reason → Act → Observe → Repeat</h2>
+    <p>ReAct (Reasoning + Acting) interleaves reasoning traces with action calls. The model thinks out loud about what it needs to do, takes an action (calls a tool), observes the result, then reasons again. This loop continues until the task is done.</p>
+
+    <div class="vbox" data-label="ReAct Loop Example">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink2);line-height:2;">
+        <span style="color:var(--rust)">Thought:</span> I need to find the current CEO of Anthropic.<br>
+        <span style="color:var(--teal)">Action:</span> search("Anthropic CEO 2024")<br>
+        <span style="color:var(--gold)">Observation:</span> "Dario Amodei is the CEO of Anthropic."<br>
+        <span style="color:var(--rust)">Thought:</span> I have the answer. I can now respond.<br>
+        <span style="color:var(--navy)">Answer:</span> The CEO of Anthropic is Dario Amodei.
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ Why ReAct Works</div>
+      <p>By thinking before acting, the model can plan and self-correct. By observing results, it gets real feedback from the world — grounding its reasoning. This eliminates a whole class of LLM hallucination: instead of making up an answer, it looks it up. <strong>The key limitation: each ReAct step is a full LLM call — a 10-step task takes 10× the latency and cost of a single call.</strong></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">03 — Tool Use / Function Calling</div>
+    <h2>Structured API for Tool Interaction</h2>
+    <p>Modern LLMs support native function calling — you provide a list of available functions with their schemas, and the model outputs a structured JSON call when it wants to use one. Your code executes the function and returns the result.</p>
+
+    <div class="formula">System defines tools:
+  {name: "search_web", description: "Search the web", params: {query: string}}
+  {name: "run_code", description: "Execute Python", params: {code: string}}
+
+Model outputs (when it wants to search):
+  {"tool": "search_web", "params": {"query": "population of Tokyo 2024"}}
+
+Your code runs it, returns: "13.96 million (2024)"
+Model continues with this grounded information</div>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Memory Type</th><th>Storage</th><th>Scope</th><th>Best For</th></tr>
+      <tr><td style="color:var(--rust)">In-context memory</td><td>The conversation/prompt itself</td><td>Current session only</td><td>Short tasks, step tracking within one run</td></tr>
+      <tr><td style="color:var(--teal)">External (vector DB)</td><td>Retrieved chunks via embedding search</td><td>Persistent across sessions</td><td>Long-term memory, user preferences, past conversations</td></tr>
+      <tr><td style="color:var(--gold)">Episodic (key-value store)</td><td>Explicit reads/writes to DB/files</td><td>Persistent, structured</td><td>Task state, progress tracking, structured facts</td></tr>
+      <tr><td style="color:var(--navy)">In-weights (fine-tuned)</td><td>Baked into model parameters</td><td>Permanent until retrained</td><td>Domain expertise, stable company knowledge</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">04 — Multi-Agent Systems</div>
+    <h2>Agents That Orchestrate Other Agents</h2>
+    <p>Complex tasks can be split among specialized sub-agents. An <strong>orchestrator</strong> agent plans and delegates. Sub-agents have specialized tools or knowledge (a research agent, a coding agent, a critic agent). Results flow back to the orchestrator for synthesis.</p>
+
+    <div class="tradeoff">
+      <div class="tc pro">
+        <h4>✓ When Agents Excel</h4>
+        <ul>
+          <li>Tasks requiring real-world information gathering</li>
+          <li>Multi-step workflows with branching logic</li>
+          <li>Tasks needing code execution and iteration</li>
+          <li>Long-horizon tasks beyond single context window</li>
+          <li>Tasks where the path isn't fully known upfront</li>
+        </ul>
+      </div>
+      <div class="tc con">
+        <h4>✗ Agent Failure Modes</h4>
+        <ul>
+          <li>Errors compound — one bad step derails everything</li>
+          <li>Latency multiplies with each tool call</li>
+          <li>Cost multiplies — each step is a paid LLM call</li>
+          <li>Hard to debug and reproduce</li>
+          <li>LLMs can loop, hallucinate tool calls, or get stuck</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn">
+      <div class="warn-tag">⚠️ The Golden Rule of Agent Design</div>
+      <p>Never use an agent when a single LLM call will do. Every additional step adds latency, cost, and failure surface. The best agent is the simplest one that accomplishes the task. Always ask: "Could I solve this with a good prompt + RAG?" before designing an agent loop.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← RAG</button>
+    <button class="nbtn primary" onclick="nextCh(6)">Quantization →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- CH 8: QUANTIZATION                      -->
+<!-- ═══════════════════════════════════════ -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 08 / 08</div>
+    <div class="ch-title">Quant-<br><em>ization</em></div>
+    <p class="ch-lead">A 70B parameter model at full precision needs 140GB of GPU memory. Quantization lets you run it in 35GB — or less — with minimal quality loss. Essential for deployment.</p>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">01 — The Basics</div>
+    <h2>Storing Numbers More Cheaply</h2>
+    <p>Neural network weights are normally stored as 32-bit floats (FP32) or 16-bit floats (FP16/BF16). Quantization represents those same weights with fewer bits — 8-bit integers (INT8) or even 4-bit (INT4) — dramatically reducing memory and often speeding up inference.</p>
+
+    <div class="formula">Memory cost = parameters × bytes per parameter
+
+FP32:  70B params × 4 bytes = 280 GB   ← needs 4× A100s
+BF16:  70B params × 2 bytes = 140 GB   ← needs 2× A100s (standard training)
+INT8:  70B params × 1 byte  =  70 GB   ← 1× A100 or H100
+INT4:  70B params × 0.5 byte = 35 GB   ← fits on a consumer 40GB GPU!</div>
+
+    <div class="bar-chart">
+      <div class="bar-row">
+        <span class="bar-label">FP32 (4 bytes)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--rust)"></div></div>
+        <span class="bar-val">280 GB</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">BF16 (2 bytes)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--plum)"></div></div>
+        <span class="bar-val">140 GB</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">INT8 (1 byte)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--teal)"></div></div>
+        <span class="bar-val">70 GB</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">INT4 (0.5 bytes)</span>
+        <div class="bar-track"><div class="bar-fill" style="width:12.5%;background:var(--moss)"></div></div>
+        <span class="bar-val">35 GB</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">02 — Quantization Methods</div>
+    <h2>Not All Quantization Is Equal</h2>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Method</th><th>How It Works</th><th>Precision</th><th>Quality Loss</th><th>Use When</th></tr>
+      <tr><td style="color:var(--rust)">Post-Training Quant (PTQ)</td><td>Quantize an already-trained model. No retraining.</td><td>INT8, INT4</td><td>Small at INT8, more at INT4</td><td>Quick deployment. Use bitsandbytes library.</td></tr>
+      <tr><td style="color:var(--teal)">GPTQ</td><td>Layer-by-layer quantization minimizing reconstruction error using calibration data</td><td>INT4, INT3</td><td>Better than naive PTQ at same bit-width</td><td>CPU/GPU inference with excellent quality. Very popular.</td></tr>
+      <tr><td style="color:var(--plum)">AWQ (Activation-aware)</td><td>Finds important weights (those that affect large activations) and quantizes others more aggressively</td><td>INT4</td><td>Often better than GPTQ at same bit-width</td><td>Deployment-focused. Efficient kernels available.</td></tr>
+      <tr><td style="color:var(--navy)">QLoRA</td><td>Quantize base model to 4-bit, then train LoRA adapters in 16-bit on top</td><td>4-bit base + 16-bit adapters</td><td>Tiny — adapters compensate</td><td>Fine-tuning large models on consumer GPUs</td></tr>
+      <tr><td style="color:var(--gold)">GGUF (llama.cpp)</td><td>Mixed-precision format, runs quantized models on CPU and Apple Silicon</td><td>Q2-Q8 variants</td><td>Q4_K_M is the sweet spot — very good quality</td><td>Local inference on laptops/MacBooks</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ The Quantization Quality Hierarchy</div>
+      <p>At INT8: almost no perceptible quality loss — this is safe to deploy everywhere. At INT4 with GPTQ/AWQ: very small quality loss, usually &lt;1% on benchmarks — acceptable for most applications. At INT3 or below: noticeable degradation, use only when memory is severely constrained. <strong>The practical recommendation: INT4 with AWQ or GPTQ is the sweet spot — half the memory of INT8 with nearly the same quality.</strong></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">03 — Beyond Quantization</div>
+    <h2>Other Inference Optimization Techniques</h2>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Technique</th><th>What It Does</th><th>Speedup</th><th>Mechanism</th></tr>
+      <tr><td style="color:var(--rust)">Knowledge Distillation</td><td>Train a small "student" model to mimic a large "teacher" model's outputs</td><td>10-100× smaller model</td><td>Student learns from teacher's soft probabilities, not just hard labels — richer signal</td></tr>
+      <tr><td style="color:var(--teal)">Speculative Decoding</td><td>Small draft model generates tokens quickly, large model verifies in parallel</td><td>2-4× throughput</td><td>Large model accepts/rejects draft tokens in one forward pass — same quality, faster</td></tr>
+      <tr><td style="color:var(--gold)">FlashAttention-2</td><td>Memory-efficient attention that avoids materializing the full n×n matrix</td><td>2-4× faster attention</td><td>Tiles computation in SRAM, minimizes GPU memory bandwidth usage</td></tr>
+      <tr><td style="color:var(--navy)">Continuous Batching</td><td>Process requests with different sequence lengths together efficiently</td><td>3-10× throughput</td><td>Instead of padding to same length, dynamically fill GPU capacity with new requests</td></tr>
+      <tr><td style="color:var(--plum)">PagedAttention (vLLM)</td><td>Manage KV cache memory like OS paging — no fragmentation</td><td>High throughput</td><td>Share KV cache across requests, prevents memory waste from padding</td></tr>
+      <tr><td style="color:var(--moss)">Pruning</td><td>Remove weights near zero — make model sparse</td><td>1.5-3× smaller</td><td>Unstructured pruning + retrain. Structured pruning removes entire heads/layers.</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-tag">⚡ The Production Inference Stack — What Google Actually Uses</div>
+      <p>A production LLM serving system typically combines: <strong>quantization (INT8/INT4)</strong> to fit more models per GPU, <strong>continuous batching</strong> to maximize GPU utilization, <strong>FlashAttention</strong> for memory-efficient attention, <strong>speculative decoding</strong> for latency-sensitive paths, and <strong>tensor parallelism</strong> to shard large models across GPUs. vLLM implements most of this and is the de-facto open-source inference engine. TensorRT-LLM is NVIDIA's optimized version for production.</p>
+    </div>
+
+    <div class="warn">
+      <div class="warn-tag">⚠️ The Quantization Trap</div>
+      <p>Don't quantize your way out of a bad model. Quantization preserves relative quality — a mediocre model in INT4 is still mediocre. Also: quantization quality degrades faster for smaller models. A 7B model quantized to INT4 loses noticeably more quality than a 70B model at INT4 — because smaller models have less redundancy in their weights. When in doubt, use a larger quantized model over a smaller full-precision one.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← Agents</button>
+    <button class="nbtn primary" onclick="alert('🎉 LLMs & Foundation Models — complete!\n\nYou now have Google-level depth across:\n✓ Pretraining objectives\n✓ Tokenization\n✓ Scaling laws & Chinchilla\n✓ Fine-tuning & LoRA\n✓ RLHF & DPO\n✓ RAG\n✓ Agents\n✓ Quantization\n\nNext up: ML Systems & Infrastructure')">ML Systems →</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let cur = 0;
+const total = 8;
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  el.classList.add('active');
+  cur = idx;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function nextCh(c) {
+  if (c+1 < total) { const items = document.querySelectorAll('.nav-item'); goTo(c+1, items[c+1]); }
+}
+function prevCh(c) {
+  if (c-1 >= 0) { const items = document.querySelectorAll('.nav-item'); goTo(c-1, items[c-1]); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Learning Core — Google-Level</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,500;0,700;0,900;1,900&family=Inconsolata:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --surface2: #1e1e1e;
+  --surface3: #252525;
+  --border: #2e2e2e;
+  --border2: #3a3a3a;
+  --text: #e8e8e8;
+  --text2: #aaaaaa;
+  --muted: #666;
+  --cyan: #00d4aa;
+  --orange: #ff6b35;
+  --yellow: #ffd166;
+  --purple: #b48eff;
+  --blue: #4da6ff;
+  --red: #ff4d6d;
+  --green: #06d6a0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inconsolata', monospace;
+  font-weight: 300;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* subtle scanline texture */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top:0; left:0; right:0;
+  z-index:100;
+  background: rgba(13,13,13,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display:none; }
+
+.nav-brand {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: 13px;
+  color: var(--cyan);
+  white-space: nowrap;
+  margin-right: 32px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 0 14px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.nav-item:hover { color: var(--text); }
+.nav-item.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+/* LAYOUT */
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 80px 24px 80px;
+}
+
+/* CHAPTER */
+.chapter { display:none; animation: fadeUp 0.35s ease both; }
+.chapter.active { display:block; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* CHAPTER HEADER */
+.ch-header {
+  margin-bottom: 52px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.ch-num {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.ch-title {
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(38px, 6vw, 68px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+}
+.ch-title em { font-style: italic; color: var(--cyan); }
+
+.ch-lead {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+/* SECTION */
+.section { margin-bottom: 60px; }
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-family: 'Archivo', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+h3 {
+  font-family: 'Archivo', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  margin-top: 28px;
+  color: var(--text);
+}
+
+p { margin-bottom: 14px; font-size: 15px; color: var(--text2); }
+p strong { color: var(--text); font-weight: 600; }
+p:last-child { margin-bottom: 0; }
+
+hr.divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+/* ANALOGY */
+.analogy {
+  border-left: 3px solid var(--yellow);
+  padding: 16px 20px;
+  margin: 20px 0;
+  background: rgba(255,209,102,0.04);
+}
+.analogy-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--yellow); margin-bottom: 6px; }
+.analogy p { font-size: 14px; color: var(--text2); margin:0; }
+
+/* INSIGHT */
+.insight {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--cyan);
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+.insight-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px; }
+.insight p { font-size: 14px; margin:0; }
+.insight strong { color: var(--cyan); }
+
+/* WARNING */
+.warning {
+  background: rgba(255,77,109,0.06);
+  border: 1px solid rgba(255,77,109,0.2);
+  border-left: 3px solid var(--red);
+  padding: 18px 22px;
+  margin: 20px 0;
+}
+.warning-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+.warning p { font-size: 14px; margin:0; color: var(--text2); }
+
+/* FORMULA */
+.formula {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  padding: 14px 20px;
+  margin: 16px 0;
+  font-size: 14px;
+  color: var(--purple);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* TABLE */
+.tbl-wrap { margin: 20px 0; overflow-x: auto; }
+table { width:100%; border-collapse:collapse; font-size: 13px; }
+th {
+  background: var(--surface3);
+  color: var(--muted);
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text2);
+  line-height: 1.5;
+}
+tr:last-child td { border-bottom: none; }
+td:first-child { color: var(--text); font-weight: 600; }
+
+/* VISUAL BOX */
+.vbox {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin: 20px 0;
+  position: relative;
+}
+.vbox::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -1px; left: 20px;
+  background: var(--cyan);
+  color: #000;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  font-weight: 600;
+}
+
+/* TRADEOFF */
+.tradeoff { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.t-card { background: var(--surface); border: 1px solid var(--border); padding: 18px; font-size: 13.5px; }
+.t-card h4 { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.t-card.pro h4 { color: var(--green); }
+.t-card.con h4 { color: var(--red); }
+.t-card ul { padding-left: 14px; }
+.t-card li { margin-bottom: 5px; color: var(--text2); line-height: 1.5; }
+
+/* STEPS */
+.steps { margin: 20px 0; }
+.step { display: flex; gap: 14px; margin-bottom: 18px; align-items: flex-start; }
+.step-num {
+  width: 26px; height: 26px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-weight: 600;
+}
+.step p { font-size: 14.5px; margin:0; }
+
+/* SVG canvas */
+.canvas { background: var(--surface); border: 1px solid var(--border); margin: 20px 0; overflow: hidden; }
+.canvas svg { width:100%; display:block; }
+
+/* NAV BTNS */
+.nav-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.nbtn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'Inconsolata', monospace;
+  font-size: 12px;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.nbtn:hover { border-color: var(--cyan); color: var(--cyan); }
+.nbtn.primary { background: var(--cyan); color: #000; border-color: var(--cyan); font-weight: 600; }
+.nbtn.primary:hover { background: #00f0c0; }
+.nbtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+/* pills */
+.pills { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+.pill { font-size: 10px; padding: 3px 10px; border: 1px solid; letter-spacing: 0.05em; }
+.p-cyan { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,170,0.06); }
+.p-orange { border-color: var(--orange); color: var(--orange); background: rgba(255,107,53,0.06); }
+.p-purple { border-color: var(--purple); color: var(--purple); background: rgba(180,142,255,0.06); }
+.p-yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(255,209,102,0.06); }
+.p-red { border-color: var(--red); color: var(--red); background: rgba(255,77,109,0.06); }
+.p-green { border-color: var(--green); color: var(--green); background: rgba(6,214,160,0.06); }
+
+/* compare row */
+.cmp { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin:16px 0; }
+.cmp-card { background: var(--surface2); border:1px solid var(--border); padding:16px; }
+.cmp-card h4 { font-size:11px; letter-spacing:0.05em; margin-bottom:8px; color: var(--text); text-transform: uppercase; }
+.cmp-card p { font-size:13px; margin:0; }
+
+/* metric bar */
+.mrow { margin-bottom:14px; }
+.mlabel { font-size:11px; display:flex; justify-content:space-between; margin-bottom:5px; color:var(--text2); }
+.mbar { height:6px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+.mfill { height:100%; border-radius:3px; }
+
+/* neuron diagram inline */
+.diagram-label { font-size:10px; text-align:center; color:var(--muted); margin-top:8px; letter-spacing:0.05em; text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">⚡ DL Core</div>
+  <div class="nav-item active" onclick="goTo(0,this)">① Backprop</div>
+  <div class="nav-item" onclick="goTo(1,this)">② Activations</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ Optimizers</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ Normalization</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ CNNs</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ RNNs & LSTMs</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ Transformers</div>
+  <div class="nav-item" onclick="goTo(7,this)">⑧ Regularization</div>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH 1: BACKPROP                         -->
+<!-- ══════════════════════════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 01 / 08 — Deep Learning Core</div>
+    <div class="ch-title">Back-<br><em>propaga-</em><br>tion</div>
+    <p class="ch-lead">The engine behind all deep learning. Understand this completely — every other concept in DL depends on it.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Big Picture</div>
+    <h2>How Neural Nets Actually Learn</h2>
+    <p>A neural network is just a function with millions of parameters. Learning means finding the values of those parameters that make the network's output close to the correct answer. We do that by repeatedly asking: <strong>"If I nudge each parameter slightly, how does the loss change?"</strong> That's the gradient. Backpropagation computes all those gradients efficiently in one pass.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      <p>Imagine you're blindfolded in hilly terrain and want to reach the lowest valley. You can only feel the slope under your feet. You take a small step downhill. Repeat. That's gradient descent. Backprop is the process of figuring out which direction is "downhill" for every single parameter simultaneously.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Forward Pass</div>
+    <h2>Data Flows Forward</h2>
+    <p>In the forward pass, your input flows through every layer — matrix multiplications, activation functions — until you get a prediction. Then you compute the <strong>loss</strong>: how wrong was the prediction?</p>
+
+    <div class="canvas">
+      <svg viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="120" fill="#161616"/>
+        <!-- input -->
+        <rect x="10" y="40" width="70" height="40" rx="2" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <text x="45" y="65" text-anchor="middle" font-family="Inconsolata" font-size="12" fill="#aaa">Input x</text>
+        <!-- arrow -->
+        <line x1="82" y1="60" x2="118" y2="60" stroke="#2e2e2e" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- layer 1 -->
+        <rect x="120" y="35" width="80" height="50" rx="2" fill="#1e1e1e" stroke="#00d4aa" stroke-width="1.5"/>
+        <text x="160" y="57" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#00d4aa">Wx + b</text>
+        <text x="160" y="74" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#666">layer 1</text>
+        <!-- arrow -->
+        <line x1="202" y1="60" x2="238" y2="60" stroke="#2e2e2e" stroke-width="1.5"/>
+        <!-- activation -->
+        <rect x="240" y="35" width="80" height="50" rx="2" fill="#1e1e1e" stroke="#b48eff" stroke-width="1.5"/>
+        <text x="280" y="57" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#b48eff">σ(z)</text>
+        <text x="280" y="74" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#666">activation</text>
+        <!-- arrow -->
+        <line x1="322" y1="60" x2="358" y2="60" stroke="#2e2e2e" stroke-width="1.5"/>
+        <!-- layer 2 -->
+        <rect x="360" y="35" width="80" height="50" rx="2" fill="#1e1e1e" stroke="#00d4aa" stroke-width="1.5"/>
+        <text x="400" y="57" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#00d4aa">Wx + b</text>
+        <text x="400" y="74" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#666">layer 2</text>
+        <!-- arrow -->
+        <line x1="442" y1="60" x2="478" y2="60" stroke="#2e2e2e" stroke-width="1.5"/>
+        <!-- loss -->
+        <rect x="480" y="35" width="80" height="50" rx="2" fill="#1e1e1e" stroke="#ff4d6d" stroke-width="1.5"/>
+        <text x="520" y="57" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#ff4d6d">Loss L</text>
+        <text x="520" y="74" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#666">compare</text>
+        <!-- forward label -->
+        <text x="300" y="108" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#00d4aa" letter-spacing="0.1em">→ → → FORWARD PASS → → →</text>
+        <!-- arrow marker -->
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#2e2e2e"/>
+          </marker>
+          <marker id="arr-red" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#ff4d6d"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — The Chain Rule</div>
+    <h2>Backprop = Chain Rule, Systematically</h2>
+    <p>Once you have the loss, you work <em>backwards</em>. The chain rule tells you how to compute the gradient through a composition of functions:</p>
+
+    <div class="formula">∂L/∂w = ∂L/∂y · ∂y/∂z · ∂z/∂w
+
+  Each layer just multiplies the incoming gradient by its local gradient.
+  Then passes the result upstream. That's it.</div>
+
+    <p>Every layer during the forward pass computes its output AND stores its intermediate values ("activations"). During the backward pass, it uses those stored values to compute its local gradient. This is why <strong>training uses 2–3× more memory than inference</strong> — you're storing everything for the backward pass.</p>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Key Insight — Vanishing & Exploding Gradients</div>
+      <p>If you chain-multiply many small numbers together, you get something tiny (vanishing gradient) — early layers receive almost zero signal and don't learn. If you multiply many large numbers, you get something enormous (exploding gradient) — training diverges. <strong>This is the core reason deep networks were hard to train before modern tricks.</strong></p>
+    </div>
+
+    <h3>Gradient Checkpointing — Trading Compute for Memory</h3>
+    <p>Instead of storing ALL intermediate activations, you only store a subset of "checkpoints." During the backward pass, you recompute the missing activations from the nearest checkpoint. You use ~√n memory instead of n, at the cost of ~30% more compute. Essential for training very deep models on limited hardware.</p>
+
+    <div class="tradeoff">
+      <div class="t-card pro">
+        <h4>✓ Standard Backprop</h4>
+        <ul>
+          <li>Fast backward pass — everything pre-computed</li>
+          <li>No extra computation</li>
+          <li>Memory grows linearly with depth</li>
+          <li>Fine for small/medium models</li>
+        </ul>
+      </div>
+      <div class="t-card con">
+        <h4>⚡ Gradient Checkpointing</h4>
+        <ul>
+          <li>~30% slower backward pass</li>
+          <li>Memory grows as √(depth)</li>
+          <li>Critical for very deep networks</li>
+          <li>Used in training LLMs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Activations →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH 2: ACTIVATIONS                      -->
+<!-- ══════════════════════════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 02 / 08</div>
+    <div class="ch-title">Activation<br><em>Functions</em></div>
+    <p class="ch-lead">Without activations, a 100-layer network is just linear regression. Activations introduce non-linearity — the ability to learn curves, patterns, and complex structure.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Why Non-Linearity?</div>
+    <h2>The Key Insight</h2>
+    <p>Stack as many linear layers as you want: W₃(W₂(W₁x)) = (W₃W₂W₁)x — it collapses into a single linear transformation. You've gained nothing. You need non-linearity between layers to make the network capable of learning any complex function.</p>
+
+    <div class="canvas">
+      <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="580" height="200" fill="#161616"/>
+        <!-- axes left -->
+        <line x1="30" y1="170" x2="250" y2="170" stroke="#2e2e2e" stroke-width="1"/>
+        <line x1="30" y1="20" x2="30" y2="170" stroke="#2e2e2e" stroke-width="1"/>
+        <!-- sigmoid -->
+        <path d="M35,165 C60,165 80,165 100,145 C120,125 130,100 140,95 C150,90 160,60 175,40 C190,20 215,18 245,18" fill="none" stroke="#b48eff" stroke-width="2"/>
+        <text x="140" y="15" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#b48eff">Sigmoid σ(x)</text>
+        <text x="140" y="185" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#666">Range: (0,1) — old, mostly dead now</text>
+
+        <!-- axes right -->
+        <line x1="320" y1="170" x2="555" y2="170" stroke="#2e2e2e" stroke-width="1"/>
+        <line x1="320" y1="20" x2="320" y2="170" stroke="#2e2e2e" stroke-width="1"/>
+        <!-- ReLU -->
+        <path d="M320,170 L437,170 L555,40" fill="none" stroke="#00d4aa" stroke-width="2.5"/>
+        <text x="437" y="15" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#00d4aa">ReLU max(0,x)</text>
+        <text x="437" y="185" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#666">Range: [0,∞) — default for hidden layers</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Full Comparison</div>
+    <h2>Every Activation — When & Why</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Activation</th><th>Formula</th><th>Range</th><th>Strengths</th><th>Weaknesses</th><th>Use Today?</th></tr>
+      <tr>
+        <td style="color:var(--purple)">Sigmoid</td>
+        <td>1/(1+e⁻ˣ)</td>
+        <td>(0,1)</td>
+        <td>Smooth, outputs probability</td>
+        <td>Vanishing gradients, saturates at extremes, not zero-centered</td>
+        <td>Output layer only (binary classification)</td>
+      </tr>
+      <tr>
+        <td style="color:var(--blue)">Tanh</td>
+        <td>(eˣ-e⁻ˣ)/(eˣ+e⁻ˣ)</td>
+        <td>(-1,1)</td>
+        <td>Zero-centered (better than sigmoid)</td>
+        <td>Still saturates, vanishing gradients</td>
+        <td>LSTMs (gates), some RNNs</td>
+      </tr>
+      <tr>
+        <td style="color:var(--cyan)">ReLU</td>
+        <td>max(0,x)</td>
+        <td>[0,∞)</td>
+        <td>Simple, no saturation for x&gt;0, fast</td>
+        <td>"Dying ReLU" — neurons stuck at 0 forever</td>
+        <td>✅ Yes — default for hidden layers in CNNs, MLPs</td>
+      </tr>
+      <tr>
+        <td style="color:var(--green)">Leaky ReLU</td>
+        <td>max(0.01x, x)</td>
+        <td>(-∞,∞)</td>
+        <td>Fixes dying ReLU — small gradient for x&lt;0</td>
+        <td>Small negative slope is a hyperparameter</td>
+        <td>✅ Yes — when dying ReLU is a problem</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow)">GELU</td>
+        <td>x·Φ(x)</td>
+        <td>(-∞,∞)</td>
+        <td>Smooth, stochastic interpretation, better for Transformers</td>
+        <td>Slightly more expensive than ReLU</td>
+        <td>✅ Yes — default in modern Transformers (BERT, GPT)</td>
+      </tr>
+      <tr>
+        <td style="color:var(--orange)">SiLU/Swish</td>
+        <td>x·σ(x)</td>
+        <td>(-∞,∞)</td>
+        <td>Smooth, self-gated, often beats ReLU on deep nets</td>
+        <td>Slightly more compute</td>
+        <td>✅ Yes — LLaMA, many modern LLMs use SwiGLU variant</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)">Softmax</td>
+        <td>eˣᵢ/Σeˣⱼ</td>
+        <td>(0,1), sums to 1</td>
+        <td>Converts logits to probability distribution</td>
+        <td>Numerically unstable (fixed with log-sum-exp trick)</td>
+        <td>✅ Yes — output layer for multi-class classification</td>
+      </tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ The Dying ReLU Problem</div>
+      <p>If a neuron's input is always negative, its gradient is always zero — it never updates. It's "dead." This happens when learning rate is too high or weights are initialized badly. Fix: Leaky ReLU, ELU, or good weight initialization (He init). <strong>In practice, ~10-20% of neurons can die in a poorly tuned network.</strong></p>
+    </div>
+
+    <div class="warning">
+      <div class="warning-label">⚠️ Common Mistake</div>
+      <p>Never use sigmoid or tanh in hidden layers of deep networks — they cause vanishing gradients. Use ReLU or GELU. Use sigmoid only at the output for binary classification. Use softmax only at the output for multi-class.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Backprop</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Optimizers →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH 3: OPTIMIZERS                       -->
+<!-- ══════════════════════════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 03 / 08</div>
+    <div class="ch-title">Optimizers<br>&amp; <em>Learning</em><br>Rates</div>
+    <p class="ch-lead">How you update weights matters enormously. The same model with different optimizers can converge brilliantly or fail completely.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — SGD Family</div>
+    <h2>From Vanilla SGD to Momentum</h2>
+    <p>Vanilla SGD updates weights by subtracting the gradient, scaled by the learning rate. Simple, but slow — it zigzags in valleys and gets stuck in saddle points.</p>
+
+    <div class="formula">w ← w − η · ∇L(w)     [vanilla SGD]
+
+w ← w − η · ∇L(w_batch)  [mini-batch SGD — in practice, always use this]</div>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy — Momentum</div>
+      <p>Imagine rolling a ball down a hilly landscape. Without momentum, the ball stops instantly at every flat spot. With momentum, it keeps rolling — it builds up speed going downhill and coasts through flat saddle points. Momentum SGD remembers which direction it was going.</p>
+    </div>
+
+    <div class="formula">v ← β·v − η·∇L        [momentum: v is velocity, β is typically 0.9]
+w ← w + v</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Adam & Variants</div>
+    <h2>Adaptive Learning Rates — The Modern Default</h2>
+    <p>Adam combines two ideas: <strong>momentum</strong> (where have gradients been pointing?) and <strong>adaptive per-parameter learning rates</strong> (how big have the gradients been?). Parameters with small, consistent gradients get bigger steps. Parameters with large, noisy gradients get smaller steps.</p>
+
+    <div class="formula">m ← β₁·m + (1-β₁)·∇L          [1st moment: mean of gradients]
+v ← β₂·v + (1-β₂)·∇L²         [2nd moment: mean of squared gradients]
+m̂ = m/(1-β₁ᵗ)                  [bias correction]
+v̂ = v/(1-β₂ᵗ)
+w ← w − η · m̂/(√v̂ + ε)        [update]
+
+Defaults: β₁=0.9, β₂=0.999, ε=1e-8</div>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Optimizer</th><th>Key Idea</th><th>Memory vs SGD</th><th>Best For</th><th>Watch Out</th></tr>
+      <tr>
+        <td style="color:var(--cyan)">SGD + Momentum</td>
+        <td>Accumulates velocity in gradient direction</td>
+        <td>+1 state</td>
+        <td>Vision models (ResNet, ViT) — often generalizes better</td>
+        <td>Needs careful LR tuning, slower to start</td>
+      </tr>
+      <tr>
+        <td style="color:var(--green)">AdamW</td>
+        <td>Adam + correct weight decay applied directly to weights</td>
+        <td>+2 states</td>
+        <td>Transformers, LLMs — default choice</td>
+        <td>3× memory vs SGD (critical at billion-param scale)</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow)">Adam (original)</td>
+        <td>Adaptive LR + momentum</td>
+        <td>+2 states</td>
+        <td>Avoid — weight decay is applied incorrectly</td>
+        <td>Use AdamW instead</td>
+      </tr>
+      <tr>
+        <td style="color:var(--purple)">Lion</td>
+        <td>Only uses sign of gradient update</td>
+        <td>+1 state</td>
+        <td>Large models (Google Brain, 2023)</td>
+        <td>Needs lower LR (~3-10× smaller than Adam)</td>
+      </tr>
+      <tr>
+        <td style="color:var(--orange)">Adafactor</td>
+        <td>Factorizes optimizer state to save memory</td>
+        <td>&lt;+1 state</td>
+        <td>Huge models where AdamW OOMs (T5, PaLM)</td>
+        <td>Slightly less stable, harder to tune</td>
+      </tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Adam vs SGD — The Real Tradeoff</div>
+      <p>Adam converges faster and is easier to tune. SGD often finds flatter minima that <strong>generalize better</strong>. In vision research (ImageNet), SGD+momentum typically beats Adam by 1-2% top-1 accuracy. In NLP/LLMs, AdamW is the clear winner — sparse gradients in embeddings benefit enormously from adaptive learning rates.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Learning Rate Schedules</div>
+    <h2>LR Is Not Static — It Should Change</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Schedule</th><th>Shape</th><th>Why It Works</th><th>Use When</th></tr>
+      <tr>
+        <td style="color:var(--cyan)">Warmup + Cosine Decay</td>
+        <td>Ramp up → smooth cosine down</td>
+        <td>Warmup stabilizes early training (noisy gradients). Cosine decay finds sharper minimum at end.</td>
+        <td>Default for most DL today — Transformers especially</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow)">Linear Warmup + Linear Decay</td>
+        <td>Ramp up → linear ramp down</td>
+        <td>Simpler version of above</td>
+        <td>BERT-style pretraining</td>
+      </tr>
+      <tr>
+        <td style="color:var(--purple)">Step Decay</td>
+        <td>Flat → sudden drops at milestones</td>
+        <td>Classic — works well when you know when to drop</td>
+        <td>ResNet-style training with known epochs</td>
+      </tr>
+      <tr>
+        <td style="color:var(--green)">Cyclic LR / OneCycle</td>
+        <td>Oscillates between min/max LR</td>
+        <td>Can escape sharp minima. Finds flatter, more generalizable solutions.</td>
+        <td>Training from scratch with limited compute</td>
+      </tr>
+      <tr>
+        <td style="color:var(--orange)">Constant</td>
+        <td>Flat</td>
+        <td>Simple</td>
+        <td>Fine-tuning (short runs), quick experiments</td>
+      </tr>
+    </table>
+    </div>
+
+    <div class="warning">
+      <div class="warning-label">⚠️ The #1 Training Failure</div>
+      <p>Learning rate too high → loss diverges or NaNs appear. Learning rate too low → loss barely moves. Always: (1) start with a learning rate range test, (2) use warmup, (3) monitor gradient norms. If loss goes to NaN — check LR first, then gradient clipping.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Activations</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Normalization →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH 4: NORMALIZATION                    -->
+<!-- ══════════════════════════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 04 / 08</div>
+    <div class="ch-title">Normal-<br><em>ization</em></div>
+    <p class="ch-lead">Normalization layers are one of the most important inventions in deep learning. They made training deep networks practical.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Why Normalize?</div>
+    <h2>The Internal Covariate Shift Problem</h2>
+    <p>As a network trains, the distribution of each layer's inputs keeps changing — because the layers before it keep changing their weights. This forces downstream layers to constantly re-adapt. Training becomes unstable. You need very low learning rates. Deep networks fail to train.</p>
+    <p>Normalization solves this by forcing each layer's inputs to have <strong>stable mean and variance</strong>, regardless of what happened upstream.</p>
+
+    <div class="formula">Normalize: x̂ = (x - μ) / √(σ² + ε)
+Then scale and shift: y = γ·x̂ + β
+(γ and β are learned parameters — the network decides how much to normalize)</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — BatchNorm vs LayerNorm</div>
+    <h2>The Most Important Comparison in Normalization</h2>
+
+    <div class="canvas">
+      <svg viewBox="0 0 580 230" xmlns="http://www.w3.org/2000/svg">
+        <rect width="580" height="230" fill="#161616"/>
+        <!-- Label setup -->
+        <text x="10" y="22" font-family="Inconsolata" font-size="10" fill="#666">batch (N samples)</text>
+        <text x="10" y="40" font-family="Inconsolata" font-size="10" fill="#666">↓</text>
+
+        <!-- GRID LEFT: BatchNorm -->
+        <text x="140" y="15" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#00d4aa">Batch Normalization</text>
+        <text x="140" y="28" text-anchor="middle" font-family="Inconsolata" font-size="9" fill="#666">normalizes across the batch dimension</text>
+        <!-- grid -->
+        <rect x="60" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="98" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="136" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="174" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="60" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="98" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="136" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="174" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="60" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="98" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="136" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="174" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <!-- highlight columns (BatchNorm normalizes per feature across batch) -->
+        <rect x="136" y="38" width="36" height="82" rx="1" fill="#00d4aa" opacity="0.15" stroke="#00d4aa" stroke-width="1.5"/>
+        <text x="154" y="133" text-anchor="middle" font-family="Inconsolata" font-size="9" fill="#00d4aa">norm across batch ↕</text>
+        <!-- axis labels -->
+        <text x="22" y="84" font-family="Inconsolata" font-size="9" fill="#666" transform="rotate(-90,22,84)">Batch →</text>
+        <text x="130" y="155" text-anchor="middle" font-family="Inconsolata" font-size="9" fill="#666">Features →</text>
+
+        <!-- GRID RIGHT: LayerNorm -->
+        <text x="430" y="15" text-anchor="middle" font-family="Inconsolata" font-size="11" fill="#b48eff">Layer Normalization</text>
+        <text x="430" y="28" text-anchor="middle" font-family="Inconsolata" font-size="9" fill="#666">normalizes across the feature dimension</text>
+        <!-- grid -->
+        <rect x="350" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="388" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="426" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="464" y="38" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <!-- highlight row (LayerNorm normalizes per sample across features) -->
+        <rect x="350" y="66" width="150" height="26" rx="1" fill="#b48eff" opacity="0.15" stroke="#b48eff" stroke-width="1.5"/>
+        <rect x="350" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e" opacity="0.5"/>
+        <rect x="388" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e" opacity="0.5"/>
+        <rect x="426" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e" opacity="0.5"/>
+        <rect x="464" y="66" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e" opacity="0.5"/>
+        <rect x="350" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="388" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="426" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <rect x="464" y="94" width="36" height="26" rx="1" fill="#1e1e1e" stroke="#2e2e2e"/>
+        <text x="510" y="84" font-family="Inconsolata" font-size="9" fill="#b48eff">norm across features →</text>
+        <text x="420" y="155" text-anchor="middle" font-family="Inconsolata" font-size="9" fill="#666">Features →</text>
+
+        <!-- summary -->
+        <text x="140" y="185" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#00d4aa">stats depend on batch → broken at inference with batch=1</text>
+        <text x="430" y="185" text-anchor="middle" font-family="Inconsolata" font-size="10" fill="#b48eff">stats per sample → works with any batch size</text>
+      </svg>
+    </div>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th></th><th>Batch Norm</th><th>Layer Norm</th><th>RMS Norm</th></tr>
+      <tr><td>Normalizes over</td><td>Batch dimension (per feature)</td><td>Feature dimension (per sample)</td><td>Feature dimension (no mean shift)</td></tr>
+      <tr><td>Works with batch=1?</td><td>❌ No — stats are meaningless</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+      <tr><td>Works with variable sequence length?</td><td>❌ Awkward</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+      <tr><td>Training vs inference behavior</td><td>Different! Uses running stats at inference</td><td>Same</td><td>Same</td></tr>
+      <tr><td>Primary use</td><td>CNNs, vision models</td><td>Transformers (BERT, GPT)</td><td>LLaMA, Mistral — faster than LayerNorm</td></tr>
+      <tr><td>Parameters</td><td>γ, β per feature</td><td>γ, β per feature</td><td>γ only (no β — no recentering)</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Why LLMs moved from LayerNorm → RMSNorm</div>
+      <p>RMSNorm skips computing the mean (only computes RMS = root-mean-square for scaling). This is <strong>~15% faster</strong> than LayerNorm with virtually no quality loss. LLaMA, Mistral, Gemma all use Pre-RMSNorm. Small speedup at each layer compounds across thousands of layers and billions of tokens.</p>
+    </div>
+
+    <h3>Pre-Norm vs Post-Norm</h3>
+    <p>In the original Transformer, normalization was applied <em>after</em> the attention/FFN sublayers (Post-Norm). Modern LLMs use <strong>Pre-Norm</strong> — normalize before each sublayer. Pre-Norm trains more stably and allows much deeper networks without careful LR tuning.</p>
+
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Optimizers</button>
+    <button class="nbtn primary" onclick="nextCh(3)">CNNs →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH 5: CNNs                             -->
+<!-- ══════════════════════════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 05 / 08</div>
+    <div class="ch-title">Convolutional<br><em>Neural</em><br>Networks</div>
+    <p class="ch-lead">CNNs exploit spatial structure in images. Understanding them teaches you the deep principle of "inductive biases" — assumptions baked into architecture that make learning easier.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Core Idea</div>
+    <h2>Shared Weights + Local Connections</h2>
+    <p>A naive approach to images: flatten every pixel into a vector, connect to a fully connected layer. Problem: a 1000×1000 image = 1M inputs. One FC layer to 1000 hidden units = 1 billion parameters. Intractable.</p>
+    <p>CNNs exploit two facts about images: (1) <strong>local structure</strong> — nearby pixels are related, (2) <strong>translation invariance</strong> — a cat is a cat whether it's top-left or bottom-right.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy — The Flashlight</div>
+      <p>Instead of looking at the whole image at once, slide a small flashlight (filter/kernel) across it. At each position, the filter asks "is there an edge here? a curve? a texture?" The same filter is used everywhere — that's weight sharing. That one filter needs only 9 parameters (3×3) instead of millions.</p>
+    </div>
+
+    <div class="formula">Output[i,j] = Σ_m Σ_n  Input[i+m, j+n] · Filter[m,n]
+
+One filter = one feature map = one learned visual concept
+Many filters in one layer = detect many concepts simultaneously</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Key Concepts</div>
+    <h2>The Vocabulary You Must Know</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Concept</th><th>What It Is</th><th>Why It Matters</th></tr>
+      <tr><td>Kernel/Filter</td><td>Small weight matrix (e.g., 3×3) slid over input</td><td>Shared weights → enormous parameter efficiency vs FC layers</td></tr>
+      <tr><td>Stride</td><td>How many pixels to move filter each step</td><td>Stride 2 = halves spatial dimensions. Alternative to pooling.</td></tr>
+      <tr><td>Padding</td><td>Add zeros around border of input</td><td>'same' padding keeps spatial size. 'valid' shrinks it.</td></tr>
+      <tr><td>Feature Map</td><td>Output of applying one filter to the input</td><td>Each map detects one visual pattern across the whole image</td></tr>
+      <tr><td>Receptive Field</td><td>Region of input that influences one output unit</td><td>Deep networks have large receptive fields — see more context</td></tr>
+      <tr><td>Max Pooling</td><td>Take max value in each region</td><td>Downsample + translation invariance. Being replaced by strided conv.</td></tr>
+      <tr><td>Depthwise Separable Conv</td><td>Split spatial conv and channel mixing</td><td>~8-9× fewer parameters than regular conv. Used in MobileNet, EfficientNet.</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Receptive Field — Why Depth Matters</div>
+      <p>A 3×3 conv sees a 3×3 patch of the input. Stack two 3×3 convs → each output unit now "sees" a 5×5 region. Stack three → 7×7. Stack many layers → each neuron has a large receptive field spanning most of the image. <strong>Depth = long-range context.</strong> This is why deep CNNs work — each layer builds on the pattern detection of the layer below.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Architecture Evolution</div>
+    <h2>From AlexNet to Vision Transformers</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Architecture</th><th>Year</th><th>Key Innovation</th><th>What It Taught Us</th></tr>
+      <tr><td style="color:var(--cyan)">AlexNet</td><td>2012</td><td>Deep CNN on GPU, ReLU, Dropout</td><td>Depth + GPU compute works. Started the DL era.</td></tr>
+      <tr><td style="color:var(--green)">VGG</td><td>2014</td><td>All 3×3 convs, very deep (16-19 layers)</td><td>Simpler is better. Depth matters more than filter size.</td></tr>
+      <tr><td style="color:var(--yellow)">Inception/GoogLeNet</td><td>2014</td><td>Parallel branches with different filter sizes</td><td>Multi-scale feature detection in one layer</td></tr>
+      <tr><td style="color:var(--orange)">ResNet</td><td>2015</td><td>Skip connections (residual connections)</td><td>Can train 100+ layers. Gradients flow directly through shortcuts.</td></tr>
+      <tr><td style="color:var(--purple)">EfficientNet</td><td>2019</td><td>Compound scaling (width + depth + resolution)</td><td>Scale all dimensions together, not just depth</td></tr>
+      <tr><td style="color:var(--red)">ViT (Vision Transformer)</td><td>2020</td><td>Patches as tokens, pure Transformer on images</td><td>No inductive bias needed at scale. Beats CNNs with enough data.</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Why ResNet Was Revolutionary — Skip Connections</div>
+      <p>Before ResNet, networks deeper than ~20 layers got WORSE, not better. The problem: vanishing gradients. ResNet adds x directly to the output of each block: <strong>output = F(x) + x</strong>. Now the gradient can flow directly through the "highway" (the skip) without passing through the non-linearities. The network only needs to learn the residual — the small correction on top of the identity. This made 100-layer+ networks possible.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Normalization</button>
+    <button class="nbtn primary" onclick="nextCh(4)">RNNs & LSTMs →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CH 6: RNNs & LSTMs                     -->
+<!-- ══════════════════════════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 06 / 08</div>
+    <div class="ch-title">RNNs &amp;<br><em>LSTMs</em></div>
+    <p class="ch-lead">Sequence models that process one step at a time, maintaining memory. Understanding their failure modes explains exactly why Transformers exist.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Recurrent Neural Networks</div>
+    <h2>Memory Through Time</h2>
+    <p>An RNN processes a sequence step by step. At each step it takes the current input AND its previous hidden state, producing a new hidden state. The hidden state is the "memory" — a compressed summary of everything it has seen so far.</p>
+
+    <div class="formula">hₜ = tanh(Wₕ·hₜ₋₁ + Wₓ·xₜ + b)
+yₜ = Wᵧ·hₜ    [output at each step, or just last step]
+
+Same W matrices used at every timestep — weight sharing across time</div>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      <p>Reading a book word by word, but you can only hold a notecard's worth of notes between words. Your notecard = the hidden state. By the end of a very long paragraph, you've forgotten the beginning because there's only so much you can write on that notecard.</p>
+    </div>
+
+    <div class="warning">
+      <div class="warning-label">⚠️ The Core Problem: Vanishing Gradients Through Time</div>
+      <p>To learn from something 100 steps ago, the gradient must flow back through 100 matrix multiplications. Each multiplication can shrink the gradient. After 100 steps, the gradient signal from early tokens is essentially zero. <strong>RNNs effectively have a short-term memory of ~10-20 steps</strong>, regardless of sequence length.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — LSTMs</div>
+    <h2>Learned Gating — Selective Memory</h2>
+    <p>LSTMs (Long Short-Term Memory) solve the vanishing gradient problem with a brilliant mechanism: a <strong>cell state</strong> that flows through time with only additive updates (no tanh squashing), and <strong>gates</strong> that learn what to remember, what to forget, and what to output.</p>
+
+    <div class="formula">Forget gate:  f = σ(Wf·[hₜ₋₁, xₜ] + bf)     ← "what to erase from memory"
+Input gate:   i = σ(Wi·[hₜ₋₁, xₜ] + bi)     ← "what new info to write"
+Cell update:  C̃ = tanh(Wc·[hₜ₋₁, xₜ] + bc)  ← "candidate new memory"
+New cell:     Cₜ = f·Cₜ₋₁ + i·C̃             ← "update memory"
+Output gate:  o = σ(Wo·[hₜ₋₁, xₜ] + bo)     ← "what to read out"
+Hidden state: hₜ = o·tanh(Cₜ)Hidden state: hₜ = o·tanh(Cₜ)</div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Why the Cell State Fixes Vanishing Gradients</div>
+      <p>The cell state update is <strong>additive</strong> (Cₜ = f·Cₜ₋₁ + i·C̃), not multiplicative through tanh. The gradient can flow back through the "cell highway" without being squashed. If the forget gate is near 1 (remember everything), the gradient flows almost perfectly through time — solving the vanishing gradient problem for moderate sequence lengths.</p>
+    </div>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th></th><th>RNN</th><th>LSTM</th><th>GRU</th><th>Transformer</th></tr>
+      <tr><td>Long-range deps</td><td>❌ Poor</td><td>✅ Good</td><td>✅ Good</td><td>✅✅ Excellent (direct)</td></tr>
+      <tr><td>Parameters</td><td>Few</td><td>4× RNN</td><td>3× RNN</td><td>Many</td></tr>
+      <tr><td>Parallelizable?</td><td>❌ Sequential</td><td>❌ Sequential</td><td>❌ Sequential</td><td>✅ Fully parallel</td></tr>
+      <tr><td>Training speed</td><td>Fast</td><td>Medium</td><td>Medium</td><td>Fast (GPU-efficient)</td></tr>
+      <tr><td>Memory at inference</td><td>O(1) hidden state</td><td>O(1)</td><td>O(1)</td><td>O(n) KV cache grows</td></tr>
+      <tr><td>Used today?</td><td>Rarely</td><td>Some production systems</td><td>As above</td><td>Dominant</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Why Transformers Won</div>
+      <p>LSTMs still can't access information from 500 steps ago reliably. They can't be parallelized — you must process step 1 before step 2. Transformers attend to every token simultaneously. The price: O(n²) memory with sequence length. But GPUs are massively parallel — this tradeoff is worth it. <strong>LSTMs are still used in streaming and on-device inference (fixed O(1) memory).</strong></p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← CNNs</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Transformers →</button>
+  </div>
+</div>
+
+<!-- CH 7: TRANSFORMERS -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 07 / 08</div>
+    <div class="ch-title">Trans-<br><em>formers</em></div>
+    <p class="ch-lead">The architecture behind every major AI breakthrough since 2018. Know every component, every design choice, every tradeoff cold.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Self-Attention</div>
+    <h2>Query, Key, Value — The Full Mechanism</h2>
+    <p>Each token produces three vectors: a <strong>Query</strong> (what am I looking for?), a <strong>Key</strong> (what do I contain?), and a <strong>Value</strong> (what do I share if selected?). Attention scores determine how much of each Value to collect.</p>
+
+    <div class="formula">Q = X·Wq,   K = X·Wk,   V = X·Wv
+
+Attention(Q,K,V) = softmax( QKᵀ / √d_k ) · V
+
+QKᵀ      → similarity scores between every pair of tokens  [n×n]
+/ √d_k   → prevents softmax from saturating
+softmax  → attention weights (sum to 1 per query)
+· V      → weighted sum of values</div>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      <p>Think of Keys as labels on filing cabinets, Queries as search terms, and Values as the contents inside. You compute how well your search term matches each label, then retrieve a weighted mix of the contents — more weight to the most relevant cabinets.</p>
+    </div>
+
+    <h3>Multi-Head Attention</h3>
+    <p>Run self-attention multiple times in parallel with different Q/K/V projection matrices. Each "head" specializes: one learns syntactic relations, another coreference, another positional patterns. Outputs are concatenated and projected back.</p>
+
+    <div class="insight">
+      <div class="insight-label">⚡ The O(n²) Bottleneck</div>
+      <p>QKᵀ produces an n×n matrix. For 100K tokens: 10 billion entries. Every "efficient attention" paper (FlashAttention, Sliding Window, Linear Attention) avoids materializing this matrix. <strong>FlashAttention</strong> tiles the computation in GPU SRAM chunks — same math, 2-4× faster, much less memory. It's the most important systems optimization in LLM training.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Architecture Choices</div>
+    <h2>Every Component & Its Tradeoffs</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Component</th><th>What It Does</th><th>Key Design Choices & Tradeoffs</th></tr>
+      <tr><td>Token Embedding</td><td>Token IDs → continuous vectors</td><td>Dimension = d_model (512–8192). Larger = more expressive, more memory.</td></tr>
+      <tr><td>Positional Encoding</td><td>Injects position info (attention is order-agnostic)</td><td>Sinusoidal → Learned → RoPE (current best). RoPE encodes relative position, generalizes beyond training length.</td></tr>
+      <tr><td>Self-Attention</td><td>Each token attends to all others</td><td>Causal mask in decoders (can't see future). GQA/MQA reduces KV cache memory.</td></tr>
+      <tr><td>Feed-Forward Network</td><td>Per-token transformation</td><td>Typically 4× wider than d_model. Stores "factual knowledge." SwiGLU activation (modern).</td></tr>
+      <tr><td>Pre-Norm (RMSNorm)</td><td>Stabilizes gradient flow</td><td>Applied before each sublayer. RMSNorm ~15% faster than LayerNorm (LLaMA, Mistral).</td></tr>
+      <tr><td>Residual Connections</td><td>Gradient highway — like ResNet</td><td>Every sublayer: out = x + sublayer(LayerNorm(x)). Without these, Transformers don't train.</td></tr>
+    </table>
+    </div>
+
+    <h3>Encoder vs Decoder vs Encoder-Decoder</h3>
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Type</th><th>Attention Mask</th><th>Examples</th><th>Best For</th></tr>
+      <tr><td style="color:var(--cyan)">Encoder (BERT-style)</td><td>Bidirectional — sees all tokens</td><td>BERT, RoBERTa</td><td>Classification, NER, understanding</td></tr>
+      <tr><td style="color:var(--orange)">Decoder (GPT-style)</td><td>Causal — only sees past tokens</td><td>GPT, LLaMA, Claude, Mistral</td><td>Text generation, language modeling</td></tr>
+      <tr><td style="color:var(--purple)">Enc-Dec (T5-style)</td><td>Encoder: bidirectional. Decoder: causal + cross-attention</td><td>T5, BART</td><td>Translation, summarization</td></tr>
+    </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ KV Cache — Why Inference is Different from Training</div>
+      <p>During autoregressive generation, you produce one token at a time. For each new token, you'd naively recompute attention over the entire context. The KV cache stores the Key and Value vectors for all previous tokens — so you only compute attention for the new token. Memory grows linearly with sequence length. This is why long-context generation uses so much GPU memory.</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← RNNs & LSTMs</button>
+    <button class="nbtn primary" onclick="nextCh(6)">Regularization →</button>
+  </div>
+</div>
+
+<!-- CH 8: REGULARIZATION -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 08 / 08</div>
+    <div class="ch-title">Regular-<br><em>ization</em><br>&amp; Generalization</div>
+    <p class="ch-lead">A model that memorizes training data is useless. Regularization is everything you do to make models generalize. There's more to it than just dropout.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Dropout</div>
+    <h2>Randomness as Regularizer</h2>
+    <p>During training, randomly zero out neurons with probability p (0.1–0.5). Each forward pass uses a different random subnet. Forces distributed, redundant representations.</p>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Dropout = Approximate Ensemble</div>
+      <p>Each training step uses a different sub-network (2^N possible masks). Dropout approximates averaging exponentially many networks. At inference, use all neurons scaled by (1-p) to approximate this average. Modern LLMs use zero dropout during pretraining — at scale, data diversity is the regularizer.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Weight Initialization</div>
+    <h2>Starting Point Matters Enormously</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Init</th><th>Formula</th><th>Use When</th><th>What It Solves</th></tr>
+      <tr><td style="color:var(--cyan)">He / Kaiming</td><td>N(0, 2/nᵢₙ)</td><td>ReLU, GELU activations</td><td>Accounts for ReLU zeroing half of neurons — keeps variance stable</td></tr>
+      <tr><td style="color:var(--orange)">Xavier / Glorot</td><td>U[±√(6/(nᵢₙ+nₒᵤₜ))]</td><td>Sigmoid, Tanh</td><td>Keeps signal variance stable through layers</td></tr>
+      <tr><td style="color:var(--red)">Zero</td><td>All zeros</td><td>Never for weights</td><td>Symmetry breaking failure — all neurons identical forever</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Data Augmentation & Label Smoothing</div>
+    <h2>Regularizing Through Data</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Technique</th><th>Domain</th><th>Effect</th></tr>
+      <tr><td>Horizontal Flip / Crop</td><td>Vision</td><td>Translation & scale invariance — free data doubling</td></tr>
+      <tr><td>Mixup</td><td>Vision/Text</td><td>Blend two examples + labels linearly. Smoother boundaries, better calibration.</td></tr>
+      <tr><td>CutMix</td><td>Vision</td><td>Paste crop from one image into another. Used in modern SotA training.</td></tr>
+      <tr><td>Token masking (MLM)</td><td>NLP</td><td>Force model to use context — basis of BERT pretraining</td></tr>
+      <tr><td>Label smoothing (ε=0.1)</td><td>All</td><td>Prevent overconfident predictions. Better calibration. Used in Transformers.</td></tr>
+    </table>
+    </div>
+
+    <h3>Gradient Clipping & Early Stopping</h3>
+    <p><strong>Gradient clipping</strong> — if gradient norm exceeds a threshold (usually 1.0), scale it down. Prevents exploding gradients. Standard in all LLM training runs.</p>
+    <p><strong>Early stopping</strong> — monitor val loss, stop when it rises. Prevents memorization, saves compute. Requires a held-out validation set never used for anything else.</p>
+
+    <div class="tradeoff">
+      <div class="t-card pro">
+        <h4>✓ Small Dataset Training</h4>
+        <ul>
+          <li>L2 weight decay: always on</li>
+          <li>Dropout 0.1–0.5: important</li>
+          <li>Label smoothing: yes</li>
+          <li>Heavy data augmentation: yes</li>
+          <li>Early stopping: essential</li>
+        </ul>
+      </div>
+      <div class="t-card con">
+        <h4>⚡ LLM Pretraining at Scale</h4>
+        <ul>
+          <li>L2 weight decay: always on</li>
+          <li>Dropout: off — data IS regularizer</li>
+          <li>Label smoothing: sometimes</li>
+          <li>Gradient clipping: always</li>
+          <li>Data quality/diversity: main regularizer</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ The Deep Learning Generalization Mystery</div>
+      <p>Neural networks often have more parameters than training examples — classical theory says they should massively overfit. Yet they generalize well. Why? Leading theories: (1) SGD implicitly finds flat, wide minima that generalize better, (2) overparameterization helps optimization, (3) architecture is an implicit regularizer. <strong>This remains one of the central open problems in ML theory.</strong></p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← Transformers</button>
+    <button class="nbtn primary" onclick="alert('🎉 Deep Learning Core complete!\nNext: LLMs and Foundation Models.')">LLMs & Foundation Models →</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let cur = 0;
+const total = 8;
+
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  el.classList.add('active');
+  cur = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextCh(c) {
+  if (c + 1 < total) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c + 1, items[c + 1]);
+  }
+}
+
+function prevCh(c) {
+  if (c - 1 >= 0) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c - 1, items[c - 1]);
+  }
+}
+</script>
+</body>
+</html>

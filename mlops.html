@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLOps Mastery — AI Engineer Interview Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,500;0,700;0,900;1,900&family=Inconsolata:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --surface2: #1e1e1e;
+  --surface3: #252525;
+  --border: #2e2e2e;
+  --border2: #3a3a3a;
+  --text: #e8e8e8;
+  --text2: #aaaaaa;
+  --muted: #666;
+  --cyan: #00d4aa;
+  --orange: #ff6b35;
+  --yellow: #ffd166;
+  --purple: #b48eff;
+  --blue: #4da6ff;
+  --red: #ff4d6d;
+  --green: #06d6a0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inconsolata', monospace;
+  font-weight: 300;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events:none;
+  z-index:9999;
+}
+
+nav {
+  position: fixed;
+  top:0; left:0; right:0;
+  z-index:100;
+  background: rgba(13,13,13,0.97);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display:none; }
+
+.nav-brand {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--orange);
+  white-space: nowrap;
+  margin-right: 24px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  font-size: 10px;
+  color: var(--muted);
+  padding: 0 11px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.nav-item:hover { color: var(--text); }
+.nav-item.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px 100px;
+}
+
+.chapter { display:none; animation: fadeUp 0.35s ease both; }
+.chapter.active { display:block; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.ch-header {
+  margin-bottom: 52px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ch-num {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.ch-title {
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(36px, 6vw, 66px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+}
+.ch-title em { font-style: italic; color: var(--orange); }
+
+.ch-lead {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 580px;
+  line-height: 1.6;
+}
+
+.section { margin-bottom: 60px; }
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-family: 'Archivo', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+h3 {
+  font-family: 'Archivo', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  margin-top: 28px;
+}
+
+p { margin-bottom: 14px; font-size: 15px; color: var(--text2); }
+p strong { color: var(--text); font-weight: 600; }
+p:last-child { margin-bottom: 0; }
+
+/* Q&A */
+.qa {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin: 14px 0;
+  overflow: hidden;
+}
+.qa-q {
+  padding: 15px 20px;
+  font-size: 14px;
+  color: var(--yellow);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 3px solid var(--yellow);
+  transition: background 0.2s;
+  line-height: 1.5;
+}
+.qa-q:hover { background: var(--surface2); }
+.qa-q .arrow { font-size: 18px; flex-shrink:0; transition: transform 0.3s; margin-top:1px; }
+.qa-q.open .arrow { transform: rotate(45deg); }
+.qa-a {
+  display: none;
+  padding: 18px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.8;
+  border-left: 3px solid var(--surface3);
+}
+.qa-a strong { color: var(--cyan); }
+.qa-a br { display:block; margin:2px 0; }
+
+.badge {
+  display:inline-block;
+  font-size:9px;
+  padding:2px 7px;
+  margin-right:6px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  font-weight:600;
+  flex-shrink:0;
+}
+.badge-easy { background:rgba(6,214,160,0.15); color:var(--green); border:1px solid rgba(6,214,160,0.3); }
+.badge-med  { background:rgba(255,209,102,0.15); color:var(--yellow); border:1px solid rgba(255,209,102,0.3); }
+.badge-hard { background:rgba(255,77,109,0.15); color:var(--red); border:1px solid rgba(255,77,109,0.3); }
+
+.tag {
+  display:inline-block; font-size:9px; padding:2px 7px;
+  border:1px solid var(--cyan); color:var(--cyan);
+  margin:4px 4px 4px 0; letter-spacing:0.08em; text-transform:uppercase;
+}
+.tag.orange { border-color:var(--orange); color:var(--orange); }
+.tag.purple { border-color:var(--purple); color:var(--purple); }
+.tag.red { border-color:var(--red); color:var(--red); }
+.tag.green { border-color:var(--green); color:var(--green); }
+
+.analogy {
+  border-left: 3px solid var(--yellow);
+  padding: 16px 20px;
+  margin: 20px 0;
+  background: rgba(255,209,102,0.04);
+}
+.analogy-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--yellow); margin-bottom: 6px; }
+.analogy p { font-size: 14px; color: var(--text2); margin:0; }
+
+.insight {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--cyan);
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+.insight-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px; }
+.insight p { font-size: 14px; margin:0; line-height:1.75; }
+.insight strong { color: var(--cyan); }
+
+.warning {
+  background: rgba(255,77,109,0.06);
+  border: 1px solid rgba(255,77,109,0.2);
+  border-left: 3px solid var(--red);
+  padding: 16px 20px;
+  margin: 18px 0;
+}
+.warning-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+.warning p { font-size: 14px; margin:0; color: var(--text2); }
+
+.formula {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  padding: 14px 20px;
+  margin: 14px 0;
+  font-size: 13px;
+  color: var(--purple);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.8;
+}
+
+.tbl-wrap { margin: 18px 0; overflow-x: auto; }
+table { width:100%; border-collapse:collapse; font-size: 13px; }
+th {
+  background: var(--surface3);
+  color: var(--muted);
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text2);
+  line-height: 1.5;
+}
+tr:last-child td { border-bottom: none; }
+td:first-child { color: var(--text); font-weight: 600; }
+
+.tradeoff { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }
+.t-card { background: var(--surface); border: 1px solid var(--border); padding: 18px; }
+.t-card h4 { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.t-card.pro h4 { color: var(--green); }
+.t-card.con h4 { color: var(--orange); }
+.t-card ul { padding-left: 16px; }
+.t-card li { margin-bottom: 6px; color: var(--text2); line-height: 1.5; font-size:13.5px; }
+
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.pipe-step {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text2);
+  text-align: center;
+  min-width: 90px;
+}
+.pipe-step strong { display:block; color: var(--orange); font-size:10px; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:3px; }
+.pipe-arrow { color: var(--muted); font-size: 18px; padding: 0 2px; }
+
+.steps { margin: 18px 0; }
+.step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+.step-num {
+  width: 26px; height: 26px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0; margin-top: 2px; font-weight: 600;
+}
+.step p { font-size: 14.5px; margin:0; }
+
+.nav-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.nbtn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'Inconsolata', monospace;
+  font-size: 12px;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.nbtn:hover { border-color: var(--orange); color: var(--orange); }
+.nbtn.primary { background: var(--orange); color: #000; border-color: var(--orange); font-weight: 600; }
+.nbtn.primary:hover { background: #ff8555; }
+.nbtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+.card h4 { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px; color:var(--orange); }
+.card p { font-size:13px; margin:0; line-height:1.6; }
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+.tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 14px;
+}
+.tool-card .tool-name { font-size: 13px; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+.tool-card .tool-cat { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 6px; }
+.tool-card .tool-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+.divider { border:none; border-top: 1px solid var(--border); margin: 40px 0; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">⚙️ MLOps</div>
+  <div class="nav-item active" onclick="goTo(0,this)">① ML Pipeline</div>
+  <div class="nav-item" onclick="goTo(1,this)">② Experiment Tracking</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ Deployment</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ Scaling & Infra</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ Data Engineering</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ Monitoring & Drift</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ CI/CD for ML</div>
+  <div class="nav-item" onclick="goTo(7,this)">⑧ Tools Landscape</div>
+  <div class="nav-item" onclick="goTo(8,this)">⑨ LLM in Prod</div>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════ CH 1 ══════════════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 01 / 09 — MLOps Mastery</div>
+    <div class="ch-title">The ML<br><em>Pipeline</em></div>
+    <p class="ch-lead">Before anything else, understand the full lifecycle. MLOps is about making every step of this pipeline reliable, reproducible, and fast to iterate.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Big Picture</div>
+    <h2>What MLOps Actually Is</h2>
+    <p>MLOps = DevOps + ML. It's the set of practices, tools, and culture that make building and running ML systems as reliable as building and running software. A model that works on a notebook is nothing. A model that runs reliably in production, gets monitored, and improves over time — that's MLOps.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      <p>Building a model without MLOps is like cooking a great meal in a restaurant but having no system for taking orders, tracking inventory, training staff, or ensuring the dish is the same every time. MLOps is the restaurant's operating system.</p>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipe-step"><strong>Data</strong>Collection &amp; Storage</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><strong>Feature</strong>Engineering</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><strong>Training</strong>Experiment</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><strong>Eval</strong>Validation</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><strong>Deploy</strong>Serve</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><strong>Monitor</strong>Retrain</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What is the difference between ML engineering and MLOps? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>ML Engineering:</strong> Building the model. Feature engineering, choosing algorithms, training, tuning hyperparameters, evaluating accuracy. Focused on model quality.<br><br>
+        <strong>MLOps:</strong> Running the model. Making training reproducible, automating pipelines, deploying reliably, monitoring for degradation, managing data versioning, scaling infrastructure. Focused on operational reliability.<br><br>
+        At 2 years experience, you're expected to do BOTH. You should be able to train a model AND deploy it, monitor it, and build the pipeline around it. Companies hate "notebook scientists" who can't ship.<br><br>
+        <div class="tag">What interviewers want</div> Show that you think beyond the notebook. Talk about reproducibility, monitoring, CI/CD for models, and how you'd handle retraining.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What makes ML different from regular software — and why does that make operations harder? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Regular software:</strong> Code is deterministic. If you deploy the same code, you get the same behavior. Bugs are reproducible. Tests are reliable.<br><br>
+        <strong>ML systems have 3 extra dimensions that change independently:</strong><br><br>
+        1. <strong>Code</strong> — training script, model architecture, inference code<br>
+        2. <strong>Data</strong> — training data, feature distributions, data pipeline<br>
+        3. <strong>Hyperparameters</strong> — learning rate, batch size, model config<br><br>
+        A model can break in production even if your code is unchanged — because the data distribution shifted. A retraining run can produce a worse model even with the same code — because of random seed or data ordering. This makes debugging much harder.<br><br>
+        <strong>The core MLOps challenge:</strong> You need to version and track ALL THREE dimensions simultaneously to reproduce any result and debug any failure.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is a feature store? Why would you use one? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Feature store:</strong> A centralized system that computes, stores, and serves ML features consistently between training and inference.<br><br>
+        <strong>The problem it solves — training/serving skew:</strong><br>
+        Imagine you train a model with feature "user_7day_purchase_count" computed in Spark from a data warehouse. At inference time, you compute it differently in Python from a real-time DB. Slight difference in computation → model sees different data than it trained on → silent accuracy drop. This is one of the most common production bugs in ML.<br><br>
+        <strong>Feature store guarantees:</strong><br>
+        • Same feature logic for training (batch) and serving (real-time)<br>
+        • Feature reuse across teams and models — no duplicate computation<br>
+        • Point-in-time correctness for training — use features as they existed AT the time of each training example (prevents data leakage)<br>
+        • Feature versioning and lineage<br><br>
+        <strong>Tools:</strong> Feast (open source), Tecton (managed), Vertex Feature Store, Hopsworks<br><br>
+        <div class="tag orange">When to use</div> Multiple teams, multiple models, real-time features, or when training/serving skew is suspected. Overkill for a single model team.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is data leakage and how do you prevent it? Give a concrete example. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Data leakage:</strong> When information from the future or from the target variable leaks into your training features, making the model look great in training but fail in production.<br><br>
+        <strong>Concrete examples:</strong><br><br>
+        <em>Example 1 — Label leakage:</em> Predicting hospital readmission. One feature: "number of follow-up appointments scheduled." But those appointments are scheduled BECAUSE the patient was readmitted. The feature contains the answer.<br><br>
+        <em>Example 2 — Temporal leakage:</em> Predicting stock price tomorrow using features computed from tomorrow's data. If you don't do a strict time-based train/test split, future data can leak into training.<br><br>
+        <em>Example 3 — Group leakage:</em> Patient classification. Train/test split randomly puts some images from the same patient in train and test. Model learns patient-specific patterns, not disease patterns.<br><br>
+        <strong>Prevention:</strong><br>
+        1. <strong>Time-based splits</strong> — always split by time for temporal data. Never random split.<br>
+        2. <strong>Point-in-time feature computation</strong> — features must only use data available BEFORE the prediction time<br>
+        3. <strong>Group-based splits</strong> — ensure same entity (patient, user, store) is only in one split<br>
+        4. <strong>Sanity check:</strong> If accuracy is suspiciously high (>95% on a hard task), suspect leakage first
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is reproducibility in ML and how do you achieve it? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Reproducibility:</strong> Given the same inputs, produce the same output. Run training twice → get the same model. This sounds simple but is surprisingly hard.<br><br>
+        <strong>Sources of non-reproducibility:</strong><br>
+        • Random seeds not set (Python, NumPy, PyTorch all have separate seeds)<br>
+        • Non-deterministic GPU operations (cuDNN by default is non-deterministic for speed)<br>
+        • Data ordering changes (shuffling without fixed seed)<br>
+        • Library version changes (different PyTorch version = different numerical results)<br>
+        • Data pipeline changes (same query to DB returns different ordering)<br><br>
+        <strong>Full checklist for reproducible training:</strong><br>
+        1. Fix ALL random seeds: random.seed(42), np.random.seed(42), torch.manual_seed(42), torch.cuda.manual_seed_all(42)<br>
+        2. Set torch.use_deterministic_algorithms(True) — slower but deterministic<br>
+        3. Version-pin your environment: requirements.txt or conda env with exact versions<br>
+        4. Version your data: DVC or data checksums. Log which exact dataset version was used.<br>
+        5. Log all hyperparameters with the experiment (MLflow, W&B)<br>
+        6. Container the training environment: Docker ensures same OS-level dependencies<br>
+        7. Log the git commit hash used for training
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Experiment Tracking →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 2 ══════════════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 02 / 09</div>
+    <div class="ch-title">Experiment<br><em>Tracking</em></div>
+    <p class="ch-lead">Without tracking, ML is just vibes. You need to know which model was trained with what data, what parameters, and what results — always. This is table stakes at any serious company.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Why It Matters</div>
+    <h2>The Chaos Without Tracking</h2>
+    <p>Two weeks into training runs: "Which model is in production? Is it the one from last Tuesday or the one from Monday? What learning rate did we use? Was that the v2 or v3 dataset?" Without tracking, ML teams drown in this chaos. Experiment tracking is your lab notebook — systematic, searchable, permanent.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> What do you log in an experiment tracking system? Walk me through a real training run. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Log at start (configuration):</strong><br>
+        • All hyperparameters: learning rate, batch size, epochs, optimizer, scheduler<br>
+        • Model architecture (or config file)<br>
+        • Dataset: path, version, number of train/val/test samples, preprocessing steps<br>
+        • Git commit hash (exact code used)<br>
+        • Hardware: GPU type, number of GPUs, CUDA version<br>
+        • Random seeds<br><br>
+        <strong>Log during training (metrics):</strong><br>
+        • Train loss, val loss (every epoch or N steps)<br>
+        • Task-specific metrics: accuracy, F1, BLEU, etc.<br>
+        • Learning rate (if using scheduler — good for debugging)<br>
+        • Gradient norms (catch exploding gradients early)<br>
+        • GPU memory usage<br>
+        • Training throughput (samples/sec)<br><br>
+        <strong>Log at end (artifacts):</strong><br>
+        • Model checkpoint (best val loss)<br>
+        • Confusion matrix, error analysis plots<br>
+        • Final eval on test set<br>
+        • Training time<br><br>
+        <div class="tag">Tools</div> MLflow, Weights & Biases (W&B), Neptune, Comet, TensorBoard (basic)
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Compare MLflow vs Weights & Biases. When would you use each? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>MLflow:</strong><br>
+        • Open source, self-hostable — you own your data<br>
+        • Experiment tracking + model registry + serving in one package<br>
+        • Integrates with any framework (sklearn, PyTorch, HuggingFace, etc.)<br>
+        • Less polished UI but very functional<br>
+        • Great if your company has data residency requirements or doesn't want vendor lock-in<br>
+        • Free to run yourself on any cloud<br><br>
+        <strong>Weights & Biases (W&B):</strong><br>
+        • Managed SaaS — beautiful UI, almost no setup<br>
+        • Best-in-class visualizations: training curves, hyperparameter sweeps, model comparison<br>
+        • Team collaboration features built-in<br>
+        • W&B Sweeps for hyperparameter optimization<br>
+        • W&B Artifacts for data/model versioning<br>
+        • Costs money (but has generous free tier)<br><br>
+        <strong>Choose MLflow when:</strong> Data privacy/compliance, cost-sensitive, already using Databricks (native integration)<br>
+        <strong>Choose W&B when:</strong> Team productivity is top priority, research environment, need best visualization
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is a model registry? How does it fit into the ML lifecycle? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Model registry:</strong> A centralized catalog of trained models with their metadata, lineage, and deployment status. Think of it like a package registry (npm, PyPI) but for ML models.<br><br>
+        <strong>What it stores per model version:</strong><br>
+        • Model artifact (weights, config)<br>
+        • Which experiment/run produced it<br>
+        • Which data version it was trained on<br>
+        • Performance metrics<br>
+        • Current stage: Staging → Production → Archived<br>
+        • Who approved it and when<br><br>
+        <strong>The lifecycle workflow:</strong><br>
+        1. Train model → log to experiment tracker<br>
+        2. Model beats current baseline → register it in Model Registry with stage "Staging"<br>
+        3. Run automated eval suite + human review<br>
+        4. Approve → promote to "Production"<br>
+        5. Deploy production model to serving infrastructure<br>
+        6. Old model → "Archived" (never deleted — you might need to roll back)<br><br>
+        <strong>Tools:</strong> MLflow Model Registry, W&B Model Registry, SageMaker Model Registry, Vertex AI Model Registry
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you do hyperparameter optimization systematically? What methods exist? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Methods from worst to best:</strong><br><br>
+        <strong>1. Manual search:</strong> Try things based on intuition. Doesn't scale. Still valid for first experiments when you have no idea.<br><br>
+        <strong>2. Grid search:</strong> Try all combinations of a predefined parameter grid. Exhaustive but exponential — 5 params × 5 values each = 5⁵ = 3125 runs. Only practical for 2-3 params.<br><br>
+        <strong>3. Random search:</strong> Sample random combinations. Proven to beat grid search — each trial explores a unique slice of every dimension. Much more efficient for high-dimensional spaces.<br><br>
+        <strong>4. Bayesian Optimization (BO):</strong> Build a probabilistic model of which regions of the search space look promising based on past trials. Sample from promising regions. 10-20× more efficient than random search. Uses Gaussian Processes or Tree-structured Parzen Estimators (TPE).<br><br>
+        <strong>5. Population-Based Training (PBT):</strong> Run a population of models simultaneously. Periodically copy weights from better-performing models to worse ones, with mutations to hyperparameters. Trains and searches simultaneously.<br><br>
+        <strong>Practical advice:</strong><br>
+        • Start with random search (simple, parallelizes trivially)<br>
+        • Move to Bayesian (Optuna, W&B Sweeps) when compute is limited<br>
+        • Most important hyperparams to tune: learning rate, batch size, weight decay. Other params matter much less.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Pipeline</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Deployment →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 3 ══════════════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 03 / 09</div>
+    <div class="ch-title">Model<br><em>Deployment</em></div>
+    <p class="ch-lead">Getting a model to production. Know every deployment pattern, every tradeoff, and every failure mode. This is where most AI engineers spend most of their time.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Deployment Patterns</div>
+    <h2>The Ways to Deploy a Model</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Pattern</th><th>How It Works</th><th>Latency</th><th>Use When</th><th>Watch Out</th></tr>
+      <tr>
+        <td style="color:var(--cyan)">REST API (Online)</td>
+        <td>Model wrapped in HTTP server. Request in, prediction out.</td>
+        <td>10ms–2s</td>
+        <td>Real-time predictions: fraud detection, recommendation, search ranking</td>
+        <td>Must handle scale, auto-scaling, timeouts</td>
+      </tr>
+      <tr>
+        <td style="color:var(--green)">Batch Inference</td>
+        <td>Process large datasets offline on a schedule (nightly, hourly)</td>
+        <td>Minutes–hours</td>
+        <td>Overnight scoring, pre-computed recommendations, data enrichment</td>
+        <td>Results are stale. Not for real-time.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow)">Streaming Inference</td>
+        <td>Predictions triggered by events (Kafka/Kinesis message arrives)</td>
+        <td>Seconds</td>
+        <td>Near-real-time: transaction scoring, IoT events, log analysis</td>
+        <td>Complex infra. Event ordering matters.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--purple)">Edge / On-device</td>
+        <td>Model runs on device (phone, browser, IoT sensor)</td>
+        <td>&lt;10ms</td>
+        <td>Mobile apps, offline use, privacy requirements, ultra-low latency</td>
+        <td>Model must be tiny. Hard to update.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--orange)">Embedded in Pipeline</td>
+        <td>Model is a step in a data pipeline (Spark, Beam, dbt)</td>
+        <td>Varies</td>
+        <td>ETL enrichment, data quality scoring, batch feature generation</td>
+        <td>Versioning model with pipeline version</td>
+      </tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain Blue-Green deployment for ML models. How does it differ from Canary? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Blue-Green deployment:</strong><br>
+        Maintain two identical production environments: Blue (current live) and Green (new version).<br>
+        1. Deploy new model to Green environment<br>
+        2. Run full test suite against Green<br>
+        3. Instantly switch traffic: load balancer now points to Green (Blue becomes old)<br>
+        4. If anything breaks: switch back to Blue in seconds<br><br>
+        ✅ Instant rollback. Zero downtime switch.<br>
+        ❌ Requires 2× infrastructure cost during transition.<br><br>
+        <strong>Canary deployment:</strong><br>
+        Gradually shift traffic: 5% → 20% → 50% → 100% to new model.<br>
+        Monitor quality metrics at each step. Gate: if metrics degrade, stop rollout and roll back.<br><br>
+        ✅ Real traffic tests new model. Limited blast radius if something breaks.<br>
+        ❌ Users get inconsistent experience during rollout. More complex routing.<br><br>
+        <strong>For ML specifically:</strong> Canary is usually better because ML failures are often subtle (small accuracy drop, edge case regressions) that only show up in real traffic distributions. Blue-green is faster but doesn't let you "soak test" with real users.<br><br>
+        <div class="tag">Shadow mode</div> Often done before canary: run both models on 100% of traffic, but only return old model's predictions. Log new model's predictions silently. Compare quality without any user impact.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is model serving? Compare TorchServe, Triton, and BentoML. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Model serving</strong> = the infrastructure that takes a trained model and makes it available via an API at scale, with batching, versioning, and GPU utilization.<br><br>
+        <strong>NVIDIA Triton Inference Server:</strong><br>
+        • Supports all frameworks: PyTorch, TensorFlow, ONNX, TensorRT<br>
+        • Dynamic batching: queues requests and batches them for GPU efficiency<br>
+        • Model ensembles: chain multiple models in one call<br>
+        • Best GPU utilization of any server<br>
+        • Use when: GPU inference at scale, latency-critical, multiple model frameworks<br><br>
+        <strong>TorchServe:</strong><br>
+        • PyTorch's official serving solution<br>
+        • Simpler than Triton, easier to get started<br>
+        • Good for pure PyTorch shops<br>
+        • Dynamic batching, model versioning built-in<br><br>
+        <strong>BentoML:</strong><br>
+        • Framework-agnostic, Python-first<br>
+        • Fastest path from training to serving (simple decorator pattern)<br>
+        • Built-in packaging: bento = model + code + dependencies<br>
+        • Good for teams that value developer experience<br>
+        • Use when: polyglot ML stack, want fast iteration<br><br>
+        <strong>Practical advice:</strong> Start with BentoML or FastAPI (simple). Move to Triton when GPU utilization or latency becomes a bottleneck.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is ONNX and why does it matter for deployment? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>ONNX (Open Neural Network Exchange):</strong> An open format for representing ML models that is framework-agnostic. Train in PyTorch, export to ONNX, run anywhere.<br><br>
+        <strong>Why it matters:</strong><br>
+        1. <strong>Portability:</strong> Train in PyTorch, deploy with ONNX Runtime (much faster inference). Or deploy to edge (CoreML, TensorRT) without framework-specific code.<br>
+        2. <strong>Speed:</strong> ONNX Runtime has hardware-specific optimizations (CPU, GPU, ARM). Often 2-5× faster than native PyTorch for inference.<br>
+        3. <strong>TensorRT conversion:</strong> ONNX → TensorRT (NVIDIA's optimized inference engine) gives massive speedups (5-10×) on NVIDIA GPUs.<br><br>
+        <div class="formula">PyTorch model
+  → torch.onnx.export(model, dummy_input, "model.onnx")
+  → onnxruntime.InferenceSession("model.onnx")
+  → session.run(output_names, {input_name: input_data})</div>
+        <strong>Watch out:</strong> Not all PyTorch operations have ONNX equivalents. Dynamic shapes (variable batch size, variable sequence length) need special handling. Custom ops may not convert cleanly.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you serve a model that needs to handle 10,000 requests/second with &lt;100ms p99 latency? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>This is a system design + MLOps question. Think in layers:</strong><br><br>
+        <strong>Model optimization (reduce per-request cost):</strong><br>
+        • Quantize to INT8 (2-4× faster, ~1% accuracy drop)<br>
+        • Compile with TorchScript or TensorRT (eliminate Python overhead)<br>
+        • Reduce model size: knowledge distillation, pruning<br>
+        • Profile first: where are the actual bottlenecks?<br><br>
+        <strong>Batching (increase GPU utilization):</strong><br>
+        • Dynamic batching: collect requests for 5-20ms, batch them together for GPU<br>
+        • GPU runs at 10% utilization on single requests, 90%+ with good batching<br>
+        • Triton or custom batching queue<br><br>
+        <strong>Horizontal scaling:</strong><br>
+        • Multiple model replicas behind a load balancer<br>
+        • Auto-scaling: Kubernetes HPA based on CPU/GPU/request queue length<br>
+        • Target: each replica handles ~500-1000 req/s → 10-20 replicas for 10K RPS<br><br>
+        <strong>Caching:</strong><br>
+        • Cache frequent/repeated inputs (semantic similarity cache for LLMs)<br>
+        • Pre-compute predictions for known inputs (top 1000 products, etc.)<br><br>
+        <strong>Infra:</strong><br>
+        • CDN / edge caching for static predictions<br>
+        • Keep warm instances — cold starts kill p99<br>
+        • Use async where possible (non-blocking I/O)<br><br>
+        <div class="tag">Always say this</div> "I'd start by profiling to understand where the bottleneck actually is before optimizing."
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is A/B testing for models vs shadow testing? Walk me through when to use each. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Shadow testing:</strong> New model gets all traffic, makes predictions, but predictions are NEVER shown to users. Only logged. You compare model A vs model B offline.<br>
+        ✅ Zero user impact. Compare outputs before committing.<br>
+        ❌ No downstream user behavior signal. You can't measure "did users click more?"<br>
+        Use for: Early validation before any user exposure. Checking for crashes or latency issues. Comparing output quality offline.<br><br>
+        <strong>A/B testing:</strong> Split real users: 50% get model A, 50% get model B. Measure downstream business metrics (CTR, conversion, retention, revenue).<br>
+        ✅ Real causal signal — actual user behavior impact.<br>
+        ❌ Users in the B group get potentially worse experience. Need enough traffic for statistical significance.<br>
+        Use for: Validating that offline metrics improvements actually translate to business value.<br><br>
+        <strong>The workflow:</strong><br>
+        Shadow → Canary (5%) → A/B test (50/50) → Full rollout<br><br>
+        <strong>Statistical note:</strong> Run A/B test for the duration needed to achieve statistical power. Minimum detectable effect × expected traffic = required duration. Don't stop early — p-value hacking is real and will burn you.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Experiment Tracking</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Scaling & Infra →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 4 ══════════════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 04 / 09</div>
+    <div class="ch-title">Scaling<br>&amp; <em>Infra</em></div>
+    <p class="ch-lead">How do you train a model that doesn't fit on one GPU? How do you serve 10 million users? Scaling is where ML meets systems engineering.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Distributed Training</div>
+    <h2>When One GPU Isn't Enough</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Explain Data Parallel vs Model Parallel training. When do you use each? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Data Parallelism (most common):</strong><br>
+        • Copy the full model onto every GPU<br>
+        • Split each batch across GPUs (GPU 1 gets samples 1-32, GPU 2 gets 33-64, etc.)<br>
+        • Each GPU computes gradients on its shard<br>
+        • Gradients are synchronized (averaged) across all GPUs<br>
+        • Each GPU updates its weights identically<br><br>
+        ✅ Simple. Works when model fits on one GPU. Linear throughput scaling.<br>
+        ❌ Can't handle models larger than single GPU memory.<br><br>
+        <strong>Tools:</strong> PyTorch DDP (DistributedDataParallel) — the standard. Faster than DataParallel (all-reduce vs parameter server).<br><br>
+        <strong>Model Parallelism:</strong><br>
+        • Split the model itself across GPUs: GPU 1 runs layers 1-12, GPU 2 runs layers 13-24, etc.<br>
+        • Used when model doesn't fit on a single GPU<br><br>
+        <strong>Pipeline parallelism:</strong> Variant of model parallel — split into stages, overlap forward and backward passes like a pipeline. Less GPU idle time.<br><br>
+        <strong>Tensor parallelism:</strong> Split individual tensor operations (matrix multiplications) across GPUs. Used in LLM training. Megatron-LM style.<br><br>
+        <strong>3D Parallelism (LLM training):</strong> Data parallel + Pipeline parallel + Tensor parallel simultaneously. How GPT-4, LLaMA are trained.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is ZeRO (Zero Redundancy Optimizer) and why is it important for LLM training? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>The problem:</strong> In standard data parallel, every GPU stores a FULL copy of: model weights + gradients + optimizer states. A 7B model in Adam optimizer = ~112GB (weights: 14GB BF16 + gradients: 14GB + optimizer states: 56GB FP32 × 2 moments + master weights: 28GB). Way more than one GPU's memory.<br><br>
+        <strong>ZeRO (DeepSpeed):</strong> Shard ALL of this across GPUs instead of duplicating it.<br><br>
+        <strong>Three stages:</strong><br>
+        • <strong>ZeRO-1:</strong> Shard optimizer states. ~4× memory reduction.<br>
+        • <strong>ZeRO-2:</strong> Shard optimizer states + gradients. ~8× reduction.<br>
+        • <strong>ZeRO-3:</strong> Shard everything including model weights. ~64× reduction for large models. Each GPU only holds 1/N of the model — gather weights as needed.<br><br>
+        <strong>Result:</strong> You can train a 70B parameter model across 8×80GB A100s that would otherwise be impossible.<br><br>
+        <div class="tag">Tools</div> DeepSpeed (Microsoft), FSDP (PyTorch's native ZeRO-3 equivalent). Most LLM training uses one of these.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Compare Kubernetes vs SageMaker vs Vertex AI for ML workloads. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Kubernetes (raw):</strong><br>
+        Maximum flexibility and control. You manage everything. Can use any hardware, any framework, any cloud or on-prem. But you need a team that knows Kubernetes deeply. Good with Kubeflow or MLflow on top for ML-specific workflows. Use when: existing K8s expertise, strict cloud agnosticism, unique requirements.<br><br>
+        <strong>AWS SageMaker:</strong><br>
+        AWS-managed ML platform. Training jobs, endpoints, pipelines, feature store, model registry all integrated. Handles infra automatically. Opinionated — works best if you stay within its patterns. Use when: AWS shop, want to move fast, less infra expertise. Expensive at scale.<br><br>
+        <strong>Google Vertex AI:</strong><br>
+        Google's managed ML platform. Strong integration with BigQuery (data), GCS (storage), TPUs (training). Vertex Pipelines for orchestration. Vertex Feature Store. Good if you're a GCP shop or need TPUs for LLM training.<br><br>
+        <strong>Azure ML:</strong><br>
+        Microsoft's equivalent. Strong if you're an Azure/Microsoft shop. Good enterprise features.<br><br>
+        <div class="tag green">Honest answer</div> For a startup: SageMaker or Vertex — they're opinionated but fast. For a big company: probably Kubernetes with internal tooling or Databricks. For research: raw K8s or SLURM on bare metal.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is mixed precision training? How does it work? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>The idea:</strong> Use FP16 or BF16 for most computations (faster, less memory), but keep FP32 for critical parts where precision matters (loss, optimizer state, weight updates).<br><br>
+        <strong>FP32:</strong> Full 32-bit precision. Safe but slow and memory-hungry.<br>
+        <strong>FP16:</strong> 16-bit. 2× less memory, 2-8× faster on modern GPUs. But small numbers underflow to 0 (training instability).<br>
+        <strong>BF16:</strong> Brain float 16. Same range as FP32, less precision than FP16. More numerically stable. Modern choice for LLM training (A100, H100 have native BF16 tensor cores).<br><br>
+        <strong>Automatic Mixed Precision (AMP):</strong><br>
+        <div class="formula">from torch.cuda.amp import autocast, GradScaler
+
+scaler = GradScaler()  # scales loss to prevent FP16 underflow
+
+with autocast():        # runs forward pass in FP16
+    output = model(input)
+    loss = criterion(output, target)
+
+scaler.scale(loss).backward()  # backward in FP16
+scaler.step(optimizer)         # update in FP32
+scaler.update()</div>
+        <strong>Result:</strong> ~2× memory reduction, ~2-3× training speedup with minimal accuracy loss. Standard practice for all DL training today.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Deployment</button>
+    <button class="nbtn primary" onclick="nextCh(3)">Data Engineering →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 5 ══════════════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 05 / 09</div>
+    <div class="ch-title">Data<br><em>Engineering</em><br>for ML</div>
+    <p class="ch-lead">Data is 80% of ML. Bad data = bad model, no exceptions. You must understand data pipelines, storage formats, and data quality at a production level.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Data Formats & Storage</div>
+    <h2>Why Storage Format Matters for ML</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Format</th><th>Type</th><th>Pros</th><th>Cons</th><th>Use For</th></tr>
+      <tr><td style="color:var(--cyan)">Parquet</td><td>Columnar, binary</td><td>Excellent compression, fast columnar reads, schema enforcement</td><td>Not human-readable, overhead for small files</td><td>Feature tables, training datasets at scale</td></tr>
+      <tr><td style="color:var(--green)">Arrow / Feather</td><td>Columnar, in-memory</td><td>Zero-copy reads, perfect for Pandas/Spark interchange</td><td>Not for long-term storage</td><td>Fast ML training data loading</td></tr>
+      <tr><td style="color:var(--yellow)">CSV</td><td>Row, text</td><td>Universal, human-readable</td><td>No types, slow, huge files</td><td>Data exchange, small datasets only</td></tr>
+      <tr><td style="color:var(--purple)">TFRecord</td><td>Binary, sequential</td><td>Optimized for TensorFlow training pipelines</td><td>TF-specific, less flexible</td><td>TensorFlow model training</td></tr>
+      <tr><td style="color:var(--orange)">HDF5 / zarr</td><td>Hierarchical binary</td><td>Chunked access, good for multidimensional arrays (images, audio)</td><td>Less cloud-native than Parquet</td><td>Scientific data, image/audio datasets</td></tr>
+      <tr><td style="color:var(--red)">Delta Lake / Iceberg</td><td>Table format on Parquet</td><td>ACID transactions, time travel, schema evolution</td><td>More infra complexity</td><td>Production data lakes, feature tables that update</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> How do you version datasets for ML? Why is it hard? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Why it's hard:</strong> Datasets are large (GB to TB), stored in many places (S3, GCS, data warehouses), and change frequently. Git doesn't work — you can't commit 500GB of images. You need something that tracks changes without duplicating data.<br><br>
+        <strong>Approaches:</strong><br><br>
+        <strong>1. DVC (Data Version Control):</strong> Git for data. Stores data in cloud (S3, GCS). Git tracks a small .dvc pointer file. Pull data with dvc pull. Full lineage: this model was trained on this dataset at this commit.<br><br>
+        <strong>2. Immutable snapshots + registry:</strong> Every dataset version gets a unique path (s3://bucket/dataset/v1.2.0/). Never overwrite, only create new versions. Register versions in a catalog (Hive Metastore, AWS Glue, internal DB).<br><br>
+        <strong>3. Delta Lake / Iceberg time travel:</strong> Query data as of a specific timestamp. "Give me all data as of 2024-01-01." Built-in versioning without managing separate files.<br><br>
+        <strong>What to track per dataset version:</strong><br>
+        • Schema (column names, types)<br>
+        • Row count and basic statistics<br>
+        • Date range / cutoffs<br>
+        • Preprocessing steps applied<br>
+        • Source systems it was derived from<br>
+        • Which models were trained on it<br><br>
+        <div class="tag">Minimum viable approach</div> Immutable S3 paths with version in the name + log dataset path in MLflow experiment. Simple, works, and covers 90% of cases.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is data validation for ML? What do you check before training? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Data validation</strong> = automatically checking that your data meets expected properties before using it for training or serving. This is NOT just for raw data quality — it's catching distribution changes, schema changes, and anomalies that would silently break your model.<br><br>
+        <strong>What to validate:</strong><br><br>
+        <strong>Schema validation:</strong><br>
+        • All expected columns present<br>
+        • Correct dtypes (no "age" column that somehow became string)<br>
+        • Categorical values within expected set<br><br>
+        <strong>Statistical validation:</strong><br>
+        • Null rate per column within expected bounds<br>
+        • Value distribution within expected range (mean ± n*std)<br>
+        • No unexpected outliers<br>
+        • Class balance matches expectation<br>
+        • Correlation structure matches training distribution<br><br>
+        <strong>Referential validation:</strong><br>
+        • Join keys exist in lookup tables<br>
+        • Temporal ordering is correct (no future data in "past" fields)<br><br>
+        <strong>Tools:</strong><br>
+        • <strong>Great Expectations:</strong> Define expectations, run checks, get reports. Most mature open-source option.<br>
+        • <strong>dbt tests:</strong> If your features come from dbt, add tests inline<br>
+        • <strong>TFX Data Validation (TFDV):</strong> For TensorFlow pipelines. Schema inference + drift detection.<br>
+        • <strong>Pandera:</strong> Lightweight, pandas-native schema validation<br><br>
+        <div class="tag red">Always validate</div> Both at training time AND at serving time (validate incoming requests match expected schema).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is the difference between a data lake, data warehouse, and lakehouse? Which matters for ML? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Data Lake (e.g., S3 + raw files):</strong><br>
+        Store everything in raw format. Schema-on-read (figure out structure when you query). Cheap storage, maximum flexibility. Problem: becomes a "data swamp" — hard to find things, no data quality guarantees, slow queries on unoptimized formats.<br><br>
+        <strong>Data Warehouse (e.g., Redshift, BigQuery, Snowflake):</strong><br>
+        Structured, curated data optimized for analytics queries. Schema-on-write (define structure upfront). Fast SQL queries, enforced quality. Problem: expensive, rigid schema, often can't store unstructured data (images, text).<br><br>
+        <strong>Lakehouse (e.g., Databricks, Delta Lake on S3, Iceberg):</strong><br>
+        Best of both: raw storage + ACID transactions + schema enforcement + fast queries. Open table formats (Delta Lake, Apache Iceberg) give you warehouse-like properties on top of cheap object storage.<br><br>
+        <strong>For ML teams:</strong><br>
+        • Training data (raw): Data lake or lakehouse (need to store images, text, large files)<br>
+        • Features (structured): Feature store or data warehouse (fast queries, known schema)<br>
+        • Analytical metrics: Data warehouse (BI, dashboards)<br>
+        • The modern answer: Lakehouse (Delta/Iceberg) + feature store. Best flexibility + quality.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Scaling</button>
+    <button class="nbtn primary" onclick="nextCh(4)">Monitoring & Drift →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 6 ══════════════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 06 / 09</div>
+    <div class="ch-title">Monitoring<br>&amp; <em>Drift</em></div>
+    <p class="ch-lead">Models degrade silently. Without monitoring, you won't know until a user complains. This chapter is what separates engineers who deploy models from engineers who operate them.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Why Models Degrade</div>
+    <h2>The Three Types of Drift</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Type</th><th>What Changes</th><th>Example</th><th>How to Detect</th></tr>
+      <tr><td style="color:var(--cyan)">Data Drift (Covariate Shift)</td><td>Input distribution P(X) changes but relationship P(Y|X) stays same</td><td>New user demographics, seasonal patterns, new device types</td><td>Monitor feature distributions: mean, std, KL divergence vs training baseline</td></tr>
+      <tr><td style="color:var(--orange)">Concept Drift</td><td>The relationship P(Y|X) changes — what was true before is no longer true</td><td>Fraud patterns change as fraudsters adapt, economic conditions change buying behavior</td><td>Monitor model accuracy on recent labeled data; hard without labels</td></tr>
+      <tr><td style="color:var(--yellow)">Label Drift</td><td>Distribution of labels P(Y) changes</td><td>Fraud rate suddenly spikes, new product categories appear</td><td>Monitor label distribution on labeled predictions</td></tr>
+      <tr><td style="color:var(--purple)">Upstream Data Drift</td><td>Data pipeline changes — schema changes, source system updates</td><td>Feature engineering bug, DB schema migration, new logging version</td><td>Data validation on pipeline inputs; schema monitoring</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What metrics do you monitor for a deployed ML model? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Layer 1 — Infrastructure metrics (always available):</strong><br>
+        • Prediction volume / requests per second<br>
+        • Latency (p50, p95, p99) — not just average!<br>
+        • Error rate (HTTP 5xx, timeouts, invalid inputs)<br>
+        • GPU/CPU utilization, memory usage<br>
+        • Cost per prediction<br><br>
+        <strong>Layer 2 — Model input metrics (feature monitoring):</strong><br>
+        • Distribution of each input feature vs training baseline<br>
+        • Null rate per feature<br>
+        • Value range violations<br>
+        • Prediction distribution (are the model's outputs shifting?)<br><br>
+        <strong>Layer 3 — Model output quality (when you have labels):</strong><br>
+        • Accuracy, F1, AUC on recent labeled samples<br>
+        • Calibration: does P(fraud)=0.8 actually mean 80% of those predictions are fraud?<br><br>
+        <strong>Layer 4 — Business metrics (the real thing):</strong><br>
+        • CTR, conversion rate, revenue per recommendation (for recommenders)<br>
+        • False positive rate for fraud (user friction)<br>
+        • Cost of false negatives (missed fraud)<br><br>
+        <div class="tag orange">Critical insight</div> You often CAN'T monitor accuracy in real-time because you don't have labels immediately. This is where proxy metrics (input drift, output distribution) become critical — they're leading indicators of degradation.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> How do you statistically detect drift? What tests do you use? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>For continuous features:</strong><br>
+        • <strong>KS test (Kolmogorov-Smirnov):</strong> Compares two distributions by maximum difference in CDFs. Simple, no distribution assumptions. Good for small samples.<br>
+        • <strong>PSI (Population Stability Index):</strong> Bin both distributions, compare. Industry standard for credit models. PSI &lt;0.1 = stable, 0.1-0.2 = slight shift, >0.2 = significant drift. Flag for review.<br>
+        • <strong>Wasserstein distance:</strong> "Earth mover's distance" — intuitive measure of how much you'd need to move probability mass to transform one distribution to another.<br><br>
+        <strong>For categorical features:</strong><br>
+        • <strong>Chi-squared test:</strong> Compare observed vs expected category frequencies<br>
+        • <strong>JS divergence:</strong> Symmetric version of KL divergence<br><br>
+        <strong>For model outputs:</strong><br>
+        • Monitor mean prediction score over time (rolling window)<br>
+        • Alert if output distribution shifts significantly<br><br>
+        <strong>Practical thresholds:</strong><br>
+        Use your training data as the reference distribution. Compare a rolling 7-day window vs the baseline. Set alert thresholds based on what caused degradation in the past.<br><br>
+        <div class="tag">Tools</div> Evidently AI, WhyLogs, Arize, nannyML (for no-label drift), SeldonCore, or custom monitoring in Grafana/Prometheus.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you set up automated retraining? When should retraining be triggered? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Two philosophies:</strong><br><br>
+        <strong>Schedule-based retraining:</strong> Retrain on a fixed schedule (daily, weekly, monthly). Simple and predictable. Works well when data changes gradually. Downside: might retrain unnecessarily, or not retrain fast enough after sudden shifts.<br><br>
+        <strong>Trigger-based retraining:</strong> Retrain only when a signal says it's needed:<br>
+        • Drift detected above threshold<br>
+        • Model accuracy drops below floor (when you have labels)<br>
+        • New data volume threshold exceeded (e.g., 10% more data than last training)<br>
+        • Manual trigger by team<br><br>
+        <strong>The automated retraining pipeline:</strong><br>
+        1. Trigger fires (schedule or drift signal)<br>
+        2. Data pipeline runs: pull latest data, run validation, create training dataset<br>
+        3. Training job kicks off with same config as last production model<br>
+        4. New model evaluated against challenger suite<br>
+        5. Auto-promote if: new model beats current production model on all eval metrics + no regressions<br>
+        6. Deploy via canary (5% → 100%)<br>
+        7. If automated eval fails → alert humans, do not auto-promote<br><br>
+        <strong>Tools for orchestration:</strong> Prefect, Airflow, Metaflow, Kubeflow Pipelines, SageMaker Pipelines
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← Data Engineering</button>
+    <button class="nbtn primary" onclick="nextCh(5)">CI/CD for ML →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 7 ══════════════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 07 / 09</div>
+    <div class="ch-title">CI/CD<br><em>for ML</em></div>
+    <p class="ch-lead">Continuous integration and deployment for ML is different from software CI/CD. Code tests pass/fail. ML quality is a spectrum. You need tests for data, models, AND code.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The ML CI/CD Pyramid</div>
+    <h2>What to Test at Each Stage</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Test Level</th><th>What You Test</th><th>When</th><th>Tools</th></tr>
+      <tr><td style="color:var(--cyan)">Code Tests</td><td>Unit tests for data transforms, feature logic, preprocessing functions</td><td>Every PR / commit</td><td>pytest, unittest</td></tr>
+      <tr><td style="color:var(--green)">Data Tests</td><td>Schema, distributions, null rates, expected ranges on training data</td><td>Before every training run</td><td>Great Expectations, Pandera</td></tr>
+      <tr><td style="color:var(--yellow)">Model Tests</td><td>Accuracy on eval set, regression tests (model must beat baseline)</td><td>After training, before promotion</td><td>Custom eval harness + MLflow</td></tr>
+      <tr><td style="color:var(--orange)">Integration Tests</td><td>Model + serving infra: correct input/output shapes, latency under load</td><td>Before deployment</td><td>locust, k6, custom</td></tr>
+      <tr><td style="color:var(--purple)">Shadow Tests</td><td>New model vs current production on real traffic</td><td>Before full rollout</td><td>Custom traffic splitting</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What does a CI/CD pipeline for ML look like? Walk me through one. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>On every pull request (CI):</strong><br>
+        1. Lint and unit tests for code changes<br>
+        2. Data validation: run Great Expectations on a sample of training data<br>
+        3. Fast smoke test: train a tiny model (1 epoch, 1% data) to check the training script doesn't crash<br>
+        4. Check model serving code can load a model and run inference<br><br>
+        <strong>On merge to main (CD — training gate):</strong><br>
+        1. Full training run triggered<br>
+        2. Data validation on full training dataset<br>
+        3. Model evaluation on holdout test set<br>
+        4. Compare to current production model: new model must beat it on key metrics<br>
+        5. If passes → register in model registry as "Staging"<br><br>
+        <strong>Promotion to production:</strong><br>
+        1. Deploy to staging environment<br>
+        2. Integration tests: latency, throughput, input/output correctness<br>
+        3. Human approval (or auto-approve if within confidence bounds)<br>
+        4. Canary deploy: 5% → monitor 24h → 100%<br><br>
+        <strong>Tools:</strong> GitHub Actions / GitLab CI for orchestration. Kubeflow Pipelines / Metaflow / SageMaker Pipelines for the ML steps themselves.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you do model regression testing? What is a "challenger" model? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Model regression testing:</strong> Automatically checking that a new model doesn't perform worse than the current production model on any important metric or data slice.<br><br>
+        <strong>Champion-Challenger framework:</strong><br>
+        • <strong>Champion:</strong> Current production model. The baseline to beat.<br>
+        • <strong>Challenger:</strong> New model candidate. Must beat champion to go to production.<br><br>
+        <strong>What to test in regression suite:</strong><br>
+        1. <strong>Overall metrics:</strong> Challenger must be ≥ champion on primary metric (with statistical significance)<br>
+        2. <strong>Data slice metrics:</strong> Must not regress on ANY important subgroup (mobile users, new users, specific regions). Overall improvement can mask slice regression.<br>
+        3. <strong>Canary metrics:</strong> A small set of known-tricky examples that must pass<br>
+        4. <strong>Latency:</strong> Challenger must not be slower by more than X ms p99<br>
+        5. <strong>Calibration:</strong> Predicted probabilities must match observed frequency<br><br>
+        <strong>Slice-based testing example:</strong><br>
+        If your model is a fraud detector: you must test performance separately for: high-value transactions, new accounts, mobile vs web, geographic regions. A model that's 2% better overall but 10% worse on mobile fails the regression test.<br><br>
+        <div class="tag">Tooling</div> Build a custom eval harness. Store results in MLflow. Gate CI pipeline: if any regression test fails, block promotion.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is infrastructure as code (IaC) and why does it matter for MLOps? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>IaC:</strong> Define your infrastructure (servers, databases, networking, GPU clusters) in code files, not through clicking in a UI. Version controlled, reproducible, peer-reviewed.<br><br>
+        <strong>Tools:</strong> Terraform (most common), Pulumi (Python/TypeScript), CDK (AWS), Deployment Manager (GCP)<br><br>
+        <strong>Why it matters for ML:</strong><br>
+        1. <strong>Reproducible environments:</strong> Spin up identical training clusters in different regions or accounts<br>
+        2. <strong>Cost control:</strong> Declare exactly what resources are used — easy to audit and tear down<br>
+        3. <strong>Disaster recovery:</strong> If your cloud account has an issue, recreate everything from code<br>
+        4. <strong>Staging/prod parity:</strong> Same infra definition for staging and production. Fewer surprises when you promote.<br><br>
+        <strong>At 2 years experience, you should know:</strong><br>
+        • How to read and write basic Terraform/CDK<br>
+        • Why clicking in consoles is bad (not reproducible, not reviewable)<br>
+        • How to parameterize infra for different environments (dev/staging/prod)<br>
+        • Basic: compute (EC2/GCE), networking (VPC), storage (S3/GCS), container registries (ECR/GCR)
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← Monitoring</button>
+    <button class="nbtn primary" onclick="nextCh(6)">Tools Landscape →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 8 ══════════════════════════ -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 08 / 09</div>
+    <div class="ch-title">The Tools<br><em>Landscape</em></div>
+    <p class="ch-lead">Know the ecosystem. You don't need to be an expert in all of these, but you need to know what exists, what category each tool belongs to, and when to reach for it.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Full Stack Map</div>
+    <h2>Every Tool You Should Know</h2>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-cat">Data Pipeline</div>
+        <div class="tool-name">Apache Airflow</div>
+        <div class="tool-desc">DAG-based workflow orchestration. Industry standard for scheduling complex pipelines.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Data Pipeline</div>
+        <div class="tool-name">Prefect / Dagster</div>
+        <div class="tool-desc">Modern alternatives to Airflow. More Pythonic, better error handling, local dev experience.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">ML Pipeline</div>
+        <div class="tool-name">Kubeflow Pipelines</div>
+        <div class="tool-desc">K8s-native ML workflow orchestration. Complex but very powerful for production ML at scale.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">ML Pipeline</div>
+        <div class="tool-name">Metaflow (Netflix)</div>
+        <div class="tool-desc">Python-first ML pipeline framework. Great local→cloud story. Loved by data scientists.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Experiment Tracking</div>
+        <div class="tool-name">MLflow</div>
+        <div class="tool-desc">Open source. Tracking + model registry + serving. Integrates with everything.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Experiment Tracking</div>
+        <div class="tool-name">Weights & Biases</div>
+        <div class="tool-desc">Best-in-class visualizations. Industry favorite for research and production teams.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Model Serving</div>
+        <div class="tool-name">Triton Server</div>
+        <div class="tool-desc">NVIDIA's inference server. Best GPU utilization. Dynamic batching. Production standard.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Model Serving</div>
+        <div class="tool-name">Ray Serve</div>
+        <div class="tool-desc">Python-native serving on Ray. Scales from laptop to cluster. Good for complex pipelines.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Feature Store</div>
+        <div class="tool-name">Feast</div>
+        <div class="tool-desc">Open source feature store. Online (Redis) + offline (Parquet/BigQuery) store. Self-managed.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Feature Store</div>
+        <div class="tool-name">Tecton</div>
+        <div class="tool-desc">Managed enterprise feature store. Expensive but battle-tested at scale.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Data Validation</div>
+        <div class="tool-name">Great Expectations</div>
+        <div class="tool-desc">Define, test, and document data quality expectations. Most mature open source option.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Data Version</div>
+        <div class="tool-name">DVC</div>
+        <div class="tool-desc">Git for data and models. Tracks large files in cloud, git tracks pointers. Free.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Training Scale</div>
+        <div class="tool-name">DeepSpeed</div>
+        <div class="tool-desc">Microsoft's distributed training library. ZeRO optimizer. Essential for LLM training.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Training Scale</div>
+        <div class="tool-name">Ray Train</div>
+        <div class="tool-desc">Distributed training on any cluster. Framework-agnostic. Integrates with Tune for HPO.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Monitoring</div>
+        <div class="tool-name">Evidently AI</div>
+        <div class="tool-desc">Open source ML monitoring. Drift reports, data quality, model performance dashboards.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Monitoring</div>
+        <div class="tool-name">Arize / Fiddler</div>
+        <div class="tool-desc">Enterprise ML observability platforms. Expensive but full-featured for large teams.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">LLM Ops</div>
+        <div class="tool-name">LangSmith</div>
+        <div class="tool-desc">LangChain's observability platform. Trace LLM calls, compare prompts, run evals.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">LLM Ops</div>
+        <div class="tool-name">Langfuse</div>
+        <div class="tool-desc">Open source LLMOps. Tracing, cost tracking, evals. Self-hostable alternative to LangSmith.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Containers</div>
+        <div class="tool-name">Docker + K8s</div>
+        <div class="tool-desc">Containerize your model. Kubernetes orchestrates at scale. Non-negotiable production knowledge.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-cat">Cloud ML</div>
+        <div class="tool-name">SageMaker / Vertex</div>
+        <div class="tool-desc">Managed ML platforms. Full lifecycle: training, tuning, deployment, monitoring. Higher cost but less toil.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Tool-Specific Questions</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is Docker and why is it essential for MLOps? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Docker</strong> packages your code, dependencies, libraries, and environment into a container — a portable unit that runs the same everywhere: your laptop, CI server, cloud GPU cluster.<br><br>
+        <strong>Why ML specifically needs it:</strong><br>
+        • ML has extremely fragile dependency stacks. PyTorch 2.1 + CUDA 12.1 + cuDNN 8.9 + specific numpy version — one mismatch = broken training or subtle numerical differences.<br>
+        • "Works on my machine" is death in production ML. Docker kills this problem.<br>
+        • Reproducibility: same Docker image = identical environment regardless of where it runs<br>
+        • Kubernetes (for scaling) requires containers — can't use K8s without Docker (or equivalent)<br><br>
+        <div class="formula">FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+ENTRYPOINT ["python", "train.py"]</div>
+        <strong>What to know:</strong><br>
+        • Difference between image vs container<br>
+        • Multi-stage builds (separate build and runtime images)<br>
+        • Volume mounts (persist data outside container)<br>
+        • GPU passthrough: --gpus all flag or nvidia-container-runtime
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> What is Kubernetes and what do you need to know as an AI engineer? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Kubernetes (K8s):</strong> Container orchestration — automatically deploys, scales, and manages containerized applications across a cluster of machines.<br><br>
+        <strong>Key concepts for AI engineers:</strong><br><br>
+        <strong>Pod:</strong> The smallest deployable unit. One or more containers that run together. Your model server is a Pod.<br><br>
+        <strong>Deployment:</strong> Manages a set of identical Pods (replicas). Handles rolling updates and rollbacks.<br><br>
+        <strong>Service:</strong> Exposes your Pods to the network (load balancer, internal DNS).<br><br>
+        <strong>Horizontal Pod Autoscaler (HPA):</strong> Automatically scale replicas up/down based on CPU, GPU, or custom metrics (request queue length).<br><br>
+        <strong>Resource requests/limits:</strong> Tell K8s how much CPU/GPU/memory each pod needs and the maximum it can use. Critical for ML — always request GPU explicitly.<br><br>
+        <div class="formula">resources:
+  requests:
+    memory: "8Gi"
+    nvidia.com/gpu: "1"   # request 1 GPU
+  limits:
+    memory: "16Gi"
+    nvidia.com/gpu: "1"</div>
+        <strong>Jobs vs Deployments:</strong> Training is a Job (runs once, terminates). Serving is a Deployment (runs forever, stays alive).<br><br>
+        <strong>What you should be able to do:</strong> kubectl get pods, describe a crashing pod (logs), deploy a model server, configure HPA. You don't need to administer K8s clusters — just use them.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← CI/CD</button>
+    <button class="nbtn primary" onclick="nextCh(7)">LLM in Prod →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ CH 9 ══════════════════════════ -->
+<div class="chapter" id="ch8">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 09 / 09</div>
+    <div class="ch-title">LLMs<br><em>in Production</em></div>
+    <p class="ch-lead">LLMs have unique MLOps challenges. Cost management, latency optimization, guardrails, and observability for generative models are different from classic ML. This is the most asked-about topic at AI companies right now.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — LLM-Specific Concerns</div>
+    <h2>What's Different With LLMs</h2>
+
+    <div class="tbl-wrap">
+    <table>
+      <tr><th>Classic ML</th><th>LLM in Production</th></tr>
+      <tr><td>Deterministic outputs (mostly)</td><td>Stochastic — same input can give different output</td></tr>
+      <tr><td>Cheap inference (milliseconds, CPU)</td><td>Expensive inference (seconds, requires GPU)</td></tr>
+      <tr><td>Small model (MB)</td><td>Large model (GB to TB)</td></tr>
+      <tr><td>Easy to evaluate (accuracy, F1)</td><td>Hard to evaluate (subjective quality)</td></tr>
+      <tr><td>Data drift → retrain</td><td>Prompt drift → re-engineer prompts, re-evaluate</td></tr>
+      <tr><td>Simple versioning</td><td>Must version: model + prompt + retrieval config together</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <h2>Real Questions You'll Be Asked</h2>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> How do you manage and reduce LLM costs in production? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Understand your cost drivers first:</strong><br>
+        • Input tokens + output tokens = total cost<br>
+        • GPT-4o: ~$5/1M input, $15/1M output. Claude Sonnet: ~$3/$15. Haiku/GPT-4o-mini: ~10-50× cheaper.<br><br>
+        <strong>Cost reduction strategies:</strong><br><br>
+        <strong>1. Model tiering — use the smallest model that works:</strong><br>
+        Route simple queries (FAQ, classification) to cheap fast models (GPT-4o-mini, Haiku). Route complex reasoning to expensive models (GPT-4o, Claude Sonnet). 80% of queries are often simple → 80% cost reduction on those queries.<br><br>
+        <strong>2. Prompt optimization:</strong><br>
+        Every unnecessary token costs money. Audit your system prompt. Remove verbose instructions. Compress few-shot examples. Use shorter output format instructions.<br><br>
+        <strong>3. Caching:</strong><br>
+        • Exact cache: same input → return cached output<br>
+        • Semantic cache (GPTCache): embed query, find nearest cached query above similarity threshold<br>
+        • Prompt caching (Anthropic, OpenAI): cache long system prompts serverside (~90% discount on cached tokens)<br><br>
+        <strong>4. Batch API:</strong><br>
+        For offline workloads (not real-time), use Batch API (OpenAI, Anthropic). 50% cheaper, processes within 24 hours. For nightly batch scoring, report generation, data enrichment.<br><br>
+        <strong>5. Self-hosted open source:</strong><br>
+        Llama 3.1 70B ≈ GPT-4 quality for many tasks. At scale: GPU cost often cheaper than API cost after ~1M requests/month.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you build guardrails for an LLM in production? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Guardrails</strong> = constraints on what the LLM can say or do. Two directions:<br>
+        • <strong>Input guardrails:</strong> Filter/transform what goes into the LLM<br>
+        • <strong>Output guardrails:</strong> Filter/transform what comes out before the user sees it<br><br>
+        <strong>Common guardrail types:</strong><br><br>
+        <strong>Topic restriction:</strong> "Customer service bot should only discuss our product." Use a classifier (fast, cheap) on input: if query is off-topic → reject with a message, don't send to LLM at all.<br><br>
+        <strong>Safety / harmful content:</strong> Use a safety classifier (OpenAI Moderation API, Llama Guard) on both input and output. Block harmful content before it reaches the user.<br><br>
+        <strong>PII detection:</strong> Scan input for personal data (names, emails, SSNs, credit cards). Redact before sending to LLM (especially if using third-party API). Use spaCy NER or AWS Comprehend.<br><br>
+        <strong>Output format validation:</strong> If you expect JSON, validate the JSON. If the model hallucinated invalid JSON → catch, retry, or fall back. Use structured output (JSON mode) to prevent format issues.<br><br>
+        <strong>Hallucination detection:</strong> Post-process: check that facts in the output are grounded in the retrieved context. Use a separate LLM call: "Is this claim supported by the context?"<br><br>
+        <strong>Tools:</strong> NeMo Guardrails (NVIDIA), Guardrails AI, custom classifiers + rules<br><br>
+        <div class="tag red">Critical</div> Every guardrail adds latency. Profile your guardrail pipeline. Run input + output checks in parallel where possible. Cache guardrail decisions for repeated inputs.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you do observability for LLM applications? What do you trace? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>LLM observability</strong> = ability to inspect what happened in any LLM call: what was sent in, what came back, how long it took, how much it cost, and whether it was good.<br><br>
+        <strong>What to trace per request:</strong><br>
+        • Input: full prompt (system + user message, including retrieved context if RAG)<br>
+        • Output: full model response<br>
+        • Metadata: model name, temperature, max_tokens, stop_reason<br>
+        • Timing: total latency, time-to-first-token<br>
+        • Cost: input tokens, output tokens, estimated cost<br>
+        • User: user_id, session_id (for conversation tracing)<br>
+        • Quality: user feedback if collected (thumbs up/down)<br><br>
+        <strong>For RAG specifically, also trace:</strong><br>
+        • Retrieval query sent to vector DB<br>
+        • Documents retrieved (with scores)<br>
+        • Whether the answer was grounded in retrieved docs<br><br>
+        <strong>For agent/multi-step pipelines:</strong><br>
+        • Full trace of each step (tool calls, results, intermediate reasoning)<br>
+        • Which tool was called with what arguments<br>
+        • Where latency is being spent in the chain<br><br>
+        <strong>Tools:</strong><br>
+        • LangSmith: best for LangChain apps, one-click tracing<br>
+        • Langfuse: open source, self-hostable, framework-agnostic<br>
+        • Helicone: lightweight proxy-based logging<br>
+        • OpenTelemetry: standard observability protocol, custom integration<br><br>
+        <div class="tag">Minimum you must log</div> Full prompt + response + latency + tokens + user ID + timestamp. Everything else is bonus. Store in ClickHouse or BigQuery for cheap queryable storage.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> How do you handle rate limits and API failures in an LLM application? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>The problem:</strong> LLM APIs rate-limit you (tokens per minute, requests per minute). At scale, you WILL hit these. Also: APIs go down, return errors, time out. Your app needs to handle all of this gracefully.<br><br>
+        <strong>Retry with exponential backoff + jitter:</strong><br>
+        On 429 (rate limit) or 5xx: wait 2^attempt seconds × random(0.5-1.5), retry up to N times. Jitter prevents thundering herd.<br><br>
+        <strong>Request queuing:</strong><br>
+        Don't flood the API. Use a token bucket or rate limiter on your side (e.g., Redis-based limiter). Queue excess requests, process within rate limits.<br><br>
+        <strong>Multi-provider fallback:</strong><br>
+        Primary: OpenAI GPT-4o. If unavailable or rate-limited → fallback to Anthropic Claude. Both have similar capabilities. Use a router that switches providers automatically. Tools: LiteLLM (unified interface for all LLM providers, handles fallbacks natively).<br><br>
+        <strong>Circuit breaker pattern:</strong><br>
+        If an API has failed 5 times in 60 seconds → open the circuit, stop trying, return a graceful error. After 60 seconds → try again (half-open). Prevents cascading failures.<br><br>
+        <strong>Graceful degradation:</strong><br>
+        If LLM call fails → can you return a cached response? A template response? A human handoff? Never show a raw error to users.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you version and manage prompts in production? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>The problem:</strong> Prompts are code. Changing a prompt changes your application's behavior. You need to track, test, and deploy prompt changes with the same rigor as code changes.<br><br>
+        <strong>Prompt versioning principles:</strong><br>
+        1. Store prompts in code (not hardcoded in application code — in a prompts/ directory or config file). Version controlled in git.<br>
+        2. Never edit a prompt in production without testing. Treat prompt changes like code changes — PR, review, test.<br>
+        3. Each prompt version has a unique ID. Log which prompt version was used for every LLM call.<br><br>
+        <strong>Prompt management approaches:</strong><br><br>
+        <strong>Simple (most teams):</strong> Prompts as YAML/JSON files in git. Load at startup. Prompt ID = git commit hash.<br><br>
+        <strong>Intermediate:</strong> Prompt registry (LangSmith Hub, Langfuse, or custom DB). Each prompt has versions, tags (dev/staging/production). Application fetches prompt by name + stage.<br><br>
+        <strong>Advanced:</strong> A/B test prompts: send 50% of traffic to prompt_v1, 50% to prompt_v2. Measure quality with LLM judge. Promote winning prompt.<br><br>
+        <strong>Must track per prompt version:</strong><br>
+        • Text of the prompt<br>
+        • Model it's designed for<br>
+        • Eval scores when it was tested<br>
+        • Date deployed<br>
+        • Who approved it<br><br>
+        <div class="tag">Important</div> Changing the prompt AND the model at the same time makes it impossible to isolate what caused a quality change. Always change one variable at a time.
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-label">⚡ The MLOps Mindset That Gets You Hired</div>
+    <p>The best answer to almost every MLOps question starts with: <strong>"It depends on scale and requirements, but I'd start simple and add complexity when needed."</strong> Show that you understand tradeoffs. Great MLOps is not using the most complex tools — it's using the right tools for the right stage. A startup with 1M predictions/day needs a very different stack than Google. Know both ends of the spectrum and when to apply each.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(8)">← Tools</button>
+    <button class="nbtn primary" onclick="alert('🎉 MLOps Mastery complete!\n\nYou now have:\n• ML Pipeline\n• Experiment Tracking\n• Deployment Methods\n• Scaling & Infra\n• Data Engineering\n• Monitoring & Drift\n• CI/CD for ML\n• Full Tools Landscape\n• LLM in Production\n\nNext: ML Systems & Frontier AI.')">Series Complete 🚀</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let cur = 0;
+const total = 9;
+
+function toggle(el) {
+  const ans = el.nextElementSibling;
+  const isOpen = ans.style.display === 'block';
+  ans.style.display = isOpen ? 'none' : 'block';
+  el.classList.toggle('open', !isOpen);
+}
+
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  el.classList.add('active');
+  cur = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextCh(c) {
+  if (c + 1 < total) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c + 1, items[c + 1]);
+  }
+}
+
+function prevCh(c) {
+  if (c - 1 >= 0) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c - 1, items[c - 1]);
+  }
+}
+</script>
+</body>
+</html>

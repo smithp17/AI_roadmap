@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classical ML — Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300;1,900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #f5f0e8;
+  --warm: #ede8dc;
+  --ink: #1a1610;
+  --ink2: #3d3628;
+  --muted: #8c7e6a;
+  --accent: #c84b2f;
+  --accent2: #2d6a4f;
+  --accent3: #1d4e89;
+  --accent4: #7b3f9e;
+  --accent5: #b5451b;
+  --gold: #d4a017;
+  --border: #d4c8b4;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 56px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 15px;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-right: 32px;
+  letter-spacing: -0.02em;
+}
+
+.nav-item {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.nav-item:hover { color: var(--ink); }
+.nav-item.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 500; }
+
+/* LAYOUT */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 96px 24px 80px;
+}
+
+/* CHAPTER */
+.chapter {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.chapter.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* CHAPTER HEADER */
+.ch-header {
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ch-num {
+  font-family: 'Fraunces', serif;
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.ch-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+}
+
+.ch-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.ch-lead {
+  font-size: 17px;
+  color: var(--ink2);
+  max-width: 600px;
+  line-height: 1.65;
+}
+
+/* SECTIONS */
+.section {
+  margin-bottom: 64px;
+}
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-family: 'DM Mono', monospace;
+}
+
+h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+p { margin-bottom: 14px; font-size: 15.5px; }
+p:last-child { margin-bottom: 0; }
+
+/* VISUAL BOXES */
+.visual-box {
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 28px;
+  margin: 28px 0;
+  position: relative;
+}
+
+.visual-box::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -1px; left: 24px;
+  background: var(--accent);
+  color: white;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ANALOGY BOX */
+.analogy {
+  background: white;
+  border-left: 3px solid var(--gold);
+  padding: 20px 24px;
+  margin: 24px 0;
+  font-size: 15px;
+}
+.analogy-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 6px;
+}
+
+/* TRADEOFF */
+.tradeoff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+.tradeoff-card {
+  padding: 20px;
+  border-radius: 2px;
+  font-size: 14px;
+}
+.tradeoff-card.pro { background: #e8f5ee; border: 1px solid #b7dfca; }
+.tradeoff-card.con { background: #fdf0ed; border: 1px solid #f0c4ba; }
+.tradeoff-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+.tradeoff-card.pro h4 { color: var(--accent2); }
+.tradeoff-card.con h4 { color: var(--accent); }
+.tradeoff-card ul { padding-left: 16px; }
+.tradeoff-card li { margin-bottom: 4px; line-height: 1.5; }
+
+/* KEY INSIGHT */
+.insight {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 24px 28px;
+  margin: 28px 0;
+  border-radius: 2px;
+  font-size: 15px;
+}
+.insight strong { color: var(--gold); }
+.insight-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 8px;
+}
+
+/* FORMULA */
+.formula {
+  font-family: 'DM Mono', monospace;
+  background: white;
+  border: 1px solid var(--border);
+  padding: 16px 24px;
+  font-size: 14px;
+  margin: 16px 0;
+  overflow-x: auto;
+  border-left: 3px solid var(--accent3);
+  color: var(--accent3);
+  font-weight: 500;
+}
+
+/* SVG CANVAS */
+.canvas {
+  background: white;
+  border: 1px solid var(--border);
+  margin: 24px 0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.canvas svg { width: 100%; display: block; }
+
+/* COMPARE TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 13.5px;
+}
+th {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 10px 14px;
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+tr:nth-child(even) td { background: var(--warm); }
+td:first-child { font-weight: 500; color: var(--ink); }
+
+/* NAV BUTTONS */
+.nav-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink2);
+  transition: all 0.2s;
+}
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.nav-btn.primary { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.nav-btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* PILL TAGS */
+.pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+.pill {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-family: 'DM Mono', monospace;
+  border: 1px solid;
+}
+.pill-red { background: #fdf0ed; border-color: #f0c4ba; color: var(--accent); }
+.pill-green { background: #e8f5ee; border-color: #b7dfca; color: var(--accent2); }
+.pill-blue { background: #eaf0f8; border-color: #b0c8e8; color: var(--accent3); }
+.pill-purple { background: #f3eef8; border-color: #d4b8ec; color: var(--accent4); }
+
+/* STEP LIST */
+.steps { counter-reset: step; margin: 20px 0; }
+.step { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+.step-num {
+  counter-increment: step;
+  width: 28px; height: 28px;
+  background: var(--ink);
+  color: var(--cream);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-content { flex: 1; font-size: 15px; }
+.step-content strong { color: var(--ink); font-weight: 500; }
+
+/* METRIC BARS */
+.metric-row { margin-bottom: 16px; }
+.metric-label { font-size: 12px; font-family: 'DM Mono', monospace; margin-bottom: 5px; display: flex; justify-content: space-between; }
+.metric-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.metric-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+/* CALLOUT */
+.callout {
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 2px;
+  font-size: 14.5px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.callout-icon { font-size: 20px; flex-shrink: 0; }
+.callout-body {}
+.callout-title { font-weight: 500; margin-bottom: 4px; font-size: 14px; }
+
+hr.divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">ML Deep Dive</div>
+  <div class="nav-item active" onclick="goTo(0, this)">① Linear & Logistic Reg</div>
+  <div class="nav-item" onclick="goTo(1, this)">② Trees & Boosting</div>
+  <div class="nav-item" onclick="goTo(2, this)">③ SVMs & Kernels</div>
+  <div class="nav-item" onclick="goTo(3, this)">④ Clustering & Dim. Reduction</div>
+  <div class="nav-item" onclick="goTo(4, this)">⑤ Model Evaluation</div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- CHAPTER 1: LINEAR & LOGISTIC REGRESSION            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 01 / 05</div>
+    <div class="ch-title">Linear &<br><em>Logistic</em><br>Regression</div>
+    <p class="ch-lead">The simplest models in ML — and also the ones every interview goes back to. Know them cold.</p>
+  </div>
+
+  <!-- LINEAR REGRESSION -->
+  <div class="section">
+    <div class="section-label">01 — Linear Regression</div>
+    <h2>Fitting a Line to Data</h2>
+    <p>You have data points — say, house size vs. house price. Linear regression finds the best straight line through them. "Best" means the line that minimizes the total squared distance from each point to the line.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      Imagine stretching a rubber band across a scatter of dots on a board. You want the band to be as close to as many dots as possible. That "best position" is your regression line.
+    </div>
+
+    <div class="formula">ŷ = w₁x₁ + w₂x₂ + ... + b &nbsp;&nbsp;&nbsp; (weights × features + bias)</div>
+
+    <p>The model learns the <strong>weights (w)</strong> — how much each feature matters. The <strong>bias (b)</strong> is just where the line starts when all features are zero.</p>
+
+    <div class="canvas">
+      <svg viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="220" fill="white"/>
+        <!-- axes -->
+        <line x1="50" y1="180" x2="460" y2="180" stroke="#d4c8b4" stroke-width="1.5"/>
+        <line x1="50" y1="20" x2="50" y2="180" stroke="#d4c8b4" stroke-width="1.5"/>
+        <text x="255" y="210" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#8c7e6a">House Size →</text>
+        <text x="20" y="100" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#8c7e6a" transform="rotate(-90,20,100)">Price →</text>
+        <!-- dots -->
+        <circle cx="90" cy="155" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="130" cy="140" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="170" cy="130" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="200" cy="118" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="240" cy="100" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="275" cy="90" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="310" cy="75" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="355" cy="60" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="400" cy="48" r="5" fill="#c84b2f" opacity="0.7"/>
+        <circle cx="430" cy="38" r="5" fill="#c84b2f" opacity="0.7"/>
+        <!-- regression line -->
+        <line x1="65" y1="165" x2="450" y2="30" stroke="#1d4e89" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- residual lines -->
+        <line x1="90" y1="155" x2="90" y2="147" stroke="#d4a017" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="240" y1="100" x2="240" y2="97" stroke="#d4a017" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="400" y1="48" x2="400" y2="41" stroke="#d4a017" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- labels -->
+        <text x="340" y="110" font-family="DM Sans" font-size="11" fill="#1d4e89" font-weight="500">Best fit line</text>
+        <text x="240" y="80" font-family="DM Sans" font-size="10" fill="#d4a017">residuals</text>
+        <line x1="260" y1="82" x2="245" y2="97" stroke="#d4a017" stroke-width="1" marker-end="url(#arrow)"/>
+      </svg>
+    </div>
+
+    <p>The yellow dashed lines are <strong>residuals</strong> — the gap between what the model predicted and the real value. We minimize the sum of squared residuals. This is called <strong>Ordinary Least Squares (OLS)</strong>.</p>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Key insight</div>
+      Why <em>squared</em> residuals? Two reasons: (1) it punishes large errors more than small ones, and (2) it's mathematically convenient — the solution has a clean closed form: <strong>w = (XᵀX)⁻¹Xᵀy</strong>. No gradient descent needed for small datasets.
+    </div>
+
+    <h3>The Problem: Overfitting</h3>
+    <p>Add enough features and your model will perfectly memorize the training data — but fail completely on new data. This is called overfitting. The fix is <strong>regularization</strong>: adding a penalty for having large weights.</p>
+
+    <div class="visual-box" data-label="Regularization Types">
+      <table>
+        <tr><th>Type</th><th>Penalty Added</th><th>Effect</th><th>When to Use</th></tr>
+        <tr>
+          <td>L2 (Ridge)</td>
+          <td>λ · Σwᵢ²</td>
+          <td>Shrinks all weights toward zero but keeps all features</td>
+          <td>Default choice. Most features are somewhat useful.</td>
+        </tr>
+        <tr>
+          <td>L1 (Lasso)</td>
+          <td>λ · Σ|wᵢ|</td>
+          <td>Drives many weights to exactly zero — automatic feature selection</td>
+          <td>When you suspect most features are irrelevant.</td>
+        </tr>
+        <tr>
+          <td>ElasticNet</td>
+          <td>Mix of L1 + L2</td>
+          <td>Groups correlated features together, does feature selection</td>
+          <td>High-dimensional data with correlated features.</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">The Bias-Variance Tradeoff</div>
+        <strong>Bias</strong> = your model is too simple — it consistently gets things wrong in the same direction (underfitting). <strong>Variance</strong> = your model is too sensitive — tiny changes in training data lead to wildly different models (overfitting). Regularization increases bias slightly to reduce variance a lot. That's the deal.
+      </div>
+    </div>
+
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>✓ Strengths</h4>
+        <ul>
+          <li>Incredibly fast to train — even millions of rows</li>
+          <li>Coefficients are directly interpretable</li>
+          <li>Works great when the relationship really is linear</li>
+          <li>Closed-form solution — no hyperparameter tuning for base case</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>✗ Weaknesses</h4>
+        <ul>
+          <li>Assumes linear relationship — badly misses curves</li>
+          <li>Sensitive to outliers (squared loss amplifies them)</li>
+          <li>Assumes features are independent (multicollinearity hurts)</li>
+          <li>Needs feature engineering for complex patterns</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- LOGISTIC REGRESSION -->
+  <div class="section">
+    <div class="section-label">02 — Logistic Regression</div>
+    <h2>Classification, Not Regression</h2>
+    <p>Despite the name, logistic regression is a <strong>classification</strong> model. It answers: "What's the probability this email is spam?" — not "how much spam?"</p>
+
+    <p>The trick: take a linear combination of features, then squeeze the output through a <strong>sigmoid function</strong> to force it between 0 and 1.</p>
+
+    <div class="formula">P(y=1) = σ(w·x + b) = 1 / (1 + e^(-w·x+b))</div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="200" fill="white"/>
+        <line x1="50" y1="100" x2="460" y2="100" stroke="#d4c8b4" stroke-width="1"/>
+        <line x1="255" y1="15" x2="255" y2="185" stroke="#d4c8b4" stroke-width="1"/>
+        <text x="460" y="115" font-family="DM Mono" font-size="10" fill="#8c7e6a">z</text>
+        <text x="260" y="22" font-family="DM Mono" font-size="10" fill="#8c7e6a">σ(z)</text>
+        <!-- sigmoid curve -->
+        <path d="M 60,183 C 80,183 120,183 150,170 C 180,157 200,140 220,120 C 235,105 255,100 255,100 C 255,100 275,95 290,80 C 310,60 330,43 360,30 C 390,17 420,17 450,17" fill="none" stroke="#c84b2f" stroke-width="2.5"/>
+        <!-- asymptotes -->
+        <line x1="60" y1="17" x2="450" y2="17" stroke="#d4c8b4" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="60" y1="183" x2="450" y2="183" stroke="#d4c8b4" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- labels -->
+        <text x="80" y="175" font-family="DM Sans" font-size="11" fill="#8c7e6a">0</text>
+        <text x="80" y="23" font-family="DM Sans" font-size="11" fill="#8c7e6a">1</text>
+        <text x="245" y="95" font-family="DM Mono" font-size="10" fill="#1d4e89">0.5</text>
+        <circle cx="255" cy="100" r="4" fill="#1d4e89"/>
+        <!-- region labels -->
+        <rect x="310" y="120" width="100" height="22" fill="#e8f5ee" rx="2"/>
+        <text x="360" y="135" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#2d6a4f">Predict class 1</text>
+        <rect x="90" y="120" width="100" height="22" fill="#fdf0ed" rx="2"/>
+        <text x="140" y="135" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#c84b2f">Predict class 0</text>
+      </svg>
+    </div>
+
+    <p>If the output is above 0.5, predict class 1. Below 0.5, predict class 0. The decision boundary is where the line <strong>w·x + b = 0</strong> — logistic regression is finding the best linear boundary between classes.</p>
+
+    <h3>Loss Function: Cross-Entropy</h3>
+    <p>We can't use squared error here — the math breaks (non-convex loss landscape). Instead we use <strong>cross-entropy loss</strong>:</p>
+
+    <div class="formula">L = -[y·log(p) + (1-y)·log(1-p)]</div>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Intuition</div>
+      If the true label is 1 and your model says "90% sure it's 1" — small loss. If your model says "5% sure it's 1" — huge loss. The log function makes the penalty explode when you're confidently wrong. This is exactly what you want.
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ What Google engineers know</div>
+      Logistic regression with good feature engineering still beats fancy models in many production settings — especially for tabular data with millions of rows. It's also the backbone of <strong>neural network output layers</strong> for classification. Understanding logistic regression = understanding the final layer of every classifier ever.
+    </div>
+
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>✓ Strengths</h4>
+        <ul>
+          <li>Outputs calibrated probabilities — not just labels</li>
+          <li>Extremely interpretable — weight = log-odds contribution</li>
+          <li>Fast, scalable to huge datasets (online learning)</li>
+          <li>Works well with sparse features (text, click data)</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>✗ Weaknesses</h4>
+        <ul>
+          <li>Only linear decision boundary — XOR problem breaks it</li>
+          <li>Needs feature engineering for non-linear patterns</li>
+          <li>Multicollinear features distort coefficients</li>
+          <li>Not great when classes are severely imbalanced without adjustment</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nav-btn" disabled>← Previous</button>
+    <button class="nav-btn primary" onclick="nextChapter(0)">Trees & Boosting →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- CHAPTER 2: TREES & BOOSTING                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 02 / 05</div>
+    <div class="ch-title">Trees &<br><em>Boosting</em></div>
+    <p class="ch-lead">Decision trees are intuitive. Ensemble them properly and you get XGBoost — one of the most powerful models in existence for tabular data.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Decision Trees</div>
+    <h2>Learning by Asking Questions</h2>
+    <p>A decision tree splits your data by asking yes/no questions — like a game of 20 questions. At each step it finds the question that best separates your data.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      Imagine sorting a deck of cards. "Is it red? → Left pile. Is it a face card? → Right pile." You keep splitting until each pile is pure (all one type). That's a decision tree.
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="240" fill="white"/>
+        <!-- root -->
+        <rect x="170" y="15" width="160" height="36" rx="3" fill="#1a1610" />
+        <text x="250" y="38" text-anchor="middle" font-family="DM Mono" font-size="12" fill="#f5f0e8">Age > 30?</text>
+        <!-- lines -->
+        <line x1="210" y1="51" x2="120" y2="90" stroke="#d4c8b4" stroke-width="1.5"/>
+        <line x1="290" y1="51" x2="380" y2="90" stroke="#d4c8b4" stroke-width="1.5"/>
+        <text x="140" y="84" font-family="DM Sans" font-size="11" fill="#2d6a4f">YES</text>
+        <text x="340" y="84" font-family="DM Sans" font-size="11" fill="#c84b2f">NO</text>
+        <!-- level 2 left -->
+        <rect x="45" y="90" width="150" height="36" rx="3" fill="#2d3748"/>
+        <text x="120" y="113" text-anchor="middle" font-family="DM Mono" font-size="11" fill="#f5f0e8">Income > 50k?</text>
+        <!-- level 2 right -->
+        <rect x="305" y="90" width="150" height="36" rx="3" fill="#2d3748"/>
+        <text x="380" y="113" text-anchor="middle" font-family="DM Mono" font-size="11" fill="#f5f0e8">Student?</text>
+        <!-- left children -->
+        <line x1="90" y1="126" x2="65" y2="165" stroke="#d4c8b4" stroke-width="1.5"/>
+        <line x1="150" y1="126" x2="175" y2="165" stroke="#d4c8b4" stroke-width="1.5"/>
+        <rect x="28" y="165" width="74" height="32" rx="3" fill="#c84b2f"/>
+        <text x="65" y="185" text-anchor="middle" font-family="DM Sans" font-size="11" fill="white">❌ No Loan</text>
+        <rect x="138" y="165" width="74" height="32" rx="3" fill="#2d6a4f"/>
+        <text x="175" y="185" text-anchor="middle" font-family="DM Sans" font-size="11" fill="white">✓ Loan</text>
+        <!-- right children -->
+        <line x1="350" y1="126" x2="325" y2="165" stroke="#d4c8b4" stroke-width="1.5"/>
+        <line x1="410" y1="126" x2="435" y2="165" stroke="#d4c8b4" stroke-width="1.5"/>
+        <rect x="288" y="165" width="74" height="32" rx="3" fill="#2d6a4f"/>
+        <text x="325" y="185" text-anchor="middle" font-family="DM Sans" font-size="11" fill="white">✓ Loan</text>
+        <rect x="398" y="165" width="74" height="32" rx="3" fill="#c84b2f"/>
+        <text x="435" y="185" text-anchor="middle" font-family="DM Sans" font-size="11" fill="white">❌ No Loan</text>
+        <!-- labels -->
+        <text x="250" y="230" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#8c7e6a">Example: Loan approval decision tree</text>
+      </svg>
+    </div>
+
+    <h3>How Does It Pick the Best Split?</h3>
+    <p>It tries every possible split on every feature and picks the one that creates the "purest" child nodes. Purity is measured by:</p>
+
+    <div class="visual-box" data-label="Split Criteria">
+      <table>
+        <tr><th>Metric</th><th>What it Measures</th><th>Used In</th></tr>
+        <tr><td>Gini Impurity</td><td>Probability of misclassifying a random sample from the node</td><td>Classification (default in sklearn)</td></tr>
+        <tr><td>Information Gain (Entropy)</td><td>How much the split reduces uncertainty (bits of info)</td><td>Classification (ID3, C4.5)</td></tr>
+        <tr><td>Variance Reduction</td><td>How much the split reduces the variance in target values</td><td>Regression trees</td></tr>
+      </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Key insight</div>
+      A single deep decision tree <strong>perfectly memorizes</strong> training data (zero training error). But it's terrible at generalizing. This is the most extreme form of overfitting. The fix? Don't use one tree — use many, cleverly combined.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">02 — Random Forests</div>
+    <h2>Wisdom of the Crowd</h2>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      Ask 1 expert and you might get a biased answer. Ask 500 different experts who've each seen different evidence and take the majority vote — you get something much more reliable. That's a Random Forest.
+    </div>
+
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>Bootstrap sampling:</strong> For each tree, randomly sample your training data WITH replacement. Each tree sees ~63% of data, different trees see different subsets.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>Random feature selection:</strong> At each split, only consider a random subset of features (√n for classification, n/3 for regression). This forces trees to be different from each other.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>Grow deep trees:</strong> Let each tree overfit its sample. That's fine — the ensemble cancels out individual errors.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>Aggregate:</strong> Classification → majority vote. Regression → average prediction.</div></div>
+    </div>
+
+    <p>This technique of training many models on random subsets and averaging is called <strong>Bagging (Bootstrap Aggregating)</strong>. The key insight: errors from individual trees are random and uncorrelated, so they cancel out when averaged. What remains is the signal.</p>
+
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>✓ Strengths</h4>
+        <ul>
+          <li>Very robust — hard to overfit with enough trees</li>
+          <li>Built-in feature importance (free!)</li>
+          <li>Out-of-bag samples give free cross-validation estimate</li>
+          <li>Handles missing values, mixed types well</li>
+          <li>Easily parallelized (trees are independent)</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>✗ Weaknesses</h4>
+        <ul>
+          <li>Less accurate than boosting on most tabular benchmarks</li>
+          <li>Large memory footprint (many trees)</li>
+          <li>Slow to predict (traverse all trees)</li>
+          <li>Still poor at extrapolation beyond training data range</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">03 — Gradient Boosting & XGBoost</div>
+    <h2>Learning from Mistakes</h2>
+    <p>Boosting is fundamentally different from bagging. Instead of training trees independently, you train them <strong>sequentially</strong> — each new tree corrects the errors of all previous trees.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      You're a student. You take a test, get some wrong. A tutor focuses only on what you got wrong. You study those. Next test — fewer mistakes. Tutor focuses on remaining mistakes. Repeat until perfect. That's boosting.
+    </div>
+
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>Start with a simple prediction</strong> — e.g., the mean of all targets.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>Calculate residuals</strong> — how wrong is the current model for each training example?</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>Train a shallow tree on the residuals</strong> — not on the original targets, but on the errors.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>Add this tree to the ensemble</strong> (scaled by the learning rate): new_prediction = old_prediction + lr × tree_prediction</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-content"><strong>Repeat</strong> — calculating new residuals each time, until a stopping criterion is met.</div></div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ The "Gradient" Part</div>
+      The residuals ARE the gradients of the loss function with respect to predictions. Gradient Boosting is literally performing gradient descent — but in function space (space of predictions) rather than parameter space. Each tree is a step in the direction that reduces loss the most.
+    </div>
+
+    <h3>XGBoost: Why It Dominates Kaggle</h3>
+    <p>XGBoost adds several crucial improvements over vanilla gradient boosting:</p>
+
+    <div class="visual-box" data-label="XGBoost Innovations">
+      <table>
+        <tr><th>Feature</th><th>What it does</th><th>Why it matters</th></tr>
+        <tr><td>L1 + L2 Regularization</td><td>Penalizes tree complexity directly in the loss</td><td>Prevents overfitting, more robust than basic GBM</td></tr>
+        <tr><td>Second-order gradients</td><td>Uses curvature info (Hessian) for better splits</td><td>Converges faster, more accurate</td></tr>
+        <tr><td>Column subsampling</td><td>Randomly drops features per tree/split (like RF)</td><td>Reduces overfitting, speeds up training</td></tr>
+        <tr><td>Sparsity-aware splits</td><td>Handles missing values natively</td><td>No imputation needed, learns best direction for NaN</td></tr>
+        <tr><td>Approximate tree learning</td><td>Uses quantile sketch instead of exact search</td><td>Scales to huge datasets</td></tr>
+        <tr><td>Cache-aware access</td><td>Optimizes memory access patterns</td><td>10-100x faster than sklearn GBM</td></tr>
+      </table>
+    </div>
+
+    <h3>Key Hyperparameters — What They Do</h3>
+    <div class="visual-box" data-label="XGBoost Hyperparameters">
+      <div class="metric-row">
+        <div class="metric-label"><span>learning_rate (η)</span><span style="color:#8c7e6a">Step size. Too high → overshoot. Too low → slow + needs more trees</span></div>
+        <div class="metric-bar"><div class="metric-fill" style="width:40%;background:#c84b2f"></div></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label"><span>n_estimators</span><span style="color:#8c7e6a">Number of trees. More = better + slower. Use early stopping!</span></div>
+        <div class="metric-bar"><div class="metric-fill" style="width:70%;background:#1d4e89"></div></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label"><span>max_depth</span><span style="color:#8c7e6a">Tree depth. Deeper = more complex patterns. 3-8 is typical.</span></div>
+        <div class="metric-bar"><div class="metric-fill" style="width:50%;background:#2d6a4f"></div></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label"><span>subsample</span><span style="color:#8c7e6a">Fraction of rows sampled per tree. 0.8 is common. Reduces variance.</span></div>
+        <div class="metric-bar"><div class="metric-fill" style="width:80%;background:#d4a017"></div></div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label"><span>lambda (L2) / alpha (L1)</span><span style="color:#8c7e6a">Regularization strength. Higher = simpler trees.</span></div>
+        <div class="metric-bar"><div class="metric-fill" style="width:35%;background:#7b3f9e"></div></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">Bagging vs. Boosting — The Core Tradeoff</div>
+        Bagging (Random Forest) reduces <strong>variance</strong> — your model is more stable across datasets. Boosting reduces <strong>bias</strong> — your model can fit more complex patterns. Boosting is generally more accurate but more prone to overfitting noisy data. If your data has a lot of noise → Random Forest. Clean data with complex patterns → XGBoost.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nav-btn" onclick="prevChapter(1)">← Linear Regression</button>
+    <button class="nav-btn primary" onclick="nextChapter(1)">SVMs & Kernels →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- CHAPTER 3: SVMs                                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 03 / 05</div>
+    <div class="ch-title">SVMs &<br><em>Kernel</em><br>Methods</div>
+    <p class="ch-lead">SVMs find the widest possible road between two classes. Kernels let them do it in infinitely high dimensions without ever computing there.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Support Vector Machines</div>
+    <h2>The Maximum Margin Classifier</h2>
+    <p>Logistic regression finds ANY line that separates the classes. SVMs are more principled: they find the line that is <strong>as far as possible</strong> from both classes simultaneously. This "widest road" is the maximum margin.</p>
+
+    <div class="canvas">
+      <svg viewBox="0 0 500 230" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="230" fill="white"/>
+        <!-- background regions -->
+        <polygon points="0,230 280,0 0,0" fill="#fdf0ed" opacity="0.5"/>
+        <polygon points="500,230 280,0 500,0" fill="#e8f5ee" opacity="0.5"/>
+        <!-- margin lines -->
+        <line x1="220" y1="0" x2="220" y2="230" stroke="#c84b2f" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+        <line x1="340" y1="0" x2="340" y2="230" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5"/>
+        <!-- decision boundary -->
+        <line x1="280" y1="0" x2="280" y2="230" stroke="#1a1610" stroke-width="2.5"/>
+        <!-- margin annotation -->
+        <line x1="220" y1="115" x2="340" y2="115" stroke="#d4a017" stroke-width="1.5"/>
+        <line x1="220" y1="108" x2="220" y2="122" stroke="#d4a017" stroke-width="1.5"/>
+        <line x1="340" y1="108" x2="340" y2="122" stroke="#d4a017" stroke-width="1.5"/>
+        <text x="280" y="107" text-anchor="middle" font-family="DM Sans" font-size="12" fill="#d4a017" font-weight="500">margin</text>
+        <!-- class -1 (left) -->
+        <circle cx="80" cy="60" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="120" cy="130" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="55" cy="170" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="150" cy="80" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="100" cy="200" r="8" fill="#c84b2f" opacity="0.8"/>
+        <!-- support vectors (left) with rings -->
+        <circle cx="200" cy="50" r="8" fill="#c84b2f" opacity="0.9"/>
+        <circle cx="200" cy="50" r="14" fill="none" stroke="#c84b2f" stroke-width="2"/>
+        <circle cx="185" cy="155" r="8" fill="#c84b2f" opacity="0.9"/>
+        <circle cx="185" cy="155" r="14" fill="none" stroke="#c84b2f" stroke-width="2"/>
+        <!-- class +1 (right) -->
+        <circle cx="420" cy="50" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="380" cy="140" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="445" cy="180" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="400" cy="100" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="460" cy="120" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <!-- support vectors (right) with rings -->
+        <circle cx="355" cy="60" r="8" fill="#2d6a4f" opacity="0.9"/>
+        <circle cx="355" cy="60" r="14" fill="none" stroke="#2d6a4f" stroke-width="2"/>
+        <circle cx="360" cy="175" r="8" fill="#2d6a4f" opacity="0.9"/>
+        <circle cx="360" cy="175" r="14" fill="none" stroke="#2d6a4f" stroke-width="2"/>
+        <!-- labels -->
+        <text x="100" y="22" font-family="DM Sans" font-size="12" fill="#c84b2f" font-weight="500">Class –1</text>
+        <text x="390" y="22" font-family="DM Sans" font-size="12" fill="#2d6a4f" font-weight="500">Class +1</text>
+        <text x="295" y="22" font-family="DM Sans" font-size="11" fill="#1a1610">boundary</text>
+        <text x="75" y="140" font-family="DM Sans" font-size="10" fill="#c84b2f" font-style="italic">support</text>
+        <text x="75" y="152" font-family="DM Sans" font-size="10" fill="#c84b2f" font-style="italic">vectors</text>
+      </svg>
+    </div>
+
+    <p>The <strong>support vectors</strong> (circled) are the data points closest to the boundary. Everything else could be deleted and the model wouldn't change. This is why SVMs are robust — the decision is driven by the hardest cases, not the easy ones.</p>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Why Wider Margin = Better Generalization</div>
+      A narrow margin means new points can easily fall on the wrong side. A wide margin gives more "room" for new data. Mathematically, maximizing margin = minimizing the norm of weights = a form of L2 regularization. SVMs have regularization built into their core objective.
+    </div>
+
+    <h3>Soft Margin (C parameter)</h3>
+    <p>Real data is never perfectly separable. The <strong>C parameter</strong> controls the tradeoff:</p>
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>High C (small margin)</h4>
+        <ul>
+          <li>Tries hard to classify every training point correctly</li>
+          <li>Narrow margin, fewer support vectors</li>
+          <li>More prone to overfitting</li>
+          <li>Use when noise is low</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>Low C (large margin)</h4>
+        <ul>
+          <li>Allows some misclassification for a wider margin</li>
+          <li>More support vectors, softer boundary</li>
+          <li>Better generalization on noisy data</li>
+          <li>Use when data is noisy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">02 — The Kernel Trick</div>
+    <h2>Handling Non-Linear Data — Magically</h2>
+    <p>Sometimes no straight line can separate your data. What do you do? You transform the data into a <strong>higher-dimensional space</strong> where it IS linearly separable.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      Imagine red and blue marbles scattered on a table, reds in the center, blues around the edge. No line separates them. But if you lift the table and let them fall into a bowl — the reds fall to the center (low), blues stay at the edges (high). Now a flat horizontal plane separates them. You transformed 2D into 3D to make it linearly separable.
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="180" fill="white"/>
+        <!-- 2D space -->
+        <text x="115" y="18" text-anchor="middle" font-family="DM Mono" font-size="11" fill="#8c7e6a">2D: Not separable</text>
+        <line x1="30" y1="150" x2="200" y2="150" stroke="#d4c8b4" stroke-width="1"/>
+        <line x1="30" y1="30" x2="30" y2="150" stroke="#d4c8b4" stroke-width="1"/>
+        <circle cx="115" cy="90" r="12" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="100" cy="100" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="130" cy="95" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="115" cy="110" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="55" cy="55" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="180" cy="60" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="50" cy="130" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="185" cy="135" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="75" cy="40" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="165" cy="45" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <!-- arrow -->
+        <text x="235" y="95" text-anchor="middle" font-family="DM Mono" font-size="14" fill="#d4a017">→</text>
+        <text x="235" y="112" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#d4a017">kernel</text>
+        <!-- 3D space (projected) -->
+        <text x="385" y="18" text-anchor="middle" font-family="DM Mono" font-size="11" fill="#8c7e6a">3D: Separable!</text>
+        <line x1="270" y1="150" x2="470" y2="150" stroke="#d4c8b4" stroke-width="1"/>
+        <line x1="270" y1="30" x2="270" y2="150" stroke="#d4c8b4" stroke-width="1"/>
+        <!-- separation line -->
+        <line x1="275" y1="90" x2="465" y2="90" stroke="#1a1610" stroke-width="2" stroke-dasharray="4,3"/>
+        <!-- greens (high) -->
+        <circle cx="300" cy="55" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="340" cy="45" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="380" cy="60" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="420" cy="50" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <circle cx="455" cy="55" r="8" fill="#2d6a4f" opacity="0.8"/>
+        <!-- reds (low) -->
+        <circle cx="310" cy="130" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="350" cy="125" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="390" cy="130" r="8" fill="#c84b2f" opacity="0.8"/>
+        <circle cx="440" cy="125" r="8" fill="#c84b2f" opacity="0.8"/>
+        <text x="280" y="85" font-family="DM Sans" font-size="10" fill="#1a1610">decision boundary</text>
+      </svg>
+    </div>
+
+    <p>The <strong>Kernel Trick</strong> is the clever part: you never actually compute the high-dimensional transformation. You only need to compute <strong>dot products</strong> between points in that space. Kernels give you those dot products directly — without going there.</p>
+
+    <div class="visual-box" data-label="Common Kernels">
+      <table>
+        <tr><th>Kernel</th><th>Formula</th><th>Effective Space</th><th>Use When</th></tr>
+        <tr><td>Linear</td><td>xᵀz</td><td>Original space</td><td>Data is linearly separable</td></tr>
+        <tr><td>Polynomial</td><td>(xᵀz + c)^d</td><td>Polynomial features of degree d</td><td>Structured patterns (NLP sometimes)</td></tr>
+        <tr><td>RBF / Gaussian</td><td>exp(–γ‖x–z‖²)</td><td>Infinite dimensions</td><td>Default choice. Works for most problems.</td></tr>
+        <tr><td>Sigmoid</td><td>tanh(αxᵀz + c)</td><td>Resembles neural net</td><td>Rarely used — often doesn't satisfy kernel conditions</td></tr>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">γ in RBF — The Most Important SVM Hyperparameter</div>
+        γ controls how "wide" each point's influence is. <strong>High γ</strong> = each point only influences very nearby points → wiggly, complex boundary → overfitting. <strong>Low γ</strong> = each point influences far-away points → smooth, simple boundary → underfitting. Tune γ and C together using cross-validation.
+      </div>
+    </div>
+
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>✓ When SVMs Shine</h4>
+        <ul>
+          <li>Small to medium datasets (kernel trick scales as O(n²-n³))</li>
+          <li>High-dimensional data (text, genomics)</li>
+          <li>When you need a clear decision boundary</li>
+          <li>When you care about theoretical guarantees</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>✗ When to Skip SVMs</h4>
+        <ul>
+          <li>Large datasets (XGBoost or neural nets scale better)</li>
+          <li>Need probability outputs (SVMs don't natively output probs)</li>
+          <li>Need interpretability (no feature importances)</li>
+          <li>Multi-class problems (awkward: one-vs-one or one-vs-rest)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nav-btn" onclick="prevChapter(2)">← Trees & Boosting</button>
+    <button class="nav-btn primary" onclick="nextChapter(2)">Clustering & Dim. Reduction →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- CHAPTER 4: CLUSTERING & DIM REDUCTION              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 04 / 05</div>
+    <div class="ch-title">Clustering &<br><em>Dim.</em><br>Reduction</div>
+    <p class="ch-lead">Unsupervised learning — finding structure in data without labels. Essential for exploration, visualization, and preparing data for downstream models.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — K-Means Clustering</div>
+    <h2>Grouping by Similarity</h2>
+    <p>K-Means partitions data into K groups, where each point belongs to the group with the nearest center (centroid).</p>
+
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><strong>Initialize:</strong> Randomly place K centroids (or use K-Means++ for smarter initialization)</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><strong>Assign:</strong> Each point joins the cluster of its nearest centroid</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><strong>Update:</strong> Move each centroid to the mean of its assigned points</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><strong>Repeat</strong> steps 2-3 until centroids stop moving (convergence)</div></div>
+    </div>
+
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>✓ Strengths</h4>
+        <ul>
+          <li>Very fast — O(n·k·iterations)</li>
+          <li>Simple to understand and implement</li>
+          <li>Works well for spherical, similarly-sized clusters</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>✗ Weaknesses</h4>
+        <ul>
+          <li>Must specify K in advance</li>
+          <li>Sensitive to initialization (run multiple times!)</li>
+          <li>Fails on non-spherical clusters (rings, crescents)</li>
+          <li>Sensitive to outliers — they pull centroids off</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">📐</div>
+      <div class="callout-body">
+        <div class="callout-title">Choosing K — The Elbow Method</div>
+        Plot inertia (sum of squared distances to centroid) vs. K. As K increases, inertia always decreases. Look for the "elbow" — the point where adding more clusters gives diminishing returns. That's your K. Also consider Silhouette Score: measures how well each point fits its cluster vs. neighboring clusters (higher = better, range –1 to 1).
+      </div>
+    </div>
+
+    <h3>DBSCAN — When Clusters Aren't Spheres</h3>
+    <p>DBSCAN (Density-Based Spatial Clustering) finds clusters of arbitrary shape by looking at density. Points in dense regions are core points; others are border or noise.</p>
+
+    <div class="visual-box" data-label="K-Means vs DBSCAN">
+      <table>
+        <tr><th></th><th>K-Means</th><th>DBSCAN</th></tr>
+        <tr><td>Cluster shape</td><td>Spherical only</td><td>Any shape</td></tr>
+        <tr><td>Number of clusters</td><td>You specify K</td><td>Discovered automatically</td></tr>
+        <tr><td>Outliers</td><td>Assigned to nearest cluster</td><td>Labeled as noise (class -1)</td></tr>
+        <tr><td>Scaling</td><td>O(n·k)</td><td>O(n log n) with index</td></tr>
+        <tr><td>Key params</td><td>K, init method</td><td>ε (radius), min_samples</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">02 — Dimensionality Reduction</div>
+    <h2>Squashing High Dimensions into Low</h2>
+    <p>Modern data is often 100s or 1000s of dimensions. You can't visualize it, many algorithms struggle with it (the "curse of dimensionality"), and most of those dimensions are redundant. Dimensionality reduction finds the most informative low-dimensional representation.</p>
+
+    <h3>PCA — The Linear Method</h3>
+    <p>PCA finds the directions of maximum variance in your data (the "principal components") and projects everything onto those directions.</p>
+
+    <div class="analogy">
+      <div class="analogy-label">🧠 Analogy</div>
+      Imagine your data is a cloud of points in 3D space, shaped like a flat pancake tilted at an angle. PCA finds the plane of the pancake (the 2 directions with most spread) and projects all points onto it. You've gone from 3D to 2D with minimal information loss.
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ PCA = SVD on the covariance matrix</div>
+      The principal components are eigenvectors of the covariance matrix, ordered by eigenvalue (variance explained). Keep the top k components. Explained variance ratio tells you what % of total variance each component captures. A common rule: keep enough to explain 95% of variance.
+    </div>
+
+    <h3>t-SNE vs UMAP — For Visualization</h3>
+    <p>PCA is linear — it can only capture linear structure. t-SNE and UMAP are non-linear and much better for visualization of complex high-dimensional data like embeddings.</p>
+
+    <div class="visual-box" data-label="t-SNE vs UMAP Comparison">
+      <table>
+        <tr><th></th><th>t-SNE</th><th>UMAP</th></tr>
+        <tr><td>Speed</td><td>Slow — O(n² ) or O(n log n) with approximation</td><td>Much faster — O(n^1.14) approx</td></tr>
+        <tr><td>Preserves</td><td>Local structure (nearby points stay nearby)</td><td>Both local AND global structure better</td></tr>
+        <tr><td>Distances meaningful?</td><td>No — cluster sizes and distances between clusters are arbitrary</td><td>Somewhat — global distances more trustworthy</td></tr>
+        <tr><td>Deterministic?</td><td>No — different runs give different layouts</td><td>Nearly deterministic</td></tr>
+        <tr><td>Key hyperparameter</td><td>perplexity (5–50; controls local neighborhood size)</td><td>n_neighbors + min_dist</td></tr>
+        <tr><td>Best for</td><td>Visualizing clusters in embeddings</td><td>Larger datasets, when you care about global structure</td></tr>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">The Biggest t-SNE Mistake</div>
+        Distances between clusters in t-SNE mean NOTHING. Two separate clusters that look far apart might actually be close in the original space. Never use t-SNE plots to conclude "these two groups are very different" — only use it to see "these points form distinct local groups." UMAP is more honest about global distances but still be careful.
+      </div>
+    </div>
+
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>When to Use PCA</h4>
+        <ul>
+          <li>Preprocessing before ML (remove noise/redundancy)</li>
+          <li>Speed up training — fewer features</li>
+          <li>Multicollinearity in linear models</li>
+          <li>When you need interpretable components</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>When to Use t-SNE/UMAP</h4>
+        <ul>
+          <li>Visualizing embedding spaces</li>
+          <li>Exploring cluster structure in 2D/3D</li>
+          <li>Understanding what your model has learned</li>
+          <li>Never for downstream ML — only for visualization!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nav-btn" onclick="prevChapter(3)">← SVMs & Kernels</button>
+    <button class="nav-btn primary" onclick="nextChapter(3)">Model Evaluation →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- CHAPTER 5: MODEL EVALUATION                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 05 / 05</div>
+    <div class="ch-title">Model<br><em>Evaluation</em></div>
+    <p class="ch-lead">The most underrated skill in ML. Every Google interview eventually asks "how do you know your model is good?" Know this cold.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Classification Metrics</div>
+    <h2>Beyond Accuracy</h2>
+    <p>Accuracy is almost useless alone. If 99% of emails are not spam, a model that always predicts "not spam" gets 99% accuracy — while being completely useless.</p>
+
+    <div class="visual-box" data-label="The Confusion Matrix">
+      <svg viewBox="0 0 440 220" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+        <rect width="440" height="220" fill="transparent"/>
+        <!-- headers -->
+        <text x="270" y="20" text-anchor="middle" font-family="DM Mono" font-size="12" fill="#8c7e6a">Predicted</text>
+        <text x="270" y="38" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#8c7e6a">Positive ←→ Negative</text>
+        <text x="28" y="120" text-anchor="middle" font-family="DM Mono" font-size="12" fill="#8c7e6a" transform="rotate(-90,28,120)">Actual</text>
+        <!-- TP -->
+        <rect x="160" y="55" width="120" height="75" fill="#e8f5ee" stroke="#b7dfca" stroke-width="1"/>
+        <text x="220" y="90" text-anchor="middle" font-family="Fraunces" font-size="22" fill="#2d6a4f" font-weight="900">TP</text>
+        <text x="220" y="110" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#2d6a4f">True Positive</text>
+        <text x="220" y="124" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#8c7e6a">Said yes, was yes</text>
+        <!-- FP -->
+        <rect x="280" y="55" width="120" height="75" fill="#fdf0ed" stroke="#f0c4ba" stroke-width="1"/>
+        <text x="340" y="90" text-anchor="middle" font-family="Fraunces" font-size="22" fill="#c84b2f" font-weight="900">FP</text>
+        <text x="340" y="110" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#c84b2f">False Positive</text>
+        <text x="340" y="124" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#8c7e6a">Said yes, was no</text>
+        <!-- FN -->
+        <rect x="160" y="130" width="120" height="75" fill="#fdf0ed" stroke="#f0c4ba" stroke-width="1"/>
+        <text x="220" y="165" text-anchor="middle" font-family="Fraunces" font-size="22" fill="#c84b2f" font-weight="900">FN</text>
+        <text x="220" y="185" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#c84b2f">False Negative</text>
+        <text x="220" y="199" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#8c7e6a">Said no, was yes</text>
+        <!-- TN -->
+        <rect x="280" y="130" width="120" height="75" fill="#e8f5ee" stroke="#b7dfca" stroke-width="1"/>
+        <text x="340" y="165" text-anchor="middle" font-family="Fraunces" font-size="22" fill="#2d6a4f" font-weight="900">TN</text>
+        <text x="340" y="185" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#2d6a4f">True Negative</text>
+        <text x="340" y="199" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#8c7e6a">Said no, was no</text>
+        <!-- row labels -->
+        <text x="145" y="100" text-anchor="end" font-family="DM Sans" font-size="11" fill="#8c7e6a">Pos</text>
+        <text x="145" y="175" text-anchor="end" font-family="DM Sans" font-size="11" fill="#8c7e6a">Neg</text>
+      </svg>
+    </div>
+
+    <div class="visual-box" data-label="Derived Metrics">
+      <table>
+        <tr><th>Metric</th><th>Formula</th><th>Answers</th><th>Use When</th></tr>
+        <tr><td>Precision</td><td>TP / (TP + FP)</td><td>"Of all I said YES, how many were right?"</td><td>False alarms are costly. (Spam filter — don't delete real email)</td></tr>
+        <tr><td>Recall (Sensitivity)</td><td>TP / (TP + FN)</td><td>"Of all real YESes, how many did I catch?"</td><td>Missing cases is costly. (Cancer detection — don't miss sick patients)</td></tr>
+        <tr><td>F1 Score</td><td>2·P·R / (P+R)</td><td>Balanced measure of P and R</td><td>Imbalanced classes, when both matter equally</td></tr>
+        <tr><td>Specificity</td><td>TN / (TN + FP)</td><td>"Of all real NOs, how many did I get right?"</td><td>Medical tests — how well you rule out disease</td></tr>
+        <tr><td>Accuracy</td><td>(TP+TN) / All</td><td>"Overall right rate"</td><td>Only when classes are balanced</td></tr>
+      </table>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ Precision vs Recall — The Core Tradeoff</div>
+      They always trade off. Lower your decision threshold → more positive predictions → higher recall, lower precision. Higher threshold → fewer positive predictions → higher precision, lower recall. The <strong>F1 score</strong> is the harmonic mean — it's low unless BOTH are high. Use F-beta to weight one over the other (F2 weights recall 2x more than precision).
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">02 — AUC-ROC</div>
+    <h2>Threshold-Independent Evaluation</h2>
+    <p>The ROC curve plots <strong>True Positive Rate vs. False Positive Rate</strong> at every possible decision threshold. AUC (Area Under Curve) summarizes this into a single number.</p>
+
+    <div class="canvas">
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="280" fill="white"/>
+        <text x="200" y="18" text-anchor="middle" font-family="DM Mono" font-size="11" fill="#8c7e6a">ROC Curve</text>
+        <!-- axes -->
+        <line x1="60" y1="240" x2="360" y2="240" stroke="#d4c8b4" stroke-width="1.5"/>
+        <line x1="60" y1="30" x2="60" y2="240" stroke="#d4c8b4" stroke-width="1.5"/>
+        <!-- axis labels -->
+        <text x="210" y="265" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#8c7e6a">False Positive Rate →</text>
+        <text x="20" y="140" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#8c7e6a" transform="rotate(-90,20,140)">True Positive Rate →</text>
+        <!-- diagonal (random) -->
+        <line x1="60" y1="240" x2="360" y2="30" stroke="#d4c8b4" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="240" y="170" font-family="DM Sans" font-size="10" fill="#8c7e6a" transform="rotate(-40,240,170)">random (AUC=0.5)</text>
+        <!-- perfect curve -->
+        <path d="M60,240 L60,30 L360,30" fill="none" stroke="#d4c8b4" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.5"/>
+        <text x="65" y="45" font-family="DM Sans" font-size="10" fill="#8c7e6a">perfect (AUC=1.0)</text>
+        <!-- good curve -->
+        <path d="M60,240 C90,220 100,80 130,50 C160,25 250,28 360,30" fill="none" stroke="#c84b2f" stroke-width="2.5"/>
+        <!-- AUC shading -->
+        <path d="M60,240 C90,220 100,80 130,50 C160,25 250,28 360,30 L360,240 Z" fill="#c84b2f" opacity="0.08"/>
+        <text x="240" y="200" font-family="Fraunces" font-size="20" fill="#c84b2f" font-weight="900" opacity="0.4">AUC</text>
+        <text x="200" y="100" font-family="DM Mono" font-size="12" fill="#c84b2f" font-weight="500">AUC ≈ 0.92</text>
+        <!-- tick marks -->
+        <text x="57" y="244" text-anchor="end" font-family="DM Mono" font-size="9" fill="#8c7e6a">0</text>
+        <text x="357" y="244" text-anchor="middle" font-family="DM Mono" font-size="9" fill="#8c7e6a">1</text>
+        <text x="55" y="34" text-anchor="end" font-family="DM Mono" font-size="9" fill="#8c7e6a">1</text>
+      </svg>
+    </div>
+
+    <div class="visual-box" data-label="AUC Interpretation">
+      <table>
+        <tr><th>AUC Value</th><th>Meaning</th><th>In Practice</th></tr>
+        <tr><td>1.0</td><td>Perfect classifier</td><td>Almost certainly data leakage — investigate!</td></tr>
+        <tr><td>0.9–0.99</td><td>Excellent</td><td>Very good model for most tasks</td></tr>
+        <tr><td>0.8–0.9</td><td>Good</td><td>Solid model, room for improvement</td></tr>
+        <tr><td>0.7–0.8</td><td>Fair</td><td>Acceptable for some use cases</td></tr>
+        <tr><td>0.5–0.7</td><td>Poor</td><td>Only slightly better than random</td></tr>
+        <tr><td>0.5</td><td>Random</td><td>Model learned nothing</td></tr>
+        <tr><td>&lt; 0.5</td><td>Worse than random</td><td>Labels might be flipped!</td></tr>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">When NOT to Use AUC-ROC — Use PR-AUC Instead</div>
+        On severely imbalanced datasets (e.g., fraud detection: 0.1% fraud), AUC-ROC can look great even on bad models because it treats TNs equally — and you have millions of them. <strong>Precision-Recall AUC</strong> is more honest: it focuses on the positive class. If positives are rare and important, use PR-AUC.
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">03 — Cross-Validation & Model Selection</div>
+    <h2>Honest Evaluation</h2>
+    <p>Evaluating on training data tells you nothing. Your model has already memorized it. You need to evaluate on <strong>data the model has never seen</strong>.</p>
+
+    <div class="visual-box" data-label="K-Fold Cross-Validation">
+      <svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+        <rect width="460" height="150" fill="transparent"/>
+        <!-- fold labels -->
+        <text x="20" y="30" font-family="DM Mono" font-size="10" fill="#8c7e6a">Fold 1</text>
+        <text x="20" y="60" font-family="DM Mono" font-size="10" fill="#8c7e6a">Fold 2</text>
+        <text x="20" y="90" font-family="DM Mono" font-size="10" fill="#8c7e6a">Fold 3</text>
+        <text x="20" y="120" font-family="DM Mono" font-size="10" fill="#8c7e6a">Fold 4</text>
+        <text x="20" y="150" font-family="DM Mono" font-size="10" fill="#8c7e6a">Fold 5</text>
+        <!-- row 1 - val in position 1 -->
+        <rect x="70" y="18" width="68" height="18" rx="2" fill="#c84b2f" opacity="0.8"/>
+        <text x="104" y="31" text-anchor="middle" font-family="DM Sans" font-size="10" fill="white">VAL</text>
+        <rect x="140" y="18" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="210" y="18" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="280" y="18" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="350" y="18" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <!-- row 2 -->
+        <rect x="70" y="48" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="140" y="48" width="68" height="18" rx="2" fill="#c84b2f" opacity="0.8"/>
+        <text x="174" y="61" text-anchor="middle" font-family="DM Sans" font-size="10" fill="white">VAL</text>
+        <rect x="210" y="48" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="280" y="48" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="350" y="48" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <!-- row 3 -->
+        <rect x="70" y="78" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="140" y="78" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="210" y="78" width="68" height="18" rx="2" fill="#c84b2f" opacity="0.8"/>
+        <text x="244" y="91" text-anchor="middle" font-family="DM Sans" font-size="10" fill="white">VAL</text>
+        <rect x="280" y="78" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="350" y="78" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <!-- row 4 -->
+        <rect x="70" y="108" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="140" y="108" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="210" y="108" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="280" y="108" width="68" height="18" rx="2" fill="#c84b2f" opacity="0.8"/>
+        <text x="314" y="121" text-anchor="middle" font-family="DM Sans" font-size="10" fill="white">VAL</text>
+        <rect x="350" y="108" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <!-- row 5 -->
+        <rect x="70" y="138" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="140" y="138" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="210" y="138" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="280" y="138" width="68" height="18" rx="2" fill="#e8f0f8" stroke="#b0c8e8"/>
+        <rect x="350" y="138" width="68" height="18" rx="2" fill="#c84b2f" opacity="0.8"/>
+        <text x="384" y="151" text-anchor="middle" font-family="DM Sans" font-size="10" fill="white">VAL</text>
+      </svg>
+      <p style="font-size:13px;color:#8c7e6a;margin-top:12px">Each fold is used as the validation set once. Final metric = average across all 5 folds. Blue = training data for that run.</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-icon">🚨</div>
+      <div class="callout-body">
+        <div class="callout-title">The Most Common Leakage Mistake</div>
+        Normalizing (computing mean/std of) your ENTIRE dataset THEN splitting for cross-validation. This leaks test set information into training. Always fit scalers, encoders, and imputers on the TRAINING fold only, then apply (not fit) on the validation fold. Use sklearn Pipelines to enforce this.
+      </div>
+    </div>
+
+    <h3>Calibration — Does Your Probability Mean Anything?</h3>
+    <p>A model that says "70% probability" should be right about 70% of the time. Many models are poorly calibrated. Neural nets tend to be overconfident. Random Forests tend to be underconfident. Logistic regression is well-calibrated by default.</p>
+
+    <div class="tradeoff-grid">
+      <div class="tradeoff-card pro">
+        <h4>Well-Calibrated Models</h4>
+        <ul>
+          <li>Logistic Regression (by design)</li>
+          <li>Naive Bayes (if assumptions hold)</li>
+          <li>Any model + Platt Scaling or Isotonic Regression post-hoc</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card con">
+        <h4>Poorly-Calibrated Models</h4>
+        <ul>
+          <li>SVMs — don't naturally output probabilities</li>
+          <li>Random Forests — output voting fractions, not true probs</li>
+          <li>Gradient Boosting — can be overconfident</li>
+          <li>Neural Nets — often overconfident in predictions</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⚡ The Google Engineer Mindset on Evaluation</div>
+      Always ask: <strong>(1)</strong> What does this metric optimize for — does that match the business goal? <strong>(2)</strong> Is my evaluation setup leakage-free? <strong>(3)</strong> Is my test set representative of production data? <strong>(4)</strong> Am I comparing models fairly — same data splits, same preprocessing? <strong>(5)</strong> Have I checked performance across subgroups? (A model can look great overall but fail badly on a minority slice.)
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nav-btn" onclick="prevChapter(4)">← Clustering</button>
+    <button class="nav-btn primary" onclick="alert('🎉 Classical ML complete! Ready for Deep Learning.')">Deep Learning Core →</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let current = 0;
+const total = 5;
+
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  el.classList.add('active');
+  current = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextChapter(cur) {
+  const next = cur + 1;
+  if (next < total) {
+    const navItems = document.querySelectorAll('.nav-item');
+    goTo(next, navItems[next]);
+  }
+}
+
+function prevChapter(cur) {
+  const prev = cur - 1;
+  if (prev >= 0) {
+    const navItems = document.querySelectorAll('.nav-item');
+    goTo(prev, navItems[prev]);
+  }
+}
+</script>
+</body>
+</html>

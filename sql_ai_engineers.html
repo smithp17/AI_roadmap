@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL & Data for AI Engineers — Interview Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,500;0,700;0,900;1,900&family=Inconsolata:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d; --surface: #161616; --surface2: #1e1e1e; --surface3: #252525;
+  --border: #2e2e2e; --border2: #3a3a3a; --text: #e8e8e8; --text2: #aaaaaa;
+  --muted: #666; --cyan: #00d4aa; --orange: #ff6b35; --yellow: #ffd166;
+  --purple: #b48eff; --blue: #4da6ff; --red: #ff4d6d; --green: #06d6a0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inconsolata',monospace; font-weight:300; line-height:1.7; min-height:100vh; }
+body::after { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); pointer-events:none; z-index:9999; }
+nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(13,13,13,0.97); backdrop-filter:blur(8px); border-bottom:1px solid var(--border); height:52px; display:flex; align-items:center; padding:0 24px; overflow-x:auto; scrollbar-width:none; }
+nav::-webkit-scrollbar { display:none; }
+.nav-brand { font-family:'Archivo',sans-serif; font-weight:900; font-size:12px; color:var(--blue); white-space:nowrap; margin-right:24px; letter-spacing:0.05em; text-transform:uppercase; }
+.nav-item { font-size:10px; color:var(--muted); padding:0 11px; height:52px; display:flex; align-items:center; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all 0.2s; letter-spacing:0.03em; text-transform:uppercase; }
+.nav-item:hover { color:var(--text); }
+.nav-item.active { color:var(--blue); border-bottom-color:var(--blue); }
+main { max-width:900px; margin:0 auto; padding:80px 24px 100px; }
+.chapter { display:none; animation:fadeUp 0.35s ease both; }
+.chapter.active { display:block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+.ch-header { margin-bottom:52px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+.ch-num { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.ch-title { font-family:'Archivo',sans-serif; font-size:clamp(34px,5.5vw,62px); font-weight:900; line-height:0.95; letter-spacing:-0.03em; margin-bottom:20px; }
+.ch-title em { font-style:italic; color:var(--blue); }
+.ch-lead { font-size:15px; color:var(--text2); max-width:580px; line-height:1.6; }
+.section { margin-bottom:60px; }
+.section-label { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+h2 { font-family:'Archivo',sans-serif; font-size:26px; font-weight:700; letter-spacing:-0.02em; margin-bottom:16px; line-height:1.2; }
+h3 { font-family:'Archivo',sans-serif; font-size:17px; font-weight:700; margin-bottom:10px; margin-top:28px; }
+p { margin-bottom:14px; font-size:15px; color:var(--text2); }
+p strong { color:var(--text); font-weight:600; }
+p:last-child { margin-bottom:0; }
+.qa { background:var(--surface); border:1px solid var(--border); margin:14px 0; overflow:hidden; }
+.qa-q { padding:15px 20px; font-size:14px; color:var(--yellow); cursor:pointer; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; border-left:3px solid var(--yellow); transition:background 0.2s; line-height:1.5; }
+.qa-q:hover { background:var(--surface2); }
+.qa-q .arrow { font-size:18px; flex-shrink:0; transition:transform 0.3s; margin-top:1px; }
+.qa-q.open .arrow { transform:rotate(45deg); }
+.qa-a { display:none; padding:18px 20px; border-top:1px solid var(--border); font-size:14px; color:var(--text2); line-height:1.85; border-left:3px solid var(--surface3); }
+.qa-a strong { color:var(--cyan); }
+.badge { display:inline-block; font-size:9px; padding:2px 7px; margin-right:5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; flex-shrink:0; }
+.badge-easy { background:rgba(6,214,160,0.15); color:var(--green); border:1px solid rgba(6,214,160,0.3); }
+.badge-med  { background:rgba(255,209,102,0.15); color:var(--yellow); border:1px solid rgba(255,209,102,0.3); }
+.badge-hard { background:rgba(255,77,109,0.15); color:var(--red); border:1px solid rgba(255,77,109,0.3); }
+.badge-ai   { background:rgba(77,166,255,0.15); color:var(--blue); border:1px solid rgba(77,166,255,0.3); }
+.tag { display:inline-block; font-size:9px; padding:2px 7px; border:1px solid var(--cyan); color:var(--cyan); margin:4px 4px 4px 0; letter-spacing:0.08em; text-transform:uppercase; }
+.tag.orange { border-color:var(--orange); color:var(--orange); }
+.tag.blue   { border-color:var(--blue);   color:var(--blue); }
+.tag.green  { border-color:var(--green);  color:var(--green); }
+.tag.red    { border-color:var(--red);    color:var(--red); }
+.insight { background:var(--surface2); border:1px solid var(--border2); border-left:3px solid var(--blue); padding:20px 24px; margin:20px 0; }
+.insight-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--blue); margin-bottom:8px; }
+.insight p { font-size:14px; margin:0; line-height:1.75; }
+.insight strong { color:var(--blue); }
+.warning { background:rgba(255,77,109,0.06); border:1px solid rgba(255,77,109,0.2); border-left:3px solid var(--red); padding:16px 20px; margin:18px 0; }
+.warning-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--red); margin-bottom:6px; }
+.warning p { font-size:14px; margin:0; color:var(--text2); }
+.analogy { border-left:3px solid var(--yellow); padding:16px 20px; margin:20px 0; background:rgba(255,209,102,0.04); }
+.analogy-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--yellow); margin-bottom:6px; }
+.analogy p { font-size:14px; color:var(--text2); margin:0; }
+.formula { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--blue); padding:14px 20px; margin:14px 0; font-size:13px; color:#a8d8ff; overflow-x:auto; white-space:pre; line-height:1.9; }
+.tbl-wrap { margin:18px 0; overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:var(--surface3); color:var(--muted); padding:9px 14px; text-align:left; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; border-bottom:1px solid var(--border2); }
+td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--text2); line-height:1.5; }
+tr:last-child td { border-bottom:none; }
+td:first-child { color:var(--text); font-weight:600; }
+.nav-btns { display:flex; justify-content:space-between; margin-top:56px; padding-top:28px; border-top:1px solid var(--border); }
+.nbtn { background:transparent; border:1px solid var(--border2); color:var(--text2); font-family:'Inconsolata',monospace; font-size:12px; padding:11px 20px; cursor:pointer; transition:all 0.2s; text-transform:uppercase; letter-spacing:0.05em; }
+.nbtn:hover { border-color:var(--blue); color:var(--blue); }
+.nbtn.primary { background:var(--blue); color:#000; border-color:var(--blue); font-weight:600; }
+.nbtn.primary:hover { background:#70b8ff; }
+.nbtn:disabled { opacity:0.25; cursor:not-allowed; }
+.ai-use { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--blue); padding:12px 18px; margin:10px 0; display:grid; grid-template-columns:130px 1fr; gap:14px; align-items:start; }
+.ai-use-label { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--blue); font-weight:600; padding-top:2px; }
+.ai-use-text { font-size:13.5px; color:var(--text2); line-height:1.6; }
+.ai-use-text strong { color:var(--text); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">🗄️ SQL for AI</div>
+  <div class="nav-item active" onclick="goTo(0,this)">① Why SQL Matters</div>
+  <div class="nav-item" onclick="goTo(1,this)">② Joins & Filtering</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ Aggregations</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ Window Functions</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ CTEs & Subqueries</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ ML Feature Pipelines</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ Hard Interview Qs</div>
+</nav>
+<main>
+
+<!-- CH 1 -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 01 / 07 — SQL & Data for AI Engineers</div>
+    <div class="ch-title">Why SQL<br><em>Matters</em><br>for AI</div>
+    <p class="ch-lead">You won't write SQL every day as an AI engineer — but you'll be tested on it, and you WILL need it when debugging data issues, building features, and understanding what your model is actually learning from.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — The Reality</div>
+    <h2>When AI Engineers Use SQL</h2>
+    <div class="ai-use"><div class="ai-use-label">Feature Engineering</div><div class="ai-use-text"><strong>Building training datasets.</strong> "Give me each user's average purchase value in the last 30 days, number of sessions this week, and days since last login." This is a SQL query — joins + window functions + aggregation.</div></div>
+    <div class="ai-use"><div class="ai-use-label">Data Exploration</div><div class="ai-use-text"><strong>Understanding your data before modeling.</strong> Class distribution, null rates, outlier detection, correlation between features. All done in SQL against your data warehouse.</div></div>
+    <div class="ai-use"><div class="ai-use-label">Model Evaluation</div><div class="ai-use-text"><strong>Sliced metrics.</strong> "What is my model's precision on mobile users in India?" Join model predictions table with user demographics, filter, aggregate. SQL.</div></div>
+    <div class="ai-use"><div class="ai-use-label">A/B Analysis</div><div class="ai-use-text"><strong>Experiment results.</strong> "Did the new recommendation model increase watch time by 5% for the treatment group?" Aggregate experiment logs by variant. SQL.</div></div>
+    <div class="ai-use"><div class="ai-use-label">Training Data</div><div class="ai-use-text"><strong>Generating labels.</strong> "A user is a churner if they had activity in month N but not month N+1." Define label logic in SQL — this becomes your training dataset.</div></div>
+    <div class="insight">
+      <div class="insight-label">⚡ What to Expect in Interviews</div>
+      <p>At Google-level AI engineer roles: 0-1 pure SQL coding rounds, but SQL appears in <strong>ML system design</strong> (how do you build the training dataset?) and in <strong>data analysis rounds</strong>. You need medium-level SQL. Know: JOINs, GROUP BY, window functions, CTEs. That covers 95% of what you'll face.</p>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Joins & Filtering →</button>
+  </div>
+</div>
+
+<!-- CH 2 -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 02 / 07</div>
+    <div class="ch-title">Joins<br>&amp; <em>Filtering</em></div>
+    <p class="ch-lead">JOINs are the most fundamental SQL operation. If you don't know the difference between LEFT and INNER JOIN, you will produce silently wrong training data. That's a production ML bug.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — JOIN Types</div>
+    <h2>Every JOIN — When to Use Which</h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>JOIN Type</th><th>Returns</th><th>Use When</th><th>AI Engineer Use</th></tr>
+      <tr><td style="color:var(--cyan)">INNER JOIN</td><td>Only rows that match in BOTH tables</td><td>You only want records with data in both places</td><td>Join user features with labels — only keep users who have BOTH features AND a label</td></tr>
+      <tr><td style="color:var(--green)">LEFT JOIN</td><td>All rows from left table, matching from right (NULL if no match)</td><td>Keep all records from one table, add info from another if it exists</td><td>Join all users with their purchases — keep users with 0 purchases (NULL purchase_amount)</td></tr>
+      <tr><td style="color:var(--yellow)">RIGHT JOIN</td><td>All rows from right table</td><td>Rare — same as LEFT JOIN with tables swapped</td><td>Rarely used — prefer LEFT JOIN for clarity</td></tr>
+      <tr><td style="color:var(--orange)">FULL OUTER JOIN</td><td>All rows from both tables</td><td>When you need every record from either side</td><td>Comparing two model prediction sets — keep all predictions from both models</td></tr>
+      <tr><td style="color:var(--purple)">CROSS JOIN</td><td>Every combination of rows (cartesian product)</td><td>Generate all pairs</td><td>Generate all (user, item) pairs for candidate generation offline</td></tr>
+      <tr><td style="color:var(--red)">SELF JOIN</td><td>Table joined to itself</td><td>Compare rows within the same table</td><td>Find users who bought item A and item B — join purchases table to itself</td></tr>
+    </table></div>
+  </div>
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> Find all users who have never made a purchase. <span class="badge badge-ai">AI use: cold start detection</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Pattern: LEFT JOIN + IS NULL</strong> — the classic "find records in A but not in B" query.
+        <div class="formula">-- users table: user_id, name, created_at
+-- purchases table: purchase_id, user_id, amount, created_at
+
+SELECT u.user_id, u.name
+FROM users u
+LEFT JOIN purchases p ON u.user_id = p.user_id
+WHERE p.user_id IS NULL;
+
+-- Why LEFT JOIN not INNER JOIN?
+-- INNER JOIN would only return users WITH purchases
+-- LEFT JOIN keeps ALL users, puts NULL where no purchase exists
+-- WHERE p.user_id IS NULL filters to ONLY those with no match</div>
+        <strong>AI context:</strong> This is exactly how you identify cold-start users (no purchase history → can't use collaborative filtering → fall back to content-based or popular items). You'd run this query to segment users before deciding which recommendation model to serve them.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Find users who purchased product A but NOT product B. <span class="badge badge-ai">AI use: negative training examples</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Three approaches — know all three:</strong>
+        <div class="formula">-- Method 1: LEFT JOIN (most common)
+SELECT DISTINCT p1.user_id
+FROM purchases p1
+LEFT JOIN purchases p2
+  ON p1.user_id = p2.user_id AND p2.product_id = 'B'
+WHERE p1.product_id = 'A'
+  AND p2.user_id IS NULL;
+
+-- Method 2: NOT EXISTS (often faster — stops as soon as match found)
+SELECT DISTINCT user_id FROM purchases p1
+WHERE product_id = 'A'
+AND NOT EXISTS (
+  SELECT 1 FROM purchases p2
+  WHERE p2.user_id = p1.user_id AND p2.product_id = 'B'
+);
+
+-- Method 3: EXCEPT (clean but not available in all DBs)
+SELECT user_id FROM purchases WHERE product_id = 'A'
+EXCEPT
+SELECT user_id FROM purchases WHERE product_id = 'B';</div>
+        <strong>AI context:</strong> Generating implicit negative training data for recommendation models. "Users who bought A but not B → B is a meaningful negative signal for that user."
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the difference between WHERE and HAVING? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>WHERE</strong> filters rows BEFORE aggregation.<br>
+        <strong>HAVING</strong> filters groups AFTER aggregation.<br>
+        <div class="formula">-- WRONG: can't use aggregate in WHERE
+SELECT user_id, COUNT(*) as purchase_count
+FROM purchases
+WHERE COUNT(*) > 5         -- ERROR: aggregates not allowed in WHERE
+GROUP BY user_id;
+
+-- CORRECT: use HAVING for post-aggregation filters
+SELECT user_id, COUNT(*) as purchase_count
+FROM purchases
+WHERE created_at >= '2024-01-01'    -- WHERE: filter rows first
+GROUP BY user_id
+HAVING COUNT(*) > 5;                -- HAVING: filter groups after
+
+-- SQL execution order:
+-- FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</div>
+        <strong>AI context:</strong> Building training data: "Give me users who made MORE than 5 purchases in the last 30 days" — that's a HAVING filter, not a WHERE filter. Getting this wrong silently includes wrong users in your training set.
+      </div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Why SQL Matters</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Aggregations →</button>
+  </div>
+</div>
+
+<!-- CH 3 -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 03 / 07</div>
+    <div class="ch-title">Group By<br>&amp; <em>Aggregations</em></div>
+    <p class="ch-lead">Every feature you compute for ML is an aggregation. "Average session length per user," "total revenue per product category," "daily active users." GROUP BY is how you build ML features from raw event data.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — Interview Questions</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-easy">Easy</span> Compute the second highest salary per department. <span class="badge badge-ai">AI use: ranking within groups</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">-- Method 1: Subquery (works everywhere)
+SELECT department, MAX(salary) as second_highest
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees e2
+                WHERE e2.department = employees.department)
+GROUP BY department;
+
+-- Method 2: Window functions (cleaner — covered in next chapter)
+SELECT DISTINCT department, salary as second_highest
+FROM (
+  SELECT department, salary,
+         DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) as rnk
+  FROM employees
+) ranked
+WHERE rnk = 2;</div>
+        <strong>AI context:</strong> "Find the second most common error type per model version" — same exact pattern. DENSE_RANK within groups is a pattern you'll use constantly.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Calculate a 7-day rolling average of daily active users. <span class="badge badge-ai">AI use: time-series features for models</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">-- Step 1: daily active users
+WITH daily_dau AS (
+  SELECT DATE(event_time) as day,
+         COUNT(DISTINCT user_id) as dau
+  FROM user_events
+  GROUP BY DATE(event_time)
+)
+-- Step 2: 7-day rolling average using window function
+SELECT
+  day,
+  dau,
+  AVG(dau) OVER (
+    ORDER BY day
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+  ) as rolling_7day_avg
+FROM daily_dau
+ORDER BY day;</div>
+        <strong>Why this matters for ML:</strong> Rolling aggregates ARE your time-series features. "User's 7-day rolling purchase count," "model's 7-day average accuracy" — both use this exact window frame. This is the most important pattern in ML feature engineering with SQL.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Find the percentage of revenue each product contributes within its category. <span class="badge badge-ai">AI use: normalized features</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">SELECT
+  product_id,
+  category,
+  SUM(revenue) as product_revenue,
+  SUM(SUM(revenue)) OVER (PARTITION BY category) as category_revenue,
+  ROUND(
+    100.0 * SUM(revenue) / SUM(SUM(revenue)) OVER (PARTITION BY category),
+    2
+  ) as pct_of_category
+FROM sales
+GROUP BY product_id, category
+ORDER BY category, pct_of_category DESC;</div>
+        <strong>Key trick:</strong> SUM(SUM(revenue)) — the outer SUM is a window function operating over the inner grouped SUM. This lets you compute group totals and row values in the same query.<br><br>
+        <strong>AI context:</strong> Normalizing features within groups — "what fraction of a user's spend is in each category?" — a very common input feature for recommendation and churn models.
+      </div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Joins</button>
+    <button class="nbtn primary" onclick="nextCh(2)">Window Functions →</button>
+  </div>
+</div>
+
+<!-- CH 4 -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 04 / 07</div>
+    <div class="ch-title">Window<br><em>Functions</em></div>
+    <p class="ch-lead">Window functions are the most powerful SQL feature for ML feature engineering. They let you compute aggregates across related rows WITHOUT collapsing the result — you keep every row AND add computed columns. Master these and you can build almost any ML feature in SQL.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — The Syntax</div>
+    <h2>Understanding the OVER Clause</h2>
+    <div class="formula">function_name(column) OVER (
+  PARTITION BY grouping_column    -- like GROUP BY but keeps all rows
+  ORDER BY ordering_column        -- defines the sequence
+  ROWS/RANGE BETWEEN ... AND ...  -- defines the window frame
+)
+
+-- PARTITION BY: apply the window function separately per group
+-- ORDER BY:     defines order within each partition
+-- Frame:        which rows to include in each calculation
+
+-- Common frame options:
+ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW  -- all rows before + current
+ROWS BETWEEN 6 PRECEDING AND CURRENT ROW          -- last 7 rows (rolling window)
+ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING  -- current + all after</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>Function</th><th>What It Does</th><th>ML Feature Use</th></tr>
+      <tr><td style="color:var(--cyan)">ROW_NUMBER()</td><td>Unique sequential number per partition (1,2,3...)</td><td>Get the Nth most recent event per user. Split train/test by row number.</td></tr>
+      <tr><td style="color:var(--green)">RANK()</td><td>Rank with gaps (1,1,3,4 — skips 2 after tie)</td><td>Rank items by sales, users by activity. Tied values get same rank.</td></tr>
+      <tr><td style="color:var(--yellow)">DENSE_RANK()</td><td>Rank without gaps (1,1,2,3 — no skip after tie)</td><td>Product popularity rank within category. Top-K selection.</td></tr>
+      <tr><td style="color:var(--purple)">LAG(col, n)</td><td>Value from n rows BEFORE current row</td><td>Previous purchase amount. Previous session length. Churn features.</td></tr>
+      <tr><td style="color:var(--orange)">LEAD(col, n)</td><td>Value from n rows AFTER current row</td><td>Did user buy again within 7 days? (future label creation)</td></tr>
+      <tr><td style="color:var(--red)">NTILE(n)</td><td>Divide rows into n equal buckets</td><td>Quartile/decile features. "Is this user in top 10% by spend?"</td></tr>
+      <tr><td style="color:var(--blue)">SUM/AVG/COUNT OVER</td><td>Running or rolling aggregate</td><td>Cumulative spend, rolling 7-day active days, session count to date</td></tr>
+    </table></div>
+  </div>
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> For each user, find their most recent purchase and the one before it. <span class="badge badge-ai">AI use: sequential behavior features</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">WITH ranked_purchases AS (
+  SELECT
+    user_id,
+    purchase_id,
+    amount,
+    created_at,
+    ROW_NUMBER() OVER (
+      PARTITION BY user_id
+      ORDER BY created_at DESC
+    ) as rn,
+    LAG(amount, 1) OVER (
+      PARTITION BY user_id
+      ORDER BY created_at
+    ) as prev_purchase_amount,
+    LAG(created_at, 1) OVER (
+      PARTITION BY user_id
+      ORDER BY created_at
+    ) as prev_purchase_date
+  FROM purchases
+)
+SELECT
+  user_id,
+  amount as latest_amount,
+  prev_purchase_amount,
+  DATEDIFF(created_at, prev_purchase_date) as days_between_purchases
+FROM ranked_purchases
+WHERE rn = 1;  -- most recent only</div>
+        <strong>AI context:</strong> "Days between last two purchases" and "change in purchase amount" are powerful churn and upsell prediction features. LAG() is how you create sequential/temporal features in SQL — essential for any model that uses user history.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Create a training dataset: for each user, label them as "churned" if they had activity in month N but not month N+1. <span class="badge badge-ai">AI use: churn label generation</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>This is a real ML label generation query. Interviewers love this.</strong>
+        <div class="formula">WITH monthly_activity AS (
+  SELECT
+    user_id,
+    DATE_TRUNC('month', event_time) as activity_month,
+    COUNT(*) as event_count
+  FROM user_events
+  GROUP BY user_id, DATE_TRUNC('month', event_time)
+),
+user_months AS (
+  SELECT
+    user_id,
+    activity_month,
+    LEAD(activity_month, 1) OVER (
+      PARTITION BY user_id
+      ORDER BY activity_month
+    ) as next_active_month
+  FROM monthly_activity
+)
+SELECT
+  user_id,
+  activity_month as reference_month,
+  CASE
+    WHEN next_active_month IS NULL THEN 1         -- no next month → churned
+    WHEN next_active_month > activity_month + INTERVAL '1 month'
+         THEN 1                                   -- gap > 1 month → churned
+    ELSE 0                                        -- active next month → retained
+  END as is_churned
+FROM user_months
+ORDER BY user_id, activity_month;</div>
+        <strong>Common mistake:</strong> Forgetting to handle the LAST month of data — users who were active in the final month of your dataset look churned because there's no next month. Always truncate your label window to exclude the most recent month.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Calculate user retention cohorts: what % of users acquired in week W are still active in weeks W+1, W+2, W+4? <span class="badge badge-ai">AI use: model performance monitoring</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">WITH user_cohorts AS (
+  -- Week user first appeared = their cohort
+  SELECT user_id,
+         DATE_TRUNC('week', MIN(event_time)) as cohort_week
+  FROM user_events
+  GROUP BY user_id
+),
+user_activity AS (
+  -- All (user, week) combinations where user was active
+  SELECT DISTINCT
+    user_id,
+    DATE_TRUNC('week', event_time) as active_week
+  FROM user_events
+),
+cohort_activity AS (
+  SELECT
+    c.cohort_week,
+    a.active_week,
+    COUNT(DISTINCT a.user_id) as active_users,
+    -- weeks since cohort (0 = acquisition week)
+    DATEDIFF('week', c.cohort_week, a.active_week) as weeks_since_acquisition
+  FROM user_cohorts c
+  JOIN user_activity a ON c.user_id = a.user_id
+  GROUP BY c.cohort_week, a.active_week
+),
+cohort_sizes AS (
+  SELECT cohort_week, COUNT(*) as cohort_size
+  FROM user_cohorts GROUP BY cohort_week
+)
+SELECT
+  ca.cohort_week,
+  cs.cohort_size,
+  ca.weeks_since_acquisition,
+  ca.active_users,
+  ROUND(100.0 * ca.active_users / cs.cohort_size, 1) as retention_pct
+FROM cohort_activity ca
+JOIN cohort_sizes cs ON ca.cohort_week = cs.cohort_week
+WHERE ca.weeks_since_acquisition IN (0,1,2,4,8)
+ORDER BY ca.cohort_week, ca.weeks_since_acquisition;</div>
+        <strong>Why this matters:</strong> Cohort retention analysis is how you measure whether your recommendation model improves long-term retention. "Cohort acquired after new model launch" vs "cohort before" — same SQL structure.
+      </div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Aggregations</button>
+    <button class="nbtn primary" onclick="nextCh(3)">CTEs & Subqueries →</button>
+  </div>
+</div>
+
+<!-- CH 5 -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 05 / 07</div>
+    <div class="ch-title">CTEs &amp;<br><em>Subqueries</em></div>
+    <p class="ch-lead">Complex ML feature queries are long. CTEs (Common Table Expressions) break them into readable steps — like functions in Python. This is how senior engineers write SQL that others can actually maintain.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — CTE vs Subquery</div>
+    <h2>Always Use CTEs for Readability</h2>
+    <div class="formula">-- Subquery version (hard to read, hard to debug)
+SELECT u.user_id, u.name, p.total_spend
+FROM users u
+JOIN (
+  SELECT user_id, SUM(amount) as total_spend
+  FROM purchases
+  WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+  GROUP BY user_id
+) p ON u.user_id = p.user_id
+WHERE p.total_spend > 100;
+
+-- CTE version (readable, each step has a name)
+WITH recent_purchases AS (
+  SELECT user_id, SUM(amount) as total_spend
+  FROM purchases
+  WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+  GROUP BY user_id
+),
+high_value_users AS (
+  SELECT user_id FROM recent_purchases
+  WHERE total_spend > 100
+)
+SELECT u.user_id, u.name, r.total_spend
+FROM users u
+JOIN recent_purchases r ON u.user_id = r.user_id
+WHERE u.user_id IN (SELECT user_id FROM high_value_users);</div>
+    <div class="insight">
+      <div class="insight-label">⚡ Recursive CTEs — for Hierarchical Data</div>
+      <p>Some data is hierarchical — org charts, product categories, graph traversal. Recursive CTEs let SQL traverse these structures. Used in ML for: processing tree-structured data, computing graph distances, traversing category hierarchies for feature aggregation.</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> Using a CTE, find the top 3 products by revenue in each category. <span class="badge badge-ai">AI use: feature selection per group</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">WITH product_revenue AS (
+  SELECT
+    product_id,
+    category,
+    SUM(amount) as total_revenue
+  FROM orders
+  GROUP BY product_id, category
+),
+ranked_products AS (
+  SELECT
+    product_id,
+    category,
+    total_revenue,
+    DENSE_RANK() OVER (
+      PARTITION BY category
+      ORDER BY total_revenue DESC
+    ) as revenue_rank
+  FROM product_revenue
+)
+SELECT product_id, category, total_revenue, revenue_rank
+FROM ranked_products
+WHERE revenue_rank <= 3
+ORDER BY category, revenue_rank;</div>
+        <strong>Pattern to memorize:</strong> CTE to compute the aggregate → CTE to rank within group → filter on rank. This 3-step pattern solves almost every "top N per group" problem.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Find all users who have made purchases on 3 or more consecutive days. <span class="badge badge-ai">AI use: engagement streak features</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Consecutive days is a classic hard SQL problem. The trick: subtract row_number from date to get a constant "group ID" for consecutive sequences.</strong>
+        <div class="formula">WITH daily_purchases AS (
+  -- One row per (user, day) — deduplicate multiple purchases same day
+  SELECT user_id, DATE(purchase_date) as purchase_day
+  FROM purchases
+  GROUP BY user_id, DATE(purchase_date)
+),
+numbered AS (
+  SELECT
+    user_id,
+    purchase_day,
+    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY purchase_day) as rn,
+    -- KEY TRICK: date - row_number = constant for consecutive days
+    -- Day 1 - rn 1 = Day 0
+    -- Day 2 - rn 2 = Day 0
+    -- Day 3 - rn 3 = Day 0  ← all same = consecutive!
+    -- Day 5 - rn 4 = Day 1  ← different = gap occurred
+    (purchase_day - (rn || ' days')::INTERVAL)::DATE as grp
+  FROM daily_purchases
+),
+consecutive_groups AS (
+  SELECT user_id, grp, COUNT(*) as streak_length
+  FROM numbered
+  GROUP BY user_id, grp
+)
+SELECT DISTINCT user_id
+FROM consecutive_groups
+WHERE streak_length >= 3;</div>
+        <strong>AI context:</strong> "Engagement streak" is a powerful feature for churn prediction. Users with a 7+ day streak are very unlikely to churn. This query generates that feature for your training dataset.
+      </div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← Window Functions</button>
+    <button class="nbtn primary" onclick="nextCh(4)">ML Feature Pipelines →</button>
+  </div>
+</div>
+
+<!-- CH 6 -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 06 / 07</div>
+    <div class="ch-title">ML Feature<br><em>Pipelines</em><br>in SQL</div>
+    <p class="ch-lead">This is where SQL meets AI engineering directly. How do you build a training dataset from raw event logs? How do you create user features that capture behavior? This is what you'll actually do at work.</p>
+  </div>
+  <div class="section">
+    <div class="section-label">01 — Real Feature Engineering Patterns</div>
+    <h2>Building a User Feature Table for ML</h2>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Build a complete user feature table for a churn prediction model. <span class="badge badge-ai">AI use: training data generation</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>This is the kind of query you'll write at your job every week.</strong>
+        <div class="formula">-- Reference date: compute all features AS OF this date
+-- This prevents data leakage (no future data)
+DECLARE reference_date DATE DEFAULT '2024-06-01';
+
+WITH
+-- Feature 1: Recency — days since last activity
+recency AS (
+  SELECT user_id,
+         DATEDIFF(reference_date, MAX(event_time)) as days_since_last_active
+  FROM user_events
+  WHERE event_time < reference_date
+  GROUP BY user_id
+),
+-- Feature 2: Frequency — activity counts over different windows
+frequency AS (
+  SELECT user_id,
+         COUNT(CASE WHEN event_time >= reference_date - 7  THEN 1 END) as events_7d,
+         COUNT(CASE WHEN event_time >= reference_date - 30 THEN 1 END) as events_30d,
+         COUNT(CASE WHEN event_time >= reference_date - 90 THEN 1 END) as events_90d,
+         COUNT(DISTINCT DATE(event_time)) as total_active_days
+  FROM user_events
+  WHERE event_time < reference_date
+  GROUP BY user_id
+),
+-- Feature 3: Monetary — purchase behavior
+monetary AS (
+  SELECT user_id,
+         SUM(amount) as total_spend_90d,
+         AVG(amount) as avg_order_value,
+         COUNT(*) as purchase_count_90d,
+         MAX(amount) as max_single_purchase
+  FROM purchases
+  WHERE purchase_date BETWEEN reference_date - 90 AND reference_date
+  GROUP BY user_id
+),
+-- Feature 4: Trend — is user activity increasing or decreasing?
+trend AS (
+  SELECT user_id,
+         COUNT(CASE WHEN event_time >= reference_date - 14 THEN 1 END) as events_last_14d,
+         COUNT(CASE WHEN event_time BETWEEN reference_date-28
+                                       AND reference_date-14 THEN 1 END) as events_prev_14d
+  FROM user_events
+  WHERE event_time < reference_date
+  GROUP BY user_id
+),
+-- Label: did user churn (no activity in next 30 days)?
+labels AS (
+  SELECT user_id,
+         CASE WHEN MAX(event_time) < reference_date + 30 THEN 1 ELSE 0 END as is_churned
+  FROM user_events
+  GROUP BY user_id
+)
+-- Final: join all features
+SELECT
+  r.user_id,
+  r.days_since_last_active,
+  f.events_7d, f.events_30d, f.events_90d, f.total_active_days,
+  COALESCE(m.total_spend_90d, 0) as total_spend_90d,
+  COALESCE(m.avg_order_value, 0) as avg_order_value,
+  COALESCE(m.purchase_count_90d, 0) as purchase_count_90d,
+  -- Derived feature: trend ratio
+  SAFE_DIVIDE(t.events_last_14d, NULLIF(t.events_prev_14d, 0)) as activity_trend_ratio,
+  l.is_churned as label
+FROM recency r
+LEFT JOIN frequency f USING (user_id)
+LEFT JOIN monetary m USING (user_id)
+LEFT JOIN trend t USING (user_id)
+JOIN labels l USING (user_id);</div>
+        <strong>Key patterns used:</strong> CTEs for modularity, CASE WHEN for conditional counting (feature windows), COALESCE for null handling, SAFE_DIVIDE to avoid divide-by-zero, reference_date parameter to prevent data leakage.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> How do you do a time-based train/test split in SQL? <span class="badge badge-ai">AI use: preventing data leakage</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Never do random splits for temporal data. Always split by time.</strong>
+        <div class="formula">-- WRONG: random split (future data leaks into training)
+SELECT *, RAND() < 0.8 as is_train FROM user_features;  -- DON'T DO THIS
+
+-- CORRECT: time-based split
+WITH labeled_users AS (
+  SELECT user_id,
+         first_seen_date,
+         -- features computed as of first_seen_date
+         ...features...,
+         is_churned as label
+  FROM user_feature_table
+)
+-- Train set: users acquired before cutoff
+SELECT *, 'train' as split
+FROM labeled_users WHERE first_seen_date < '2024-03-01'
+UNION ALL
+-- Test set: users acquired after cutoff
+SELECT *, 'test' as split
+FROM labeled_users WHERE first_seen_date BETWEEN '2024-03-01' AND '2024-05-01';
+
+-- Why time-based matters:
+-- Random split: model trained on Jan user data tested on Jan users
+-- → looks great in eval, fails in production on future users
+-- Time-based: train on Jan-Feb, test on Mar-Apr
+-- → simulates real production deployment</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← CTEs</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Hard Interview Qs →</button>
+  </div>
+</div>
+
+<!-- CH 7 -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 07 / 07</div>
+    <div class="ch-title">Hard<br><em>Interview</em><br>Questions</div>
+    <p class="ch-lead">These are the questions that trip people up. Master these and you're in the top 10% of SQL candidates at AI engineer interviews.</p>
+  </div>
+  <div class="section">
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Write a query to detect session boundaries in user event logs. A session ends after 30 min of inactivity. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">WITH events_with_prev AS (
+  SELECT
+    user_id, event_time,
+    LAG(event_time) OVER (PARTITION BY user_id ORDER BY event_time) as prev_event_time
+  FROM user_events
+),
+session_starts AS (
+  SELECT
+    user_id, event_time,
+    -- New session if: first event OR gap > 30 min since last event
+    CASE
+      WHEN prev_event_time IS NULL THEN 1
+      WHEN TIMESTAMPDIFF(MINUTE, prev_event_time, event_time) > 30 THEN 1
+      ELSE 0
+    END as is_session_start
+  FROM events_with_prev
+),
+sessions AS (
+  SELECT
+    user_id, event_time,
+    SUM(is_session_start) OVER (
+      PARTITION BY user_id ORDER BY event_time
+      ROWS UNBOUNDED PRECEDING
+    ) as session_id   -- cumulative sum of starts = unique session ID
+  FROM session_starts
+)
+SELECT
+  user_id,
+  session_id,
+  MIN(event_time) as session_start,
+  MAX(event_time) as session_end,
+  COUNT(*) as events_in_session,
+  TIMESTAMPDIFF(MINUTE, MIN(event_time), MAX(event_time)) as session_length_min
+FROM sessions
+GROUP BY user_id, session_id
+ORDER BY user_id, session_id;</div>
+        <strong>Session features are critical ML inputs.</strong> Session length, events per session, sessions per day — all churn/engagement predictors. The cumulative SUM trick to create session IDs is a classic interview pattern.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> Given a table of model predictions and ground truth, compute precision, recall, and F1 in SQL. <span class="badge badge-ai">AI use: model evaluation in the warehouse</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">-- predictions table: user_id, predicted_label, actual_label, score
+-- threshold: classify as positive if score >= 0.5
+
+WITH classified AS (
+  SELECT
+    user_id,
+    actual_label,
+    CASE WHEN score >= 0.5 THEN 1 ELSE 0 END as predicted_label,
+    CASE
+      WHEN score >= 0.5 AND actual_label = 1 THEN 'TP'
+      WHEN score >= 0.5 AND actual_label = 0 THEN 'FP'
+      WHEN score < 0.5  AND actual_label = 1 THEN 'FN'
+      WHEN score < 0.5  AND actual_label = 0 THEN 'TN'
+    END as outcome
+  FROM predictions
+),
+counts AS (
+  SELECT
+    SUM(CASE WHEN outcome = 'TP' THEN 1 ELSE 0 END) as tp,
+    SUM(CASE WHEN outcome = 'FP' THEN 1 ELSE 0 END) as fp,
+    SUM(CASE WHEN outcome = 'FN' THEN 1 ELSE 0 END) as fn,
+    SUM(CASE WHEN outcome = 'TN' THEN 1 ELSE 0 END) as tn
+  FROM classified
+)
+SELECT
+  tp, fp, fn, tn,
+  ROUND(tp / NULLIF(tp + fp, 0), 4) as precision,
+  ROUND(tp / NULLIF(tp + fn, 0), 4) as recall,
+  ROUND(2.0 * tp / NULLIF(2*tp + fp + fn, 0), 4) as f1_score
+FROM counts;</div>
+        <strong>This query runs your model evaluation entirely in BigQuery/Snowflake.</strong> For large prediction sets (billions of rows), running evaluation in the warehouse is much faster than pulling data into Python.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-hard">Hard</span> An A/B test table has user_id, variant (A or B), and outcome. Compute statistical significance. <span class="badge badge-ai">AI use: model A/B test analysis</span> <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">WITH variant_stats AS (
+  SELECT
+    variant,
+    COUNT(*) as n,
+    SUM(outcome) as conversions,
+    AVG(outcome) as conversion_rate,
+    -- Variance for binary outcome = p*(1-p)
+    AVG(outcome) * (1 - AVG(outcome)) as variance
+  FROM ab_test_results
+  GROUP BY variant
+),
+control AS (SELECT * FROM variant_stats WHERE variant = 'A'),
+treatment AS (SELECT * FROM variant_stats WHERE variant = 'B')
+SELECT
+  c.conversion_rate as control_rate,
+  t.conversion_rate as treatment_rate,
+  t.conversion_rate - c.conversion_rate as absolute_lift,
+  ROUND(100.0 * (t.conversion_rate - c.conversion_rate) / c.conversion_rate, 2) as relative_lift_pct,
+  -- Standard error of difference between proportions
+  SQRT(c.variance/c.n + t.variance/t.n) as std_error,
+  -- Z-score
+  (t.conversion_rate - c.conversion_rate) /
+    NULLIF(SQRT(c.variance/c.n + t.variance/t.n), 0) as z_score
+  -- z > 1.96 → p < 0.05 (statistically significant at 95% confidence)
+FROM control c, treatment t;</div>
+        <strong>AI context:</strong> After deploying a new model in an A/B test, this exact query tells you if the improvement is real or just noise. z_score > 1.96 = statistically significant at p &lt; 0.05.
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-med">Medium</span> What is the difference between RANK, DENSE_RANK, and ROW_NUMBER? Give an example. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="formula">-- Given scores: 100, 90, 90, 80
+
+SELECT score,
+  ROW_NUMBER() OVER (ORDER BY score DESC) as row_num,    -- 1, 2, 3, 4
+  RANK()       OVER (ORDER BY score DESC) as rank_val,  -- 1, 2, 2, 4 (gap!)
+  DENSE_RANK() OVER (ORDER BY score DESC) as dense_rank  -- 1, 2, 2, 3 (no gap)
+FROM scores;
+
+-- ROW_NUMBER: always unique. Ties broken arbitrarily. Use: deduplication,
+--             sampling exactly N rows per group
+-- RANK:       ties get same rank, next rank skipped. Use: sports-style ranking
+-- DENSE_RANK: ties get same rank, no gaps. Use: "top 3 products per category"
+--             where you want exactly 3 rank levels even with ties</div>
+        <strong>Interview trap:</strong> "Get the top 3 users per cohort" — if you use ROW_NUMBER, tied users at rank 3 get different results based on arbitrary ordering. Use DENSE_RANK to be fair to ties, then filter WHERE dense_rank &lt;= 3.
+      </div>
+    </div>
+  </div>
+  <div class="insight">
+    <div class="insight-label">⚡ The SQL Mental Model for AI Engineers</div>
+    <p>Every SQL query you write as an AI engineer is answering one of four questions: <strong>(1) Who are my users / items?</strong> (JOINs + filters) <strong>(2) What did they do?</strong> (aggregations) <strong>(3) How does their behavior change over time?</strong> (window functions with LAG/LEAD) <strong>(4) Is the model working?</strong> (evaluation queries). Master these four and you can build any ML feature or evaluate any model from SQL.</p>
+  </div>
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← ML Feature Pipelines</button>
+    <button class="nbtn primary" onclick="alert('✅ SQL complete!\nNow building: Behavioral Interviews...')">Done ✓</button>
+  </div>
+</div>
+
+</main>
+<script>
+let cur=0; const total=7;
+function toggle(el){const a=el.nextElementSibling;const o=a.style.display==='block';a.style.display=o?'none':'block';el.classList.toggle('open',!o);}
+function goTo(idx,el){document.querySelectorAll('.chapter').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('ch'+idx).classList.add('active');el.classList.add('active');cur=idx;window.scrollTo({top:0,behavior:'smooth'});}
+function nextCh(c){if(c+1<total){const items=document.querySelectorAll('.nav-item');goTo(c+1,items[c+1]);}}
+function prevCh(c){if(c-1>=0){const items=document.querySelectorAll('.nav-item');goTo(c-1,items[c-1]);}}
+</script>
+</body>
+</html>
