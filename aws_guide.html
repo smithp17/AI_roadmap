@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS for AI Engineers — Cloud, Scale & Production</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810;
+  --surface: #0b0f1a;
+  --surface2: #111827;
+  --surface3: #1a2035;
+  --border: #1e2a3d;
+  --border2: #253347;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --muted: #4a5568;
+  --aws: #FF9900;
+  --aws-dim: rgba(255,153,0,0.15);
+  --aws-border: rgba(255,153,0,0.3);
+  --teal: #00d4ff;
+  --teal-dim: rgba(0,212,255,0.1);
+  --green: #10b981;
+  --red: #f43f5e;
+  --purple: #a78bfa;
+  --yellow: #fbbf24;
+  --grid: rgba(255,153,0,0.04);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* GRID BACKGROUND */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ORANGE GLOW TOP */
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(255,153,0,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(5,8,16,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 2px;
+}
+nav::-webkit-scrollbar { display:none; }
+
+.nav-brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--aws);
+  white-space: nowrap;
+  margin-right: 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.aws-logo {
+  width: 28px; height: 28px;
+  background: var(--aws);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #000;
+}
+
+.nav-item {
+  font-size: 9px;
+  color: var(--muted);
+  padding: 0 10px;
+  height: 56px;
+  display: flex; align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.nav-item:hover { color: var(--aws); }
+.nav-item.active { color: var(--aws); border-bottom-color: var(--aws); }
+
+/* MAIN */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 88px 24px 120px;
+  position: relative;
+  z-index: 1;
+}
+
+.chapter { display:none; animation: fadeUp 0.4s ease both; }
+.chapter.active { display:block; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* CHAPTER HEADER */
+.ch-header {
+  margin-bottom: 60px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.ch-num {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ch-num::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 200px;
+}
+
+.ch-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(38px, 6vw, 72px);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  margin-bottom: 22px;
+}
+.ch-title em { font-style: normal; color: var(--aws); }
+.ch-title .dim { color: var(--muted); }
+
+.ch-lead {
+  font-size: 14px;
+  color: var(--text2);
+  max-width: 560px;
+  line-height: 1.75;
+}
+
+/* SECTION */
+.section { margin-bottom: 64px; }
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--aws);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::before {
+  content: '';
+  width: 4px; height: 4px;
+  background: var(--aws);
+  border-radius: 50%;
+}
+
+h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  margin-top: 28px;
+  color: var(--text);
+}
+
+p { margin-bottom: 14px; font-size: 14px; color: var(--text2); line-height: 1.8; }
+p strong { color: var(--text); }
+p:last-child { margin-bottom: 0; }
+
+/* Q&A */
+.qa {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin: 12px 0;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.qa:hover { border-color: var(--border2); }
+
+.qa-q {
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--aws);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 3px solid var(--aws);
+  transition: background 0.2s;
+  line-height: 1.5;
+  font-family: 'Space Mono', monospace;
+}
+.qa-q:hover { background: var(--surface2); }
+.qa-q .arrow { font-size: 16px; flex-shrink:0; transition: transform 0.3s; margin-top:2px; color: var(--muted); }
+.qa-q.open .arrow { transform: rotate(45deg); color: var(--aws); }
+.qa-a {
+  display: none;
+  padding: 18px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.9;
+  border-left: 3px solid var(--surface3);
+}
+.qa-a strong { color: var(--teal); }
+
+/* BADGES */
+.badge {
+  display:inline-block; font-size:8px; padding:2px 6px;
+  margin-right:5px; letter-spacing:0.1em; text-transform:uppercase;
+  font-weight:700; flex-shrink:0; font-family:'Space Mono',monospace;
+}
+.badge-core  { background:rgba(255,153,0,0.15);  color:var(--aws);    border:1px solid var(--aws-border); }
+.badge-deep  { background:rgba(167,139,250,0.15); color:var(--purple); border:1px solid rgba(167,139,250,0.3); }
+.badge-arch  { background:rgba(0,212,255,0.12);   color:var(--teal);   border:1px solid rgba(0,212,255,0.25); }
+.badge-ml    { background:rgba(16,185,129,0.15);  color:var(--green);  border:1px solid rgba(16,185,129,0.3); }
+.badge-cost  { background:rgba(251,191,36,0.15);  color:var(--yellow); border:1px solid rgba(251,191,36,0.3); }
+
+/* TAGS */
+.tag { display:inline-block; font-size:8px; padding:2px 6px; margin:3px 3px 3px 0; letter-spacing:0.08em; text-transform:uppercase; font-family:'Space Mono',monospace; }
+.tag.aws    { border:1px solid var(--aws-border); color:var(--aws); }
+.tag.teal   { border:1px solid rgba(0,212,255,0.35); color:var(--teal); }
+.tag.green  { border:1px solid rgba(16,185,129,0.35); color:var(--green); }
+.tag.red    { border:1px solid rgba(244,63,94,0.35); color:var(--red); }
+.tag.purple { border:1px solid rgba(167,139,250,0.35); color:var(--purple); }
+.tag.yellow { border:1px solid rgba(251,191,36,0.35); color:var(--yellow); }
+
+/* CODE BLOCKS */
+.code {
+  background: #030508;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  padding: 16px 20px;
+  margin: 14px 0;
+  font-size: 12px;
+  color: #7dd3fc;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.85;
+  font-family: 'Space Mono', monospace;
+}
+.code .comment { color: var(--muted); }
+.code .key { color: var(--aws); }
+.code .val { color: #86efac; }
+.code .str { color: #fde68a; }
+
+/* INSIGHT */
+.insight {
+  background: linear-gradient(135deg, rgba(255,153,0,0.06) 0%, rgba(255,153,0,0.02) 100%);
+  border: 1px solid var(--aws-border);
+  padding: 20px 22px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+.insight::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--aws);
+}
+.insight-label { font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--aws); margin-bottom: 8px; }
+.insight p { font-size: 13px; margin:0; line-height:1.75; }
+.insight strong { color: var(--aws); }
+
+/* WARNING */
+.warning {
+  background: rgba(244,63,94,0.06);
+  border: 1px solid rgba(244,63,94,0.2);
+  padding: 14px 18px;
+  margin: 16px 0;
+  position: relative;
+  overflow: hidden;
+}
+.warning::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--red); }
+.warning-label { font-size:8px; letter-spacing:0.25em; text-transform:uppercase; color:var(--red); margin-bottom:6px; }
+.warning p { font-size:13px; margin:0; color:var(--text2); }
+
+/* TABLE */
+.tbl-wrap { margin:16px 0; overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
+th { background:var(--surface2); color:var(--muted); padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; border-bottom:1px solid var(--border2); font-family:'Space Mono',monospace; }
+td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--text2); line-height:1.5; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background: rgba(255,153,0,0.02); }
+td:first-child { color:var(--aws); font-weight:700; }
+
+/* AWS SERVICE CARDS */
+.service-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px; margin:18px 0; }
+.svc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 14px;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.svc-card:hover { border-color: var(--aws-border); transform: translateY(-2px); }
+.svc-cat { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--aws); margin-bottom: 5px; }
+.svc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 5px; color: var(--text); }
+.svc-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* ARCH DIAGRAM */
+.arch {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin: 20px 0;
+  font-size: 12px;
+}
+.arch-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--aws); margin-bottom: 16px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+.arch-flow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.arch-box {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 8px 12px;
+  font-size: 11px;
+  text-align: center;
+  min-width: 80px;
+  flex: 1;
+  color: var(--text2);
+  line-height: 1.4;
+}
+.arch-box strong { display: block; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aws); margin-bottom: 3px; }
+.arch-arrow { color: var(--border2); font-size: 16px; flex-shrink: 0; }
+
+/* COST BOX */
+.cost-box {
+  background: rgba(251,191,36,0.05);
+  border: 1px solid rgba(251,191,36,0.2);
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+.cost-label { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--yellow); margin-bottom: 8px; }
+.cost-box p { font-size: 13px; margin:0; color: var(--text2); }
+.cost-box strong { color: var(--yellow); }
+
+/* STEPS */
+.steps { margin:16px 0; }
+.step { display:flex; gap:14px; margin-bottom:14px; align-items:flex-start; }
+.step-num { width:24px; height:24px; background:var(--surface2); border:1px solid var(--aws-border); color:var(--aws); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; margin-top:2px; font-weight:700; }
+.step p { font-size:13.5px; margin:0; }
+
+/* NAV BUTTONS */
+.nav-btns {
+  display:flex; justify-content:space-between;
+  margin-top:60px; padding-top:28px;
+  border-top:1px solid var(--border);
+}
+.nbtn {
+  background:transparent; border:1px solid var(--border2);
+  color:var(--text2); font-family:'Space Mono',monospace;
+  font-size:10px; padding:10px 18px; cursor:pointer;
+  transition:all 0.2s; text-transform:uppercase; letter-spacing:0.05em;
+}
+.nbtn:hover { border-color:var(--aws); color:var(--aws); }
+.nbtn.primary { background:var(--aws); color:#000; border-color:var(--aws); font-weight:700; }
+.nbtn.primary:hover { background:#ffad33; }
+.nbtn:disabled { opacity:0.2; cursor:not-allowed; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="aws-logo">AWS</div>
+    AI on Cloud
+  </div>
+  <div class="nav-item active" onclick="goTo(0,this)">① Core Services</div>
+  <div class="nav-item" onclick="goTo(1,this)">② Compute & GPU</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ Storage & Data</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ SageMaker</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ Networking & IAM</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ Scaling Patterns</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ Production Deploy</div>
+  <div class="nav-item" onclick="goTo(7,this)">⑧ Cost & Monitoring</div>
+  <div class="nav-item" onclick="goTo(8,this)">⑨ Full ML System</div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════ CH 1 ═══════════════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 01 / 09 — AWS for AI Engineers</div>
+    <div class="ch-title"><span class="dim">The</span> Core<br><em>Services</em><br><span class="dim">Map</span></div>
+    <p class="ch-lead">AWS has 200+ services. You don't need all of them. As an AI engineer you'll use maybe 20 regularly. This chapter maps the whole landscape and shows you what actually matters.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Services You Must Know</div>
+    <h2>AWS for AI — The Core 20</h2>
+
+    <div class="service-grid">
+      <div class="svc-card"><div class="svc-cat">Compute</div><div class="svc-name">EC2</div><div class="svc-desc">Virtual machines. Train custom models, run inference servers, any workload.</div></div>
+      <div class="svc-card"><div class="svc-cat">Compute</div><div class="svc-name">Lambda</div><div class="svc-desc">Serverless functions. Event-driven inference, data triggers, lightweight preprocessing.</div></div>
+      <div class="svc-card"><div class="svc-cat">Containers</div><div class="svc-name">ECS / EKS</div><div class="svc-desc">Container orchestration. ECS (simpler), EKS (Kubernetes). Run model servers at scale.</div></div>
+      <div class="svc-card"><div class="svc-cat">Containers</div><div class="svc-name">ECR</div><div class="svc-desc">Elastic Container Registry. Store Docker images for your ML training and serving containers.</div></div>
+      <div class="svc-card"><div class="svc-cat">Storage</div><div class="svc-name">S3</div><div class="svc-desc">Object storage. Training datasets, model artifacts, logs. The backbone of every ML system.</div></div>
+      <div class="svc-card"><div class="svc-cat">Storage</div><div class="svc-name">EBS / EFS</div><div class="svc-desc">Block/file storage attached to EC2. High-speed disk for training checkpoints.</div></div>
+      <div class="svc-card"><div class="svc-cat">Database</div><div class="svc-name">RDS / Aurora</div><div class="svc-desc">Managed relational DB. User metadata, experiment configs, structured feature tables.</div></div>
+      <div class="svc-card"><div class="svc-cat">Database</div><div class="svc-name">DynamoDB</div><div class="svc-desc">Managed NoSQL. Sub-millisecond lookup for online feature serving, caching.</div></div>
+      <div class="svc-card"><div class="svc-cat">ML Platform</div><div class="svc-name">SageMaker</div><div class="svc-desc">End-to-end managed ML: training, tuning, model registry, endpoint deployment, monitoring.</div></div>
+      <div class="svc-card"><div class="svc-cat">AI Services</div><div class="svc-name">Bedrock</div><div class="svc-desc">Managed foundation models API. Claude, Titan, Llama on AWS. No GPU management.</div></div>
+      <div class="svc-card"><div class="svc-cat">Streaming</div><div class="svc-name">Kinesis</div><div class="svc-desc">Real-time data streaming. User events → feature computation → model serving pipeline.</div></div>
+      <div class="svc-card"><div class="svc-cat">Queuing</div><div class="svc-name">SQS</div><div class="svc-desc">Message queue. Decouple data producers from ML inference workers. Async batch jobs.</div></div>
+      <div class="svc-card"><div class="svc-cat">Data Warehouse</div><div class="svc-name">Redshift</div><div class="svc-desc">Petabyte-scale SQL analytics. Training data queries, A/B test analysis, feature aggregation.</div></div>
+      <div class="svc-card"><div class="svc-cat">ETL</div><div class="svc-name">Glue</div><div class="svc-desc">Serverless ETL. Data catalog, Spark jobs, S3 to Redshift pipelines for training data.</div></div>
+      <div class="svc-card"><div class="svc-cat">Networking</div><div class="svc-name">VPC</div><div class="svc-desc">Virtual Private Cloud. Isolate ML infrastructure. Control network access to model endpoints.</div></div>
+      <div class="svc-card"><div class="svc-cat">Load Balancing</div><div class="svc-name">ALB / NLB</div><div class="svc-desc">Application/Network Load Balancer. Distribute inference traffic across model server replicas.</div></div>
+      <div class="svc-card"><div class="svc-cat">Scaling</div><div class="svc-name">Auto Scaling</div><div class="svc-desc">Scale EC2 or ECS tasks automatically based on CPU, GPU utilization, request queue depth.</div></div>
+      <div class="svc-card"><div class="svc-cat">Security</div><div class="svc-name">IAM</div><div class="svc-desc">Identity & Access. Control who/what can access S3 buckets, SageMaker endpoints, training jobs.</div></div>
+      <div class="svc-card"><div class="svc-cat">Monitoring</div><div class="svc-name">CloudWatch</div><div class="svc-desc">Metrics, logs, alarms. Monitor model latency, error rates, GPU utilization, drift alerts.</div></div>
+      <div class="svc-card"><div class="svc-cat">Workflow</div><div class="svc-name">Step Functions</div><div class="svc-desc">Serverless orchestration. Chain preprocessing → training → evaluation → deployment workflows.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> A junior engineer asks: "What's the difference between EC2, ECS, EKS, and Lambda? Which do I use for a model server?" <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>EC2 (Elastic Compute Cloud):</strong> A raw virtual machine. You get an OS, you install everything yourself. Maximum control, maximum responsibility. Use when: you need custom GPU drivers, specialized ML frameworks, or bare-metal-like control over training infrastructure.<br><br>
+        <strong>ECS (Elastic Container Service):</strong> AWS-managed container orchestration. You define Docker containers, AWS runs them on EC2 underneath. Much simpler than Kubernetes. Use when: you want containers without K8s complexity. Standard choice for model servers at companies without existing K8s expertise.<br><br>
+        <strong>EKS (Elastic Kubernetes Service):</strong> Managed Kubernetes on AWS. Full K8s API compatibility. Use when: company already uses Kubernetes, need advanced scheduling (GPU node affinity, spot instance management), multi-cloud portability matters.<br><br>
+        <strong>Lambda:</strong> Serverless. You write a function, AWS runs it when triggered, charges per millisecond. No servers to manage. Use when: event-driven inference (image uploaded → classify → store result), lightweight pre/post processing, triggered by S3 or API Gateway.<br><br>
+        <strong>For a model server specifically:</strong><br>
+        Small team, simple model → <span class="tag aws">ECS + ALB</span> (fastest to production)<br>
+        Existing K8s team → <span class="tag teal">EKS + Helm charts</span><br>
+        Sporadic, bursty traffic → <span class="tag green">Lambda</span> (if model is small and cold start is OK)<br>
+        Production ML at scale → <span class="tag aws">SageMaker Endpoints</span> (managed everything)
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> What is S3 and why is it the backbone of every ML system on AWS? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>S3 (Simple Storage Service)</strong> = object storage. Store any file (blob) at any scale. 99.999999999% (11 nines) durability. Effectively unlimited storage. Pay per GB stored + per request.<br><br>
+        <strong>Why every ML system on AWS centers on S3:</strong><br><br>
+        1. <strong>Training data:</strong> Raw data (images, text, audio) → stored in S3. Training jobs read directly from S3 at high throughput (multi-Gbps with S3 Transfer Acceleration).<br>
+        2. <strong>Model artifacts:</strong> After training, checkpoint files (.pt, .bin, weights) saved to S3. Model registry references S3 paths.<br>
+        3. <strong>Feature data:</strong> Processed Parquet feature files stored in S3, queried by Athena or loaded into training jobs.<br>
+        4. <strong>Pipeline glue:</strong> Step 1 writes output to S3. Step 2 reads from S3. S3 is the universal handoff point between every stage in an ML pipeline.<br>
+        5. <strong>Logs and artifacts:</strong> Training logs, evaluation reports, confusion matrices — all go to S3. CloudWatch can also stream logs there.<br><br>
+        <div class="code"><span class="comment"># Everything in ML pipelines flows through S3</span>
+<span class="key">s3://my-bucket/raw-data/</span>           <span class="comment"># training data</span>
+<span class="key">s3://my-bucket/processed/v2/</span>       <span class="comment"># feature parquet files</span>
+<span class="key">s3://my-bucket/models/run-20240601/</span> <span class="comment"># model checkpoints</span>
+<span class="key">s3://my-bucket/eval/</span>               <span class="comment"># evaluation results</span>
+<span class="key">s3://my-bucket/logs/</span>               <span class="comment"># training logs</span></div>
+        <strong>Key S3 concepts for AI engineers:</strong><br>
+        • <strong>Versioning:</strong> Enable on training data buckets. S3 keeps every version of every object — essential for dataset reproducibility.<br>
+        • <strong>Lifecycle policies:</strong> Auto-move old checkpoints to Glacier (cheap cold storage) after 90 days. Huge cost savings.<br>
+        • <strong>Event notifications:</strong> S3 → trigger Lambda or SQS when a new file is uploaded. Enables event-driven pipelines.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">Compute & GPU →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 2 ═══════════════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 02 / 09</div>
+    <div class="ch-title">Compute<br><em>&amp; GPU</em><br><span class="dim">Instances</span></div>
+    <p class="ch-lead">Choosing the right instance type is one of the most impactful decisions in ML infrastructure. Wrong choice = 5× more cost or 5× slower training. Know every GPU instance family.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — EC2 Instance Families for ML</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>Family</th><th>GPU</th><th>GPU Memory</th><th>Use Case</th><th>Est. Cost/hr</th></tr>
+      <tr><td>p3.2xlarge</td><td>1× V100</td><td>16GB</td><td>Training medium models, fine-tuning up to 7B</td><td>~$3.06</td></tr>
+      <tr><td>p3.8xlarge</td><td>4× V100</td><td>64GB</td><td>Distributed training, medium model fine-tuning</td><td>~$12.24</td></tr>
+      <tr><td>p3.16xlarge</td><td>8× V100</td><td>128GB</td><td>Large model training, NLP at scale</td><td>~$24.48</td></tr>
+      <tr><td style="color:var(--aws)">p4d.24xlarge</td><td>8× A100 40GB</td><td>320GB</td><td>LLM training, large distributed workloads</td><td>~$32.77</td></tr>
+      <tr><td style="color:var(--aws)">p4de.24xlarge</td><td>8× A100 80GB</td><td>640GB</td><td>Very large model training, full LLM fine-tuning</td><td>~$40.96</td></tr>
+      <tr><td style="color:var(--teal)">p5.48xlarge</td><td>8× H100</td><td>640GB HBM3</td><td>Frontier LLM training, fastest available on AWS</td><td>~$98.32</td></tr>
+      <tr><td>g4dn.xlarge</td><td>1× T4</td><td>16GB</td><td>Cost-effective inference, fine-tuning smaller models</td><td>~$0.526</td></tr>
+      <tr><td>g5.xlarge</td><td>1× A10G</td><td>24GB</td><td>Inference, fine-tuning up to 13B, image generation</td><td>~$1.006</td></tr>
+      <tr><td style="color:var(--green)">g5.12xlarge</td><td>4× A10G</td><td>96GB</td><td>Multi-GPU inference, larger model serving</td><td>~$5.672</td></tr>
+      <tr><td>inf2.xlarge</td><td>AWS Inferentia2</td><td>32GB</td><td>Cost-optimized inference for LLMs (up to 70B)</td><td>~$0.758</td></tr>
+      <tr><td>trn1.2xlarge</td><td>AWS Trainium</td><td>32GB</td><td>Cost-optimized LLM training (up to 40% cheaper)</td><td>~$1.343</td></tr>
+    </table></div>
+
+    <div class="cost-box">
+      <div class="cost-label">💰 Cost Rule of Thumb</div>
+      <p><strong>Development/experimentation:</strong> g4dn.xlarge (~$0.53/hr) — cheap T4, good for testing. <strong>Production inference (small-med models):</strong> g5.xlarge (~$1/hr) — A10G is 3× faster than T4. <strong>LLM training:</strong> p4d.24xlarge or Spot p3.8xlarge if cost-sensitive. <strong>Frontier LLM:</strong> p5 H100s — expensive but 3× faster than A100 for large batches.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> What are Spot Instances? How do you use them for ML training? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Spot Instances</strong> = spare AWS capacity sold at up to 90% discount vs On-Demand price. AWS can reclaim them with 2 minutes notice if capacity is needed elsewhere.<br><br>
+        <strong>Why they're perfect for ML training:</strong> Training jobs are interruptible if you checkpoint frequently. Save 60-90% on compute costs. A p3.8xlarge that costs $12.24/hr On-Demand might be $2-4/hr on Spot.<br><br>
+        <strong>How to use Spot safely for training:</strong>
+        <div class="code"><span class="comment"># 1. Checkpoint frequently to S3 (every N steps)</span>
+<span class="key">if</span> step % checkpoint_every == <span class="val">0</span>:
+    torch.save(model.state_dict(), <span class="str">f"s3://bucket/checkpoint-{step}.pt"</span>)
+
+<span class="comment"># 2. Handle interruption signal (SIGTERM given 2min before termination)</span>
+<span class="key">import</span> signal
+<span class="key">def</span> handle_interrupt(signum, frame):
+    save_checkpoint()  <span class="comment"># emergency checkpoint</span>
+    sys.exit(<span class="val">0</span>)
+signal.signal(signal.SIGTERM, handle_interrupt)
+
+<span class="comment"># 3. On resume: load latest checkpoint and continue</span>
+checkpoint = load_latest_from_s3(<span class="str">"s3://bucket/checkpoints/"</span>)
+model.load_state_dict(checkpoint[<span class="str">'model'</span>])
+optimizer.load_state_dict(checkpoint[<span class="str">'optimizer'</span>])</div>
+        <strong>Spot Fleet strategy:</strong> Request capacity across multiple instance types and AZs. AWS picks the cheapest available. If your training can run on p3.2xlarge OR g5.4xlarge, you have more options and less chance of interruption.<br><br>
+        <div class="tag green">Real numbers</div> A typical LLaMA fine-tuning run: 20 hours on p3.8xlarge = $244.80 On-Demand. Same on Spot = ~$60-80. On 10 training runs = $1,648 saved.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-deep">Deep</span> What is AWS Inferentia and when should you use it instead of NVIDIA GPUs? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>AWS Inferentia (inf1, inf2):</strong> Custom AWS silicon specifically designed for neural network inference. NOT a general GPU — it's an ASIC (Application Specific Integrated Circuit) optimized for transformer inference operations.<br><br>
+        <strong>Inferentia2 vs A10G for LLM inference:</strong><br>
+        • inf2.48xlarge: 12 Inferentia2 chips, 384GB total memory. Designed for 70B+ models.<br>
+        • Lower latency than A10G for specific model sizes<br>
+        • 40-50% lower cost per inference token than comparable GPU instance<br>
+        • Limited to compiled models (AWS Neuron SDK) — not plug-and-play<br><br>
+        <strong>When to use Inferentia:</strong><br>
+        ✅ High-volume production inference (>10M requests/day) where cost dominates<br>
+        ✅ Standard transformer architectures (BERT, LLaMA, Mistral) — well-supported<br>
+        ✅ Latency is secondary to throughput<br><br>
+        <strong>When to stick with GPUs:</strong><br>
+        ❌ Research / frequent model architecture changes (recompile takes time)<br>
+        ❌ Non-standard ops or custom CUDA kernels<br>
+        ❌ Need vLLM, TensorRT-LLM, or other GPU-specific frameworks<br>
+        ❌ Low traffic — GPU spot instances cheaper for bursty loads<br><br>
+        <strong>AWS Trainium (trn1):</strong> Same idea but for training. AWS claims up to 50% cost reduction vs p4d for LLM training. Requires Neuron SDK compilation. Worth evaluating if training costs are significant.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-arch">Arch</span> How do you set up a multi-GPU training job on AWS? Walk me through the full setup. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Two approaches — SageMaker Training Jobs (managed) or raw EC2 (manual):</strong><br><br>
+        <strong>Approach 1 — SageMaker Distributed Training (recommended):</strong>
+        <div class="code"><span class="key">import</span> sagemaker
+<span class="key">from</span> sagemaker.pytorch <span class="key">import</span> PyTorch
+
+estimator = PyTorch(
+    entry_point=<span class="str">"train.py"</span>,
+    role=<span class="str">"arn:aws:iam::123456789:role/SageMakerRole"</span>,
+    instance_type=<span class="str">"ml.p4d.24xlarge"</span>,   <span class="comment"># 8x A100</span>
+    instance_count=<span class="val">4</span>,                   <span class="comment"># 4 nodes = 32x A100 total</span>
+    framework_version=<span class="str">"2.1.0"</span>,
+    py_version=<span class="str">"py310"</span>,
+    distribution={
+        <span class="str">"torch_distributed"</span>: {<span class="str">"enabled"</span>: <span class="val">True</span>}  <span class="comment"># DDP/FSDP</span>
+    },
+    hyperparameters={
+        <span class="str">"model"</span>: <span class="str">"llama-3-8b"</span>,
+        <span class="str">"lr"</span>: <span class="val">2e-4</span>,
+        <span class="str">"epochs"</span>: <span class="val">3</span>,
+    },
+    checkpoint_s3_uri=<span class="str">"s3://my-bucket/checkpoints/"</span>,
+    use_spot_instances=<span class="val">True</span>,
+    max_wait=<span class="val">86400</span>,  <span class="comment"># 24h max wait for spot</span>
+)
+estimator.fit({<span class="str">"training"</span>: <span class="str">"s3://my-bucket/train-data/"</span>})</div>
+        <strong>What SageMaker handles for you:</strong><br>
+        • Launches the correct number of EC2 instances<br>
+        • Sets up inter-node networking (EFA — Elastic Fabric Adapter, 400Gbps)<br>
+        • Configures distributed training environment variables (MASTER_ADDR, WORLD_SIZE, RANK)<br>
+        • Streams logs to CloudWatch<br>
+        • Copies final model to S3 automatically<br>
+        • Handles Spot interruptions and checkpoint resumption<br><br>
+        <strong>EFA (Elastic Fabric Adapter):</strong> For multi-node training you need fast inter-node communication for gradient synchronization. EFA provides 400Gbps low-latency networking — equivalent to InfiniBand. Essential for p4d and p5 instances. Without it, all-reduce gradient sync becomes the bottleneck.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← Core Services</button>
+    <button class="nbtn primary" onclick="nextCh(1)">Storage & Data →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 3 ═══════════════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 03 / 09</div>
+    <div class="ch-title">Storage<br><em>&amp; Data</em><br><span class="dim">Pipeline</span></div>
+    <p class="ch-lead">Data engineering is 80% of ML. On AWS, your data flows through S3, Glue, Redshift, Kinesis, and DynamoDB. Know the full pipeline from raw events to model-ready features.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The ML Data Pipeline on AWS</div>
+    <div class="arch">
+      <div class="arch-title">Raw Events → Training Dataset Pipeline</div>
+      <div class="arch-flow">
+        <div class="arch-box"><strong>App Events</strong>API Gateway / SDK</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Kinesis</strong>Real-time stream</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Firehose</strong>S3 delivery</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>S3 Raw</strong>Parquet/JSON</div>
+      </div>
+      <div class="arch-flow" style="margin-top:8px">
+        <div class="arch-box"><strong>S3 Raw</strong>Data lake</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Glue ETL</strong>Spark jobs</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>S3 Processed</strong>Features</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>SageMaker</strong>Training job</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> What is Kinesis and how does it fit into a real-time ML feature pipeline? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Amazon Kinesis</strong> = managed real-time data streaming. Like Kafka, but AWS-managed. Three services to know:<br><br>
+        <strong>Kinesis Data Streams:</strong> Core streaming service. Producers write records. Consumers read in real-time. Data retained 24h-365 days. Use for: user event streams, model prediction logging, real-time feature computation.<br><br>
+        <strong>Kinesis Data Firehose:</strong> One-click streaming to destinations (S3, Redshift, OpenSearch). No consumer code to write. Use for: event log archival, streaming raw data to your data lake in S3.<br><br>
+        <strong>Kinesis Data Analytics:</strong> Run SQL or Flink on a Kinesis stream. Use for: real-time feature computation, anomaly detection, streaming aggregations.<br><br>
+        <strong>Real-time ML feature pipeline example:</strong>
+        <div class="code"><span class="comment"># User taps "buy" button in mobile app</span>
+User action → <span class="key">API Gateway</span> → <span class="key">Kinesis Data Streams</span>
+                                          ↓
+                              <span class="key">Lambda consumer</span>
+                                - compute features in real-time:
+                                  user_7day_purchase_count
+                                  session_length_so_far
+                                  item_category_affinity_score
+                                          ↓
+                              <span class="key">DynamoDB</span> (online feature store)
+                                - key: user_id
+                                - value: {feature_vector, ttl: 1h}
+                                          ↓
+                              <span class="key">Model endpoint</span> reads features → prediction</div>
+        <strong>Kinesis vs SQS for ML:</strong><br>
+        • <strong>Kinesis:</strong> Multiple consumers can read same stream independently. Records ordered per shard. Replay events. Best for: event streaming, feature pipelines, audit logs.<br>
+        • <strong>SQS:</strong> Queue — each message consumed once. Best for: task queues (inference jobs, async batch scoring).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> Compare DynamoDB vs ElastiCache (Redis) for online feature serving. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Online feature store</strong> = the database that model serving reads at inference time to get the latest pre-computed features for a user/item. Latency requirements: &lt;5ms. Must handle massive concurrent reads.<br><br>
+        <strong>DynamoDB:</strong><br>
+        • Managed NoSQL, single-digit millisecond latency<br>
+        • Scales to any request rate automatically (provisioned or on-demand capacity)<br>
+        • 99.999% availability SLA<br>
+        • Supports DynamoDB Accelerator (DAX) for microsecond caching in front of it<br>
+        • Pay per request or per throughput unit<br>
+        • Good for: user features that update periodically (every hour), item features<br><br>
+        <strong>ElastiCache (Redis):</strong><br>
+        • Sub-millisecond latency (in-memory)<br>
+        • Data structures beyond key-value: lists, sorted sets, hashes — useful for ranking<br>
+        • TTL per key — features automatically expire<br>
+        • Limited persistence (memory — data lost on restart without AOF/RDB)<br>
+        • Must manage capacity — not serverless<br>
+        • Good for: session data, real-time computed features, caching model predictions<br><br>
+        <strong>Decision matrix:</strong><br>
+        <div class="tbl-wrap"><table>
+          <tr><th>Requirement</th><th>Choose</th></tr>
+          <tr><td>Sub-ms latency, &lt;100GB data</td><td style="color:var(--green)">ElastiCache Redis</td></tr>
+          <tr><td>Serverless, any scale, &lt;5ms OK</td><td style="color:var(--aws)">DynamoDB</td></tr>
+          <tr><td>Complex data structures (leaderboards, sorted sets)</td><td style="color:var(--green)">ElastiCache Redis</td></tr>
+          <tr><td>Billions of users, auto-scaling, no ops burden</td><td style="color:var(--aws)">DynamoDB</td></tr>
+        </table></div>
+        <strong>Production pattern:</strong> DynamoDB as primary store (durable, scalable) + DAX or Redis as caching layer in front (ultra-low latency). Best of both.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-arch">Arch</span> What is AWS Glue and how do you use it to build ML training datasets? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>AWS Glue</strong> = serverless ETL (Extract, Transform, Load). Runs Apache Spark jobs without managing clusters. Two main components:<br><br>
+        <strong>Glue Data Catalog:</strong> Metadata repository. Schema definitions, table locations, partition info. Integrates with Athena (SQL queries on S3), Redshift Spectrum, SageMaker. Think of it as a Hive metastore for your data lake.<br><br>
+        <strong>Glue ETL Jobs:</strong> Managed Spark jobs. Write Python or Scala, Glue handles the Spark cluster. Auto-scales workers based on job size. Pay per DPU-hour (Data Processing Unit).<br><br>
+        <strong>Typical ML dataset generation flow:</strong>
+        <div class="code"><span class="comment"># Glue Job: build training dataset</span>
+<span class="key">import</span> awsglue
+<span class="key">from</span> awsglue.context <span class="key">import</span> GlueContext
+
+glueContext = GlueContext(SparkContext.getOrCreate())
+
+<span class="comment"># Read raw events from S3 data lake via Glue catalog</span>
+events = glueContext.create_dynamic_frame.from_catalog(
+    database=<span class="str">"ml_lake"</span>, table_name=<span class="str">"user_events"</span>
+).toDF()
+
+<span class="comment"># Feature engineering (Spark SQL)</span>
+features = events.groupBy(<span class="str">"user_id"</span>).agg(
+    F.count(<span class="str">"event_id"</span>).alias(<span class="str">"event_count_30d"</span>),
+    F.sum(<span class="str">"purchase_amount"</span>).alias(<span class="str">"total_spend_30d"</span>),
+    F.datediff(F.lit(ref_date), F.max(<span class="str">"event_time"</span>)).alias(<span class="str">"days_since_active"</span>)
+)
+
+<span class="comment"># Write training dataset back to S3 as Parquet</span>
+features.write.parquet(<span class="str">"s3://my-bucket/training/features/v3/"</span>)</div>
+        <strong>Glue Crawlers:</strong> Auto-discover schema from S3 files (JSON, Parquet, CSV). Creates/updates Glue catalog tables. Schedule to run nightly — new data gets cataloged automatically. Then Athena can query it immediately with SQL.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← Compute & GPU</button>
+    <button class="nbtn primary" onclick="nextCh(2)">SageMaker →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 4 ═══════════════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 04 / 09</div>
+    <div class="ch-title">Amazon<br><em>SageMaker</em></div>
+    <p class="ch-lead">SageMaker is AWS's end-to-end ML platform. If you're an AI engineer at a company using AWS, you'll use SageMaker daily. Know every component and when to use it vs rolling your own.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — SageMaker Components</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>Component</th><th>What It Does</th><th>When You Use It</th></tr>
+      <tr><td>SageMaker Studio</td><td>Cloud IDE (JupyterLab based). Notebooks, experiments, pipelines UI in one place</td><td>Daily development. Replaces local Jupyter for cloud ML work.</td></tr>
+      <tr><td>Training Jobs</td><td>Run training script on managed EC2. Auto-provisions, trains, terminates. Logs to CloudWatch.</td><td>Any training run. Handles Spot, checkpointing, distributed automatically.</td></tr>
+      <tr><td>Experiments</td><td>Tracks training runs, parameters, metrics. Like MLflow but native AWS.</td><td>Every training run. Compare hyperparameter trials.</td></tr>
+      <tr><td>Processing Jobs</td><td>Run data preprocessing scripts on managed EC2. Scale out independently from training.</td><td>Feature engineering, data validation, offline evaluation.</td></tr>
+      <tr><td>Hyperparameter Tuner</td><td>Automatic HPO. Bayesian optimization over your training job parameters.</td><td>After you have a working training pipeline and want to optimize it.</td></tr>
+      <tr><td>Model Registry</td><td>Version models, track lineage (trained on which data), approval workflow, stage management.</td><td>Any model going to production. Gate: Staging → Production promotion.</td></tr>
+      <tr><td>Endpoints</td><td>Deploy model as REST API endpoint. Auto-manages EC2, load balancing, auto-scaling.</td><td>Real-time inference serving. SageMaker manages everything.</td></tr>
+      <tr><td>Batch Transform</td><td>Run inference on entire dataset. Parallelized, managed, results to S3.</td><td>Offline batch scoring (nightly predictions, data enrichment).</td></tr>
+      <tr><td>Pipelines</td><td>CI/CD for ML. Chain: process → train → evaluate → register → deploy as a DAG workflow.</td><td>Production ML — automate the full train-to-deploy lifecycle.</td></tr>
+      <tr><td>Feature Store</td><td>Online (DynamoDB) + offline (S3) feature store. Consistent features for training and serving.</td><td>Multiple models sharing features, or when training/serving skew is a problem.</td></tr>
+      <tr><td>Model Monitor</td><td>Monitor endpoint for data drift, model quality, bias. CloudWatch alarms on drift.</td><td>Every production endpoint. Alert when drift detected.</td></tr>
+      <tr><td>Ground Truth</td><td>Managed data labeling with human annotators (Mechanical Turk or private teams).</td><td>Creating labeled training data when you need human annotation at scale.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> How do you deploy a PyTorch model to a SageMaker endpoint? Full walkthrough. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="code"><span class="comment"># Step 1: Package model and inference code</span>
+<span class="comment"># inference.py — SageMaker calls these functions</span>
+<span class="key">def</span> model_fn(model_dir):
+    <span class="str">"""Load model from disk"""</span>
+    model = MyModel()
+    model.load_state_dict(torch.load(f<span class="str">"{model_dir}/model.pth"</span>))
+    model.eval()
+    <span class="key">return</span> model
+
+<span class="key">def</span> input_fn(request_body, content_type):
+    <span class="str">"""Deserialize input"""</span>
+    data = json.loads(request_body)
+    <span class="key">return</span> torch.tensor(data[<span class="str">"features"</span>])
+
+<span class="key">def</span> predict_fn(data, model):
+    <span class="str">"""Run inference"""</span>
+    <span class="key">with</span> torch.no_grad():
+        <span class="key">return</span> model(data).numpy().tolist()
+
+<span class="key">def</span> output_fn(prediction, accept):
+    <span class="str">"""Serialize output"""</span>
+    <span class="key">return</span> json.dumps({<span class="str">"prediction"</span>: prediction})
+
+<span class="comment"># Step 2: Upload model to S3</span>
+model_data = sagemaker_session.upload_data(<span class="str">"model.tar.gz"</span>, bucket, <span class="str">"models/"</span>)
+
+<span class="comment"># Step 3: Create SageMaker Model object</span>
+model = PyTorchModel(
+    model_data=model_data,
+    role=role,
+    framework_version=<span class="str">"2.1.0"</span>,
+    py_version=<span class="str">"py310"</span>,
+    entry_point=<span class="str">"inference.py"</span>,
+)
+
+<span class="comment"># Step 4: Deploy to endpoint (EC2 behind managed ALB)</span>
+predictor = model.deploy(
+    initial_instance_count=<span class="val">2</span>,        <span class="comment"># 2 replicas for HA</span>
+    instance_type=<span class="str">"ml.g5.xlarge"</span>,   <span class="comment"># A10G GPU for inference</span>
+    endpoint_name=<span class="str">"my-model-v2"</span>,
+)
+
+<span class="comment"># Step 5: Invoke endpoint</span>
+response = predictor.predict({<span class="str">"features"</span>: [<span class="val">1.0</span>, <span class="val">2.0</span>, <span class="val">3.0</span>]})</div>
+        <strong>SageMaker manages:</strong> EC2 provisioning, Docker container build, model loading, HTTP server (TorchServe), load balancing across replicas, health checks, auto-restart on failure, CloudWatch metrics.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-deep">Deep</span> How does SageMaker Pipelines work? Design a full train-to-production pipeline. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>SageMaker Pipelines</strong> = managed CI/CD for ML. DAG of pipeline steps. Each step is a managed AWS job. The full pipeline is triggered on data arrival, scheduled, or manually.
+        <div class="code"><span class="key">from</span> sagemaker.workflow.pipeline <span class="key">import</span> Pipeline
+<span class="key">from</span> sagemaker.workflow.steps <span class="key">import</span> ProcessingStep, TrainingStep
+<span class="key">from</span> sagemaker.workflow.model_step <span class="key">import</span> ModelStep
+<span class="key">from</span> sagemaker.workflow.condition_step <span class="key">import</span> ConditionStep
+
+<span class="comment"># Step 1: Data preprocessing (Glue or SageMaker Processing)</span>
+preprocessing_step = ProcessingStep(
+    name=<span class="str">"Preprocess"</span>,
+    processor=processor,
+    inputs=[ProcessingInput(source=<span class="str">"s3://raw-data/"</span>)],
+    outputs=[ProcessingOutput(output_name=<span class="str">"features"</span>, source=<span class="str">"/opt/ml/processing/output"</span>)]
+)
+
+<span class="comment"># Step 2: Model training</span>
+training_step = TrainingStep(
+    name=<span class="str">"Train"</span>,
+    estimator=estimator,
+    inputs={<span class="str">"training"</span>: preprocessing_step.properties.Outputs[<span class="str">"features"</span>]},
+)
+
+<span class="comment"># Step 3: Evaluate model on test set</span>
+eval_step = ProcessingStep(
+    name=<span class="str">"Evaluate"</span>,
+    inputs=[<span class="comment">/* training_step model artifact + test data */</span>]
+)
+
+<span class="comment"># Step 4: Conditional promotion — only register if accuracy > 0.90</span>
+condition = ConditionGreaterThanOrEqualTo(
+    left=JsonGet(step=eval_step, property_file=<span class="str">"evaluation.json"</span>, json_path=<span class="str">"metrics.accuracy"</span>),
+    right=<span class="val">0.90</span>
+)
+register_step = ModelStep(name=<span class="str">"RegisterModel"</span>, ...)
+
+cond_step = ConditionStep(
+    name=<span class="str">"CheckAccuracy"</span>,
+    conditions=[condition],
+    if_steps=[register_step],     <span class="comment"># register if accuracy >= 0.90</span>
+    else_steps=[fail_step],       <span class="comment"># alert team if below threshold</span>
+)
+
+<span class="comment"># Wire it together</span>
+pipeline = Pipeline(
+    name=<span class="str">"ChurnModelPipeline"</span>,
+    steps=[preprocessing_step, training_step, eval_step, cond_step]
+)
+pipeline.upsert(role_arn=role)</div>
+        <strong>This pipeline runs on every trigger and:</strong> preprocesses data → trains model → evaluates → conditionally registers in Model Registry → sends notification to Slack. Full automation, no human needed for routine retraining.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← Storage & Data</button>
+    <button class="nbtn primary" onclick="nextCh(3)">Networking & IAM →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 5 ═══════════════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 05 / 09</div>
+    <div class="ch-title">Networking<br><em>&amp; IAM</em></div>
+    <p class="ch-lead">Security and networking are not optional — they're what separates a hobby project from production. Know VPC, security groups, IAM roles, and how to lock down an ML system properly.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — VPC for ML Systems</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> What is a VPC and why does every production ML system need one? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>VPC (Virtual Private Cloud)</strong> = your own isolated network within AWS. Like having a private datacenter on AWS. All resources inside the VPC are isolated from other AWS customers by default.<br><br>
+        <strong>Key VPC concepts for ML:</strong><br><br>
+        <strong>Subnets:</strong> Subdivisions of your VPC's IP address range.<br>
+        • Public subnet: Has internet access via Internet Gateway. Put: load balancers, NAT gateways, bastion hosts.<br>
+        • Private subnet: No direct internet access. Put: EC2 training instances, SageMaker training, RDS, DynamoDB endpoints, model servers.<br><br>
+        <strong>Security Groups:</strong> Stateful firewalls for EC2 instances. Whitelist specific ports and source IPs.<br>
+        <div class="code"><span class="comment"># Security group for model inference server</span>
+Inbound:
+  <span class="key">port 8080</span>: from ALB security group only    <span class="comment"># inference API</span>
+  <span class="key">port 22</span>:   from bastion host SG only       <span class="comment"># SSH for debugging</span>
+  <span class="key">port 2222</span>: from training cluster SG         <span class="comment"># distributed training</span>
+
+Outbound:
+  <span class="key">port 443</span>:  to 0.0.0.0/0                    <span class="comment"># HTTPS to S3, ECR, CloudWatch</span>
+  <span class="key">port 5432</span>: to RDS security group           <span class="comment"># database</span></div>
+        <strong>VPC Endpoints:</strong> Allow private connectivity from your VPC to AWS services (S3, DynamoDB, SageMaker) WITHOUT going over the internet. Critical for security and performance — your training job reads from S3 over the private AWS backbone, not public internet.
+        <div class="code"><span class="comment"># S3 VPC endpoint — training data access stays inside AWS network</span>
+<span class="comment"># Without: EC2 → Internet Gateway → public internet → S3</span>
+<span class="comment"># With:    EC2 → VPC Endpoint → private AWS backbone → S3</span>
+<span class="comment"># Result: faster, cheaper (no data transfer costs), more secure</span></div>
+      </div>
+    </div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> Explain IAM roles vs users vs policies. How do you secure an ML system with IAM? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>IAM User:</strong> A person. Has long-term credentials (username/password, access keys). Use only for human access — never for applications or services.<br><br>
+        <strong>IAM Role:</strong> An identity that AWS services assume. No long-term credentials — temporary credentials rotated automatically. ALWAYS use roles for: EC2 instances, Lambda functions, ECS tasks, SageMaker training jobs.<br><br>
+        <strong>IAM Policy:</strong> JSON document that defines permissions. Attached to users, groups, or roles. Principle of least privilege: grant only what's needed.<br><br>
+        <strong>ML system IAM design:</strong>
+        <div class="code"><span class="comment"># SageMaker Training Role — only what training needs</span>
+SageMakerTrainingRole:
+  - <span class="key">s3:GetObject</span>       on <span class="str">s3://training-bucket/*</span>  (read training data)
+  - <span class="key">s3:PutObject</span>       on <span class="str">s3://model-bucket/*</span>    (write model artifacts)
+  - <span class="key">ecr:BatchGetImage</span>  on <span class="str">your-training-image</span>    (pull Docker image)
+  - <span class="key">cloudwatch:PutMetricData</span>                       (write training metrics)
+  - <span class="key">logs:CreateLogGroup</span>                            (write training logs)
+  <span class="comment"># NOT: s3:* or ec2:* or iam:* — only what's needed</span>
+
+<span class="comment"># Model serving EC2 role</span>
+ModelServingRole:
+  - <span class="key">s3:GetObject</span>       on <span class="str">s3://model-bucket/prod/*</span>  (read model weights)
+  - <span class="key">dynamodb:GetItem</span>   on <span class="str">features-table</span>            (read online features)
+  - <span class="key">cloudwatch:PutMetricData</span>                         (write latency metrics)
+  <span class="comment"># No S3 write, no training bucket access, no admin permissions</span></div>
+        <strong>IAM best practices for ML:</strong><br>
+        • Never use root account credentials — ever<br>
+        • Never hardcode AWS keys in code (use IAM roles + boto3 auto-detection)<br>
+        • Separate roles for training, serving, data pipeline — each gets only what it needs<br>
+        • Use AWS Organizations for multi-account isolation (dev/staging/prod in separate accounts)<br>
+        • Enable CloudTrail — log all IAM actions for audit
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← SageMaker</button>
+    <button class="nbtn primary" onclick="nextCh(4)">Scaling Patterns →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 6 ═══════════════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 06 / 09</div>
+    <div class="ch-title">Scaling<br><em>Patterns</em></div>
+    <p class="ch-lead">How do you go from 100 requests/day to 10 million? How do you handle a traffic spike that's 100× normal? These are the AWS scaling patterns every AI engineer must know.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Scaling Toolkit</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-arch">Arch</span> What is Auto Scaling and how do you configure it for a model serving fleet? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>AWS Auto Scaling</strong> automatically adds/removes EC2 instances or ECS tasks based on metrics. For model serving, you scale out when traffic increases, scale in when it drops.<br><br>
+        <strong>Three scaling policies:</strong><br><br>
+        <strong>1. Target Tracking (recommended):</strong> Set a target metric value. AWS automatically adjusts capacity to maintain it.
+        <div class="code"><span class="comment"># Scale to maintain 60% average GPU utilization</span>
+autoscaling.put_scaling_policy(
+    PolicyType=<span class="str">"TargetTrackingScaling"</span>,
+    TargetTrackingScalingPolicyConfiguration={
+        <span class="str">"TargetValue"</span>: <span class="val">60.0</span>,          <span class="comment"># 60% GPU util target</span>
+        <span class="str">"CustomizedMetricSpecification"</span>: {
+            <span class="str">"MetricName"</span>: <span class="str">"GPUUtilization"</span>,
+            <span class="str">"Namespace"</span>: <span class="str">"AWS/SageMaker"</span>,
+        },
+        <span class="str">"ScaleInCooldown"</span>: <span class="val">300</span>,    <span class="comment"># wait 5min before scaling in</span>
+        <span class="str">"ScaleOutCooldown"</span>: <span class="val">60</span>,    <span class="comment"># scale out quickly (60s)</span>
+    }
+)</div>
+        <strong>2. Step Scaling:</strong> Different scaling actions at different metric thresholds. "If CPU > 70%: add 2 instances. If CPU > 90%: add 5 instances." More aggressive response to spikes.<br><br>
+        <strong>3. Scheduled Scaling:</strong> Scale up at known peak times. "Every weekday 9am: minimum 10 instances. Nights and weekends: minimum 2 instances." For predictable traffic patterns.<br><br>
+        <strong>Warm pools (for latency-sensitive ML):</strong> Keep pre-initialized EC2 instances in a "warm" state. When scaling out needed, warm instances join the fleet in seconds (not the 5-10 minutes cold start takes to download model weights).
+        <div class="code"><span class="comment"># Without warm pools: scale out latency = EC2 boot + Docker pull + model load</span>
+<span class="comment"># = 3-10 minutes. Users hit errors during spike.</span>
+
+<span class="comment"># With warm pools: instances are booted and waiting. Scale out = seconds.</span>
+<span class="comment"># Trade-off: pay for warm pool instances even when idle (~20% of fleet size).</span></div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-arch">Arch</span> How do you handle unpredictable traffic spikes for ML inference? The full pattern. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Defense in depth — multiple layers working together:</strong><br><br>
+        <strong>Layer 1 — CDN (CloudFront):</strong> Cache model outputs for repeated inputs at the edge. A user asking the same question twice → second response served from CloudFront in &lt;10ms, no model invocation. Works for: static content, cacheable predictions (same input = same output), LLM responses for common queries.<br><br>
+        <strong>Layer 2 — Application Load Balancer (ALB):</strong> Distributes traffic across model server fleet. Health-checks instances, removes unhealthy ones. Supports connection draining — gracefully removes an instance from rotation when scaling in (lets in-flight requests complete).<br><br>
+        <strong>Layer 3 — SQS queue buffer:</strong> For non-real-time workloads, put inference requests in SQS. Workers process from queue. Queue length → Auto Scaling metric. Spike in traffic → queue fills → Auto Scaling fires → more workers. Users get eventual response, not 503 error.
+        <div class="code"><span class="comment"># SQS + Auto Scaling pattern for batch inference</span>
+Request → <span class="key">API Gateway</span> → <span class="key">SQS Queue</span> ← consumers ← EC2 fleet
+                                      ↑
+                    <span class="key">CloudWatch</span>: queue depth > 1000 messages
+                                      ↓
+                    <span class="key">Auto Scaling</span>: add 5 EC2 instances
+                                      ↓
+                    queue drains, <span class="key">Auto Scaling</span>: remove excess instances</div>
+        <strong>Layer 4 — Graceful degradation:</strong> If all capacity is saturated, return a cached/fallback response instead of 503. "Here's our default recommendation while our system catches up." Users see a degraded but functional experience.<br><br>
+        <strong>Layer 5 — Circuit breaker:</strong> If your model endpoint is down, stop sending traffic to it immediately. Return fallback. Don't cascade the failure. Implement with ALB health checks or a Lambda circuit breaker.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-deep">Deep</span> Compare horizontal vs vertical scaling for ML inference workloads. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Vertical scaling (scale up):</strong> Make each instance bigger. p3.2xlarge (1 GPU) → p3.8xlarge (4 GPUs). More memory per instance — fits larger models. More GPU compute per instance.<br>
+        ✅ Simpler — no distributed coordination<br>
+        ✅ Better for models that need large GPU memory (LLMs that barely fit on one GPU)<br>
+        ❌ Limited by largest instance type (p5.48xlarge = 8 H100s max per instance)<br>
+        ❌ No redundancy — one instance failure = full outage<br>
+        ❌ More expensive per request (can't serve multiple users simultaneously without batching)<br><br>
+        <strong>Horizontal scaling (scale out):</strong> More instances of the same type. 1× g5.xlarge → 20× g5.xlarge behind ALB. Each handles a subset of traffic.<br>
+        ✅ Linear throughput scaling<br>
+        ✅ High availability — one instance failing affects 1/N of traffic<br>
+        ✅ Cost-efficient — pay per replica, shut down when not needed<br>
+        ❌ Model must fit on a single instance (no model parallelism)<br>
+        ❌ Session affinity complexity if model is stateful<br><br>
+        <strong>For ML serving in practice:</strong><br>
+        Small/medium models (&lt;7B, fits on one GPU): horizontal scaling → ALB across fleet<br>
+        Large models (70B+, need tensor parallelism): first scale UP to multi-GPU instance, then scale OUT with multiple such instances<br>
+        LLMs with vLLM: vLLM handles batching within one instance → horizontal scaling between instances
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← Networking & IAM</button>
+    <button class="nbtn primary" onclick="nextCh(5)">Production Deploy →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 7 ═══════════════════ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 07 / 09</div>
+    <div class="ch-title">Production<br><em>Deployment</em><br><span class="dim">Patterns</span></div>
+    <p class="ch-lead">How do you ship a new model safely? How do you roll back when something breaks? These deployment patterns are what separate production AI engineers from notebook scientists.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Deployment Strategies on AWS</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-arch">Arch</span> How do you do Blue-Green and Canary deployments with SageMaker endpoints? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>SageMaker Production Variants</strong> — built-in support for traffic splitting:
+        <div class="code"><span class="comment"># Canary deployment: 5% to new model, 95% to current</span>
+endpoint_config = {
+    <span class="str">"EndpointConfigName"</span>: <span class="str">"my-model-canary"</span>,
+    <span class="str">"ProductionVariants"</span>: [
+        {
+            <span class="str">"VariantName"</span>: <span class="str">"current-v1"</span>,
+            <span class="str">"ModelName"</span>: <span class="str">"my-model-v1"</span>,
+            <span class="str">"InstanceType"</span>: <span class="str">"ml.g5.xlarge"</span>,
+            <span class="str">"InitialInstanceCount"</span>: <span class="val">3</span>,
+            <span class="str">"InitialVariantWeight"</span>: <span class="val">0.95</span>  <span class="comment"># 95% traffic</span>
+        },
+        {
+            <span class="str">"VariantName"</span>: <span class="str">"new-v2"</span>,
+            <span class="str">"ModelName"</span>: <span class="str">"my-model-v2"</span>,
+            <span class="str">"InstanceType"</span>: <span class="str">"ml.g5.xlarge"</span>,
+            <span class="str">"InitialInstanceCount"</span>: <span class="val">1</span>,
+            <span class="str">"InitialVariantWeight"</span>: <span class="val">0.05</span>  <span class="comment"># 5% canary</span>
+        }
+    ]
+}
+
+<span class="comment"># After 24h monitoring: promote to 50/50 if metrics look good</span>
+sagemaker.update_endpoint_weights_and_capacities(
+    EndpointName=<span class="str">"my-endpoint"</span>,
+    DesiredWeightsAndCapacities=[
+        {<span class="str">"VariantName"</span>: <span class="str">"current-v1"</span>, <span class="str">"DesiredWeight"</span>: <span class="val">0.5</span>},
+        {<span class="str">"VariantName"</span>: <span class="str">"new-v2"</span>,     <span class="str">"DesiredWeight"</span>: <span class="val">0.5</span>},
+    ]
+)
+
+<span class="comment"># Rollback: send all traffic back to v1 in seconds</span>
+<span class="comment"># No downtime — just update weights</span></div>
+        <strong>Shadow mode with SageMaker:</strong> Use DataCapture to log all requests and responses from both variants without affecting users. Compare v1 vs v2 output quality offline.<br><br>
+        <strong>Blue-Green with SageMaker:</strong> Two separate endpoints. Route ALB to Blue. Deploy Green. Swap ALB target group to Green. Blue stays up for instant rollback. Delete Blue after 72h if Green is healthy.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> What is ECS and how do you deploy a custom model server (vLLM) on it? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Use ECS (not SageMaker) when:</strong> You need a custom serving framework (vLLM, TGI, Triton), SageMaker's container format doesn't fit, or you need more control over the serving process.<br><br>
+        <strong>Full vLLM deployment on ECS:</strong>
+        <div class="code"><span class="comment"># 1. Dockerfile for vLLM server</span>
+FROM vllm/vllm-openai:latest
+
+ENV MODEL_ID=<span class="str">meta-llama/Llama-3-8B-Instruct</span>
+ENV TENSOR_PARALLEL_SIZE=<span class="val">1</span>
+ENV MAX_MODEL_LEN=<span class="val">8192</span>
+
+CMD [<span class="str">"python"</span>, <span class="str">"-m"</span>, <span class="str">"vllm.entrypoints.openai.api_server"</span>,
+     <span class="str">"--model"</span>, <span class="str">"${MODEL_ID}"</span>,
+     <span class="str">"--host"</span>, <span class="str">"0.0.0.0"</span>,
+     <span class="str">"--port"</span>, <span class="str">"8000"</span>]
+
+<span class="comment"># 2. ECS Task Definition</span>
+{
+  <span class="str">"family"</span>: <span class="str">"vllm-server"</span>,
+  <span class="str">"containerDefinitions"</span>: [{
+    <span class="str">"image"</span>: <span class="str">"123456789.dkr.ecr.us-east-1.amazonaws.com/vllm:latest"</span>,
+    <span class="str">"portMappings"</span>: [{<span class="str">"containerPort"</span>: <span class="val">8000</span>}],
+    <span class="str">"resourceRequirements"</span>: [{
+      <span class="str">"type"</span>: <span class="str">"GPU"</span>, <span class="str">"value"</span>: <span class="str">"1"</span>    <span class="comment"># request 1 GPU</span>
+    }],
+    <span class="str">"environment"</span>: [{<span class="str">"name"</span>: <span class="str">"MODEL_ID"</span>, <span class="str">"value"</span>: <span class="str">"llama-3-8b"</span>}],
+    <span class="str">"logConfiguration"</span>: {<span class="str">"logDriver"</span>: <span class="str">"awslogs"</span>}  <span class="comment"># → CloudWatch</span>
+  }]
+}
+
+<span class="comment"># 3. ECS Service: maintains N running tasks behind ALB</span>
+<span class="comment"># ALB health check: GET /health → 200 OK</span>
+<span class="comment"># Auto Scaling: based on ALBRequestCountPerTarget metric</span></div>
+        <strong>Model loading from S3:</strong> Download model weights at container start-up from S3. Or use EFS mount for shared model weights across all task replicas (avoids repeated S3 downloads per instance).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-deep">Deep</span> What is AWS Lambda and when is it viable for ML inference? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Lambda</strong> = serverless functions. You upload code, Lambda runs it on demand. You pay per invocation (100ms granularity). No servers to manage. Auto-scales to millions of concurrent invocations.<br><br>
+        <strong>Lambda limitations for ML:</strong><br>
+        • 10GB memory max, 15 minute timeout<br>
+        • No GPU support (CPU only)<br>
+        • Cold start: 500ms-2s when function hasn't run recently<br>
+        • 250MB deployment package (10GB with container image)<br><br>
+        <strong>When Lambda works for ML:</strong><br>
+        ✅ Lightweight models: sklearn, XGBoost, small regression models, rule-based systems<br>
+        ✅ Pre/post processing: image resizing before S3 upload, data validation, feature extraction<br>
+        ✅ Event triggers: "new file in S3 → classify → write result to DynamoDB"<br>
+        ✅ LLM preprocessing: tokenization, prompt formatting (stateless, fast)<br><br>
+        <strong>Practical pattern — Lambda for orchestration, not inference:</strong>
+        <div class="code"><span class="comment"># Lambda handles: request validation, feature retrieval,</span>
+<span class="comment"># calling SageMaker endpoint, response formatting</span>
+<span class="comment"># Model itself runs on SageMaker (GPU instance)</span>
+
+<span class="key">def</span> lambda_handler(event, context):
+    user_id = event[<span class="str">"user_id"</span>]
+    
+    <span class="comment"># Get features from DynamoDB (fast, in-region)</span>
+    features = dynamo.get_item(Key={<span class="str">"user_id"</span>: user_id})[<span class="str">"Item"</span>]
+    
+    <span class="comment"># Call SageMaker endpoint (GPU inference)</span>
+    response = sagemaker_runtime.invoke_endpoint(
+        EndpointName=<span class="str">"recommendation-model"</span>,
+        Body=json.dumps(features)
+    )
+    
+    <span class="comment"># Format and return</span>
+    <span class="key">return</span> {<span class="str">"statusCode"</span>: <span class="val">200</span>, <span class="str">"body"</span>: response[<span class="str">"Body"</span>].read()}</div>
+        This pattern uses Lambda's serverless scaling for request handling, and SageMaker's GPU for actual inference. Best of both worlds.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← Scaling Patterns</button>
+    <button class="nbtn primary" onclick="nextCh(6)">Cost & Monitoring →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 8 ═══════════════════ -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 08 / 09</div>
+    <div class="ch-title">Cost &amp;<br><em>Monitoring</em></div>
+    <p class="ch-lead">AWS bills can spiral fast with GPUs. And a silent model failure at 3am will cost you users. Cost optimization and monitoring are not afterthoughts — they're core engineering responsibilities.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — Cost Optimization</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-cost">Cost</span> Top 10 ways to reduce AWS costs for ML workloads. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>1. Spot Instances for training (60-90% savings):</strong> Every training job should try Spot first. Implement checkpointing. Interrupt handler. Use SageMaker Spot — it handles resumption automatically.<br><br>
+        <strong>2. Right-size instances:</strong> Don't use p4d.24xlarge if g5.12xlarge can do the job. Profile GPU utilization. If utilization is &lt;40%, you need a smaller instance or better batching.<br><br>
+        <strong>3. Auto-scaling to zero:</strong> Scale model serving fleet to minimum (1-2 instances) at night and weekends. For internal tools with known usage patterns, schedule scaling.<br><br>
+        <strong>4. S3 storage classes:</strong> Training data accessed daily → S3 Standard. Old experiment checkpoints → S3 Infrequent Access (40% cheaper). Archival (>1 year old) → S3 Glacier (80% cheaper). Use lifecycle policies to automate.
+        <div class="code"><span class="comment"># S3 lifecycle policy: auto-archive old checkpoints</span>
+Rules:
+  - ID: <span class="str">"archive-old-checkpoints"</span>
+    Filter: Prefix: <span class="str">"checkpoints/"</span>
+    Transitions:
+      - Days: <span class="val">30</span>,  StorageClass: STANDARD_IA    <span class="comment"># 40% cheaper after 30 days</span>
+      - Days: <span class="val">90</span>,  StorageClass: GLACIER         <span class="comment"># 80% cheaper after 90 days</span>
+    Expiration:
+      - Days: <span class="val">365</span>                             <span class="comment"># delete after 1 year</span></div>
+        <strong>5. Reserved Instances / Savings Plans (40-60% savings):</strong> For production inference with predictable baseline traffic, commit to 1-year Savings Plan. Pay for a consistent amount of compute, get 40% discount on all usage. Use for the baseline fleet; Spot for burst.<br><br>
+        <strong>6. Data transfer optimization:</strong> Keep compute and data in the same region. Training EC2 reading from S3 in same region = free. Cross-region = expensive. Use VPC endpoints to avoid NAT gateway costs.<br><br>
+        <strong>7. Graviton instances for CPU workloads:</strong> AWS Graviton3 (arm64) instances are 20% cheaper and 40% faster than x86 for many workloads. For data preprocessing (Glue, Spark), feature stores (DynamoDB), API servers → try Graviton.<br><br>
+        <strong>8. EBS volume optimization:</strong> Use gp3 instead of gp2 EBS (20% cheaper, configurable IOPS). Delete unattached EBS volumes (forgotten test volumes cost money).<br><br>
+        <strong>9. Optimize data transfer:</strong> CloudFront caches model responses at edge. Users in Mumbai get response from Mumbai PoP, not your us-east-1 region. Reduces latency AND origin compute load.<br><br>
+        <strong>10. Cost Explorer + AWS Budgets:</strong> Set budget alerts. "Alert me when ML costs exceed $5000/month." Tag every resource (training-job, model-name, team) so you know what's costing money.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — CloudWatch Monitoring for ML</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> What do you monitor in a production ML system on AWS? Full CloudWatch setup. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Infrastructure metrics (CloudWatch built-in):</strong>
+        <div class="code"><span class="comment"># SageMaker endpoint — auto-reported</span>
+- Invocations           <span class="comment"># requests per minute</span>
+- InvocationErrors      <span class="comment"># 4xx + 5xx errors</span>
+- ModelLatency          <span class="comment"># time in model (p50, p90, p99)</span>
+- OverheadLatency       <span class="comment"># SageMaker overhead</span>
+- CPUUtilization        <span class="comment"># CPU load per instance</span>
+- GPUUtilization        <span class="comment"># GPU load (custom metric)</span>
+- MemoryUtilization     <span class="comment"># RAM usage</span>
+
+<span class="comment"># EC2 / ECS</span>
+- cpu/mem utilization, network in/out, disk read/write</div>
+        <strong>Custom ML metrics (your code publishes these):</strong>
+        <div class="code"><span class="key">import</span> boto3
+
+cloudwatch = boto3.client(<span class="str">"cloudwatch"</span>)
+
+<span class="key">def</span> log_inference_metrics(prediction, confidence, user_id):
+    cloudwatch.put_metric_data(
+        Namespace=<span class="str">"MyML/ModelServing"</span>,
+        MetricData=[
+            {<span class="str">"MetricName"</span>: <span class="str">"PredictionConfidence"</span>,
+             <span class="str">"Value"</span>: confidence, <span class="str">"Unit"</span>: <span class="str">"None"</span>},
+            {<span class="str">"MetricName"</span>: <span class="str">"PositivePredictionRate"</span>,
+             <span class="str">"Value"</span>: <span class="val">1</span> <span class="key">if</span> prediction == <span class="val">1</span> <span class="key">else</span> <span class="val">0</span>,
+             <span class="str">"Unit"</span>: <span class="str">"None"</span>},
+            {<span class="str">"MetricName"</span>: <span class="str">"LowConfidenceRate"</span>,
+             <span class="str">"Value"</span>: <span class="val">1</span> <span class="key">if</span> confidence < <span class="val">0.6</span> <span class="key">else</span> <span class="val">0</span>,
+             <span class="str">"Unit"</span>: <span class="str">"None"</span>},
+        ]
+    )</div>
+        <strong>Alarms you must set up:</strong>
+        <div class="code">- <span class="key">p99 latency > 500ms</span>      → PagerDuty alert (SLA breach)
+- <span class="key">error rate > 1%</span>           → PagerDuty alert (model errors)
+- <span class="key">confidence avg < 0.65</span>     → Slack alert (possible drift)
+- <span class="key">positive rate > 2× baseline</span>→ Slack alert (distribution shift)
+- <span class="key">GPU utilization < 20%</span>     → Slack alert (over-provisioned, waste money)
+- <span class="key">GPU utilization > 85%</span>     → Slack alert (approaching capacity limit)</div>
+        <strong>SageMaker Model Monitor:</strong> Captures endpoint input/output data automatically. Compares to a baseline (your training data statistics). Generates drift reports. CloudWatch alarm when drift detected. Setup once, monitors forever.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← Production Deploy</button>
+    <button class="nbtn primary" onclick="nextCh(7)">Full ML System →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CH 9 ═══════════════════ -->
+<div class="chapter" id="ch8">
+  <div class="ch-header">
+    <div class="ch-num">Chapter 09 / 09</div>
+    <div class="ch-title">The Full<br><em>Production</em><br>ML System</div>
+    <p class="ch-lead">Put it all together. This is the complete architecture for a production-grade ML system on AWS — from raw data ingestion to model serving to monitoring and retraining. The system design you'll be asked to draw in interviews.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Full Architecture</div>
+    <h2>End-to-End ML System on AWS</h2>
+    <div class="arch">
+      <div class="arch-title">① Data Ingestion Layer</div>
+      <div class="arch-flow">
+        <div class="arch-box"><strong>Mobile/Web App</strong>User events</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>API Gateway</strong>Rate limiting, auth</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Kinesis Streams</strong>Real-time events</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Firehose → S3</strong>Raw data lake</div>
+      </div>
+    </div>
+    <div class="arch" style="margin-top:10px">
+      <div class="arch-title">② Data Processing & Feature Engineering</div>
+      <div class="arch-flow">
+        <div class="arch-box"><strong>S3 Raw</strong>Parquet/JSON</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Glue ETL</strong>Spark transforms</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>S3 Features</strong>Training-ready</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>SageMaker Feature Store</strong>Online + Offline</div>
+      </div>
+    </div>
+    <div class="arch" style="margin-top:10px">
+      <div class="arch-title">③ Training & Model Management</div>
+      <div class="arch-flow">
+        <div class="arch-box"><strong>SageMaker Pipelines</strong>Orchestrates all steps</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Training Job</strong>p4d.24xlarge Spot</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Model Evaluation</strong>Accuracy, drift tests</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Model Registry</strong>Staging → Production</div>
+      </div>
+    </div>
+    <div class="arch" style="margin-top:10px">
+      <div class="arch-title">④ Inference Serving</div>
+      <div class="arch-flow">
+        <div class="arch-box"><strong>CloudFront</strong>Edge caching</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>ALB</strong>Load balancing</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>ECS/SageMaker Fleet</strong>GPU instances + Auto Scale</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Feature Store</strong>DynamoDB online features</div>
+      </div>
+    </div>
+    <div class="arch" style="margin-top:10px">
+      <div class="arch-title">⑤ Monitoring & Retraining Loop</div>
+      <div class="arch-flow">
+        <div class="arch-box"><strong>CloudWatch</strong>Metrics + Alarms</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>Model Monitor</strong>Drift detection</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>EventBridge</strong>Trigger on drift/schedule</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box"><strong>SageMaker Pipeline</strong>Auto-retrain & deploy</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Interview Questions</div>
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-arch">Arch</span> Design a real-time fraud detection system on AWS for 50K transactions/second. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Requirements: &lt;50ms latency, 99.99% availability, 50K TPS, explainable predictions for compliance</strong><br><br>
+        <strong>Ingestion:</strong><br>
+        Transactions → API Gateway (rate limiting, auth) → Kinesis Data Streams (50 shards for 50K TPS) → two consumers in parallel: (1) real-time feature compute, (2) archive to S3<br><br>
+        <strong>Online Feature Serving (&lt;5ms):</strong><br>
+        Pre-computed user features in DynamoDB: account_age, past_fraud_flag, 7d_transaction_count, avg_amount, country_mismatch_flag. Updated by a Kinesis consumer Lambda every 5 minutes. Enriched by real-time features computed inline per transaction: time_since_last_txn, merchant_category, amount_vs_avg_ratio.<br><br>
+        <strong>Inference (&lt;20ms budget):</strong><br>
+        SageMaker endpoint (XGBoost or LightGBM — not deep learning for fraud, speed matters more). 10× g5.xlarge instances behind ALB. Auto Scaling on latency p99 > 30ms. Warm pools — scale-out in seconds not minutes. Each instance handles ~8K TPS with batching.<br><br>
+        <strong>Result handling:</strong><br>
+        score > 0.85 → BLOCK + SQS queue → human review Lambda → DynamoDB case record<br>
+        score 0.6-0.85 → FLAG → step-up authentication (SMS OTP)<br>
+        score &lt; 0.6 → APPROVE<br><br>
+        <strong>Explainability (compliance requirement):</strong><br>
+        SageMaker Clarify computes SHAP values per prediction. "This transaction was blocked because: amount 10× average (weight: 0.45), new merchant country (0.30), 3am local time (0.15)." Stored in DynamoDB for 7 years per financial regulation.<br><br>
+        <strong>High availability:</strong><br>
+        Deploy in 3 AZs. ALB health checks every 5 seconds. Unhealthy instance removed in &lt;10s. Circuit breaker: if all endpoints down → fallback to rule-based system (no ML, just hard rules). Never block transactions due to ML outage — fail open with logging.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-deep">Deep</span> You get an AWS bill that's 3× higher than expected. How do you diagnose and fix it? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Step 1 — Identify the service causing the spike:</strong><br>
+        AWS Cost Explorer → group by service → find the culprit (EC2? S3? Data Transfer?)<br>
+        AWS Cost Explorer → group by tag → which team/project is responsible?<br><br>
+        <strong>Common culprits for ML teams:</strong><br><br>
+        <strong>EC2/SageMaker (most common):</strong><br>
+        → Training jobs not terminated after failure (stuck instances running for days)<br>
+        → Development instances left running overnight/weekend<br>
+        → Wrong instance type selected (p4d instead of g5)<br>
+        → Fix: AWS Config rule alerting when EC2 runs > 24h in dev account. Auto-terminate idle instances.<br><br>
+        <strong>Data Transfer (surprising and expensive):</strong><br>
+        → EC2 in us-east-1 reading from S3 in eu-west-1: charges $0.02/GB cross-region<br>
+        → Large S3 uploads from on-prem without Transfer Acceleration cost<br>
+        → NAT Gateway: $0.045/GB for instances in private subnet accessing internet<br>
+        → Fix: Always keep EC2 and S3 in same region. VPC Endpoints eliminate NAT gateway costs for S3/DynamoDB.<br><br>
+        <strong>S3 (subtle):</strong><br>
+        → Thousands of small PUT/GET requests per second (s3 API calls charged per 1000)<br>
+        → Large number of S3 Intelligent Tiering monitoring fees<br>
+        → Glacier retrieval fees (forgot you archived data, now retrieving urgently = expensive)<br><br>
+        <strong>Step 2 — Set up tagging + budgets going forward:</strong><br>
+        Every resource gets: Project tag, Team tag, Environment tag. AWS Budgets: alert at 80% of monthly budget. Cost Anomaly Detection: ML-based alert when spending pattern changes suddenly.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge badge-core">Core</span> What is AWS Bedrock and when do you use it instead of deploying your own LLM? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Amazon Bedrock</strong> = fully managed foundation model API. Access Claude (Anthropic), Titan (Amazon), Llama 3 (Meta), Mistral, Stable Diffusion and more via a unified API. No GPU management, no model deployment, no infrastructure.<br><br>
+        <strong>Use Bedrock when:</strong><br>
+        ✅ You need an LLM quickly without infrastructure setup<br>
+        ✅ Variable traffic — pay per token, no idle GPU cost<br>
+        ✅ Compliance requirements (Bedrock is SOC2, HIPAA eligible, data not used to train models)<br>
+        ✅ You need multiple foundation models — Bedrock gives you one API for all<br>
+        ✅ Small-medium usage (&lt;10M tokens/month — API pricing competitive)<br><br>
+        <strong>Use self-hosted LLM (vLLM + EC2/ECS) when:</strong><br>
+        ❌ High volume (>100M tokens/month — self-hosting becomes cheaper)<br>
+        ❌ Need custom model weights (fine-tuned model can't be on Bedrock)<br>
+        ❌ Ultra-low latency requirements (need to run on your own GPU fleet)<br>
+        ❌ Strict data residency (your GPU in your VPC, no API call to AWS service)<br><br>
+        <strong>Bedrock key features:</strong><br>
+        • <strong>Bedrock Guardrails:</strong> Built-in content filtering, topic blocking, PII redaction<br>
+        • <strong>Bedrock Agents:</strong> Managed agent infrastructure with tool use and memory<br>
+        • <strong>Bedrock Knowledge Bases:</strong> Managed RAG — connect S3 docs, auto-embedding, vector search<br>
+        • <strong>Bedrock Fine-tuning:</strong> Fine-tune Titan or Claude on your data without managing infrastructure<br><br>
+        <strong>Cost example:</strong> Claude 3.5 Sonnet on Bedrock: $3/1M input tokens. At 50M tokens/month = $150/month. Same on self-hosted g5.48xlarge: ~$16/hr × 720hr = $11,520/month. Bedrock wins at this scale — but at 5B tokens/month, self-hosting wins by 10×.
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-label">⚡ The Cloud Mindset for AI Engineers</div>
+    <p>AWS is a toolkit, not an answer. The best AI engineers know <strong>when to use managed services</strong> (Bedrock, SageMaker — fast to ship, higher cost) vs <strong>when to roll their own</strong> (vLLM on ECS — more control, lower cost at scale). The answer is always: <strong>start managed, move custom when cost or requirements demand it.</strong> Every architecture decision is a tradeoff between engineering time, operational burden, and cost. Know the tradeoffs and you'll ace any cloud architecture interview.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(8)">← Cost & Monitoring</button>
+    <button class="nbtn primary" onclick="alert('🎉 AWS for AI Engineers — Complete!\n\nCovered:\n☁️ Core 20 AWS Services\n💻 EC2 GPU Instances & Spot\n🗄️ S3, Kinesis, Glue Data Pipelines\n🤖 SageMaker End-to-End\n🔒 VPC, IAM Security\n📈 Auto Scaling Patterns\n🚀 Blue-Green & Canary Deployment\n💰 Cost Optimization\n📊 CloudWatch Monitoring\n🏗️ Full Production ML Architecture\n\nYou now have the full AI Engineer series — 8 websites, 70+ chapters.')">Complete 🚀</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let cur = 0;
+const total = 9;
+
+function toggle(el) {
+  const ans = el.nextElementSibling;
+  const open = ans.style.display === 'block';
+  ans.style.display = open ? 'none' : 'block';
+  el.classList.toggle('open', !open);
+}
+
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  el.classList.add('active');
+  cur = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextCh(c) {
+  if (c + 1 < total) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c + 1, items[c + 1]);
+  }
+}
+
+function prevCh(c) {
+  if (c - 1 >= 0) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c - 1, items[c - 1]);
+  }
+}
+</script>
+</body>
+</html>
