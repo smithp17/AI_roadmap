@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APIs & Databases — AI Engineer Interview Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080a0c;
+  --paper: #0d1117;
+  --surface: #111820;
+  --surface2: #16202c;
+  --border: #1c2a38;
+  --border2: #243345;
+  --text: #dce8f0;
+  --text2: #7a9ab0;
+  --muted: #3a5268;
+  --lime: #a3e635;
+  --lime-dim: rgba(163,230,53,0.1);
+  --lime-border: rgba(163,230,53,0.25);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34,211,238,0.08);
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --violet: #a78bfa;
+  --emerald: #34d399;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* SCANLINES */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.08) 3px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(8,10,12,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: 54px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--lime);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  margin-right: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.nav-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  padding: 0 11px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.nav-item:hover { color: var(--text2); }
+.nav-item.active { color: var(--lime); border-bottom-color: var(--lime); }
+
+/* MAIN */
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 82px 24px 120px;
+}
+
+/* CHAPTERS */
+.chapter { display: none; animation: fadeIn 0.3s ease both; }
+.chapter.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* CHAPTER HEADER */
+.ch-header {
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ch-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ch-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 300px; }
+
+.ch-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  margin-bottom: 18px;
+  color: var(--text);
+}
+.ch-title .accent { color: var(--lime); }
+.ch-title .dim { color: var(--muted); }
+
+.ch-lead {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 580px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* SECTION */
+.section { margin-bottom: 64px; }
+.section-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 14px;
+}
+
+h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 0.03em;
+  margin-bottom: 16px;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  margin-top: 26px;
+  color: var(--text);
+}
+
+p { margin-bottom: 13px; font-size: 14px; color: var(--text2); line-height: 1.8; }
+p strong { color: var(--text); font-weight: 500; }
+p:last-child { margin-bottom: 0; }
+
+/* Q&A */
+.qa {
+  border: 1px solid var(--border);
+  margin: 10px 0;
+  overflow: hidden;
+  background: var(--paper);
+  transition: border-color 0.2s;
+}
+.qa:hover { border-color: var(--lime-border); }
+
+.qa-q {
+  padding: 14px 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 3px solid var(--lime);
+  transition: background 0.2s;
+  line-height: 1.6;
+}
+.qa-q:hover { background: var(--surface); color: var(--text); }
+.qa-q.open { color: var(--lime); background: var(--surface); }
+.qa-q .arrow { font-size: 14px; flex-shrink: 0; transition: transform 0.3s; margin-top: 2px; color: var(--muted); }
+.qa-q.open .arrow { transform: rotate(45deg); color: var(--lime); }
+
+.qa-a {
+  display: none;
+  padding: 18px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.85;
+  border-left: 3px solid var(--surface2);
+}
+.qa-a strong { color: var(--lime); }
+
+/* BADGES */
+.badge {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  padding: 2px 6px;
+  margin-right: 6px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  flex-shrink: 0;
+  border: 1px solid;
+}
+.b-rest   { color: var(--lime);    border-color: var(--lime-border);              background: var(--lime-dim); }
+.b-gql    { color: var(--violet);  border-color: rgba(167,139,250,0.3);           background: rgba(167,139,250,0.08); }
+.b-grpc   { color: var(--cyan);    border-color: rgba(34,211,238,0.25);           background: var(--cyan-dim); }
+.b-db     { color: var(--amber);   border-color: rgba(251,191,36,0.3);            background: rgba(251,191,36,0.08); }
+.b-perf   { color: var(--rose);    border-color: rgba(251,113,133,0.3);           background: rgba(251,113,133,0.08); }
+.b-ai     { color: var(--emerald); border-color: rgba(52,211,153,0.3);            background: rgba(52,211,153,0.08); }
+
+/* TAGS */
+.tag {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  padding: 2px 6px;
+  margin: 3px 3px 3px 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+.t-lime   { color: var(--lime);    border-color: var(--lime-border); }
+.t-cyan   { color: var(--cyan);    border-color: rgba(34,211,238,0.3); }
+.t-amber  { color: var(--amber);   border-color: rgba(251,191,36,0.3); }
+.t-rose   { color: var(--rose);    border-color: rgba(251,113,133,0.3); }
+.t-violet { color: var(--violet);  border-color: rgba(167,139,250,0.3); }
+
+/* CODE */
+.code {
+  background: #020406;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--lime);
+  padding: 16px 20px;
+  margin: 14px 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #8bba8b;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.9;
+}
+.code .c  { color: var(--muted); font-style: italic; }
+.code .k  { color: var(--lime); }
+.code .s  { color: #a5d6a7; }
+.code .n  { color: var(--cyan); }
+.code .v  { color: #ffcc80; }
+.code .hl { background: rgba(163,230,53,0.08); display: block; margin: 0 -20px; padding: 0 20px; }
+
+/* BOXES */
+.insight {
+  background: var(--lime-dim);
+  border: 1px solid var(--lime-border);
+  padding: 18px 22px;
+  margin: 18px 0;
+  position: relative;
+}
+.insight-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lime); margin-bottom: 7px; }
+.insight p { font-size: 13px; margin: 0; }
+.insight strong { color: var(--lime); }
+
+.warn {
+  background: rgba(251,113,133,0.06);
+  border: 1px solid rgba(251,113,133,0.2);
+  border-left: 3px solid var(--rose);
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.warn-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rose); margin-bottom: 6px; }
+.warn p { font-size: 13px; margin: 0; color: var(--text2); }
+
+/* TABLE */
+.tbl { margin: 16px 0; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th {
+  background: var(--surface);
+  color: var(--muted);
+  padding: 9px 14px;
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text2);
+  line-height: 1.55;
+  font-size: 13px;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(163,230,53,0.02); }
+td:first-child { color: var(--lime); font-family: 'DM Mono', monospace; font-size: 12px; }
+
+/* COMPARE GRID */
+.cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.cmp-card {
+  border: 1px solid var(--border);
+  background: var(--paper);
+  padding: 18px;
+}
+.cmp-card h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.cmp-card ul { padding-left: 0; list-style: none; }
+.cmp-card li { font-size: 13px; color: var(--text2); padding: 4px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+.cmp-card li:last-child { border-bottom: none; }
+.cmp-card li::before { content: '→ '; color: var(--lime); font-family: 'DM Mono', monospace; }
+
+/* FLOW */
+.flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 18px 0;
+  overflow-x: auto;
+}
+.flow-box {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 12px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  text-align: center;
+  flex: 1;
+  min-width: 90px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+.flow-box strong { display: block; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime); margin-bottom: 3px; }
+.flow-arrow { display: flex; align-items: center; color: var(--muted); font-size: 18px; padding: 0 2px; flex-shrink: 0; }
+
+/* NAV BUTTONS */
+.nav-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.nbtn {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: all 0.2s;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+.nbtn:hover { border-color: var(--lime); color: var(--lime); }
+.nbtn.primary { background: var(--lime); color: #0a0e12; border-color: var(--lime); font-weight: 700; }
+.nbtn.primary:hover { background: #bef264; }
+.nbtn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* PERF METER */
+.perf-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+}
+.perf-label { width: 130px; color: var(--text2); flex-shrink: 0; }
+.perf-track { flex: 1; height: 4px; background: var(--surface2); }
+.perf-fill { height: 100%; background: var(--lime); }
+.perf-val { width: 50px; text-align: right; color: var(--lime); }
+
+/* BIG PROTOCOL BADGE */
+.proto-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.proto-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+.proto-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">API + DB</div>
+  <div class="nav-item active" onclick="goTo(0,this)">① REST</div>
+  <div class="nav-item" onclick="goTo(1,this)">② GraphQL</div>
+  <div class="nav-item" onclick="goTo(2,this)">③ gRPC</div>
+  <div class="nav-item" onclick="goTo(3,this)">④ FastAPI & WebSockets</div>
+  <div class="nav-item" onclick="goTo(4,this)">⑤ API Optimization</div>
+  <div class="nav-item" onclick="goTo(5,this)">⑥ SQL Optimization</div>
+  <div class="nav-item" onclick="goTo(6,this)">⑦ NoSQL & Vector DBs</div>
+  <div class="nav-item" onclick="goTo(7,this)">⑧ DB Design Patterns</div>
+  <div class="nav-item" onclick="goTo(8,this)">⑨ AI System APIs</div>
+</nav>
+
+<main>
+
+<!-- ══════════ CH 1 — REST ══════════ -->
+<div class="chapter active" id="ch0">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 01 / 09 — APIs & Database Optimization</div>
+    <div class="ch-title">REST<br><span class="accent">API</span><br><span class="dim">Design</span></div>
+    <p class="ch-lead">REST is still the dominant API style for web services. Know it deeply — not just the verbs, but caching, versioning, rate limiting, pagination, and why it breaks down at scale for AI systems.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — The Protocol</div>
+    <div class="proto-header">
+      <div class="proto-name" style="color:var(--lime)">REST</div>
+      <div class="proto-tag" style="color:var(--lime);border-color:var(--lime-border)">Representational State Transfer</div>
+    </div>
+    <p><strong>REST</strong> is an architectural style built on HTTP. Resources are identified by URLs. Operations are HTTP verbs (GET, POST, PUT, PATCH, DELETE). Responses are typically JSON. Stateless — each request contains all information needed.</p>
+
+    <div class="tbl">
+    <table>
+      <tr><th>Verb</th><th>Meaning</th><th>Idempotent?</th><th>AI Engineer Use</th></tr>
+      <tr><td>GET</td><td>Retrieve resource</td><td>✅ Yes</td><td>GET /predictions/{id}, GET /models, GET /experiments</td></tr>
+      <tr><td>POST</td><td>Create resource / trigger action</td><td>❌ No</td><td>POST /predict, POST /training-jobs, POST /embeddings</td></tr>
+      <tr><td>PUT</td><td>Replace entire resource</td><td>✅ Yes</td><td>PUT /models/{id}/config — replace full config</td></tr>
+      <tr><td>PATCH</td><td>Partial update</td><td>⚠️ Usually</td><td>PATCH /experiments/{id} — update status only</td></tr>
+      <tr><td>DELETE</td><td>Remove resource</td><td>✅ Yes</td><td>DELETE /models/{id} — remove model version</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-rest">REST</span> Design a REST API for an LLM inference service. What are the endpoints, status codes, and response format? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Core endpoints:</strong>
+        <div class="code"><span class="c"># Synchronous inference — wait for response</span>
+POST /v1/completions
+Body: {
+  "model": "gpt-4o-mini",
+  "messages": [{"role": "user", "content": "Hello"}],
+  "max_tokens": 256,
+  "temperature": 0.7,
+  "stream": false
+}
+Response 200: { "id": "cmpl-abc", "choices": [...], "usage": {...} }
+Response 422: { "error": "max_tokens exceeds model limit" }
+Response 429: { "error": "Rate limit exceeded", "retry_after": 60 }
+Response 503: { "error": "Model overloaded, retry after backoff" }
+
+<span class="c"># Async inference — for long-running tasks</span>
+POST /v1/jobs                  <span class="k">→</span> 202 Accepted { "job_id": "job-xyz" }
+GET  /v1/jobs/{job_id}         <span class="k">→</span> 200 { "status": "running|done|failed" }
+GET  /v1/jobs/{job_id}/result  <span class="k">→</span> 200 { "output": "..." } when done
+
+<span class="c"># Model management</span>
+GET  /v1/models                <span class="k">→</span> list all available models
+GET  /v1/models/{id}           <span class="k">→</span> model metadata, context length, pricing
+GET  /v1/models/{id}/health    <span class="k">→</span> is this specific model available?
+
+<span class="c"># Embeddings</span>
+POST /v1/embeddings
+Body: { "model": "text-embedding-3-small", "input": ["text1", "text2"] }
+Response: { "data": [{"embedding": [0.1, 0.2, ...], "index": 0}] }</div>
+        <strong>HTTP status codes you must know:</strong><br>
+        200 OK — success. 201 Created — resource created. 202 Accepted — async job started. 400 Bad Request — malformed request. 401 Unauthorized — missing/invalid auth. 403 Forbidden — authenticated but not allowed. 404 Not Found. 422 Unprocessable Entity — valid JSON but semantic error. 429 Too Many Requests — rate limited. 500 Internal Server Error. 503 Service Unavailable — overloaded/down.<br><br>
+        <strong>Response envelope pattern (consistent across all endpoints):</strong>
+        <div class="code">{
+  "data": { ... },          <span class="c"># the actual payload</span>
+  "error": null,            <span class="c"># error object if something went wrong</span>
+  "meta": {
+    "request_id": "req-abc123",  <span class="c"># for tracing</span>
+    "version": "2024-01-15",
+    "usage": { "tokens": 142 }
+  }
+}</div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-rest">REST</span> How do you implement API versioning? What are the tradeoffs of each approach? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>3 approaches — all used in production:</strong><br><br>
+        <strong>1. URL Path versioning (most common, recommended):</strong>
+        <div class="code">GET /v1/completions    <span class="c"># stable, explicit in URL</span>
+GET /v2/completions    <span class="c"># new version coexists</span>
+GET /v3/completions    <span class="c"># clients migrate at their own pace</span></div>
+        ✅ Visible, cacheable, easy to route. ❌ URL "pollution," clients must update code.<br><br>
+        <strong>2. Header versioning:</strong>
+        <div class="code">GET /completions
+<span class="k">API-Version: 2024-01-01</span>   <span class="c"># Anthropic's actual approach</span>
+<span class="c"># or</span>
+<span class="k">Accept: application/vnd.myapi.v2+json</span></div>
+        ✅ Clean URLs, same endpoint for all versions. ❌ Not visible in browser, harder to test, breaks caching.<br><br>
+        <strong>3. Query parameter (avoid for major versions):</strong>
+        <div class="code">GET /completions?version=2</div>
+        ✅ Easy to test in browser. ❌ Ugly, breaks REST semantics (version is not a filter).<br><br>
+        <strong>Real-world strategy:</strong> Use URL versioning (/v1/, /v2/) for major breaking changes. Use header versioning (API-Version: YYYY-MM-DD) for minor/dated versioning between breaking changes. Maintain N and N-1 in production simultaneously. Give 6-12 months deprecation notice with Deprecation and Sunset headers:<br>
+        <div class="code">Deprecation: true
+Sunset: Sat, 31 Dec 2025 23:59:59 GMT
+Link: &lt;/v2/completions&gt;; rel="successor-version"</div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-rest">REST</span> How do you implement rate limiting in a REST API for LLM inference? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Rate limiting dimensions for LLM APIs:</strong> LLMs are unique — a single request can vary from 1 token to 100K tokens. Rate limit on both requests per minute (RPM) AND tokens per minute (TPM).<br><br>
+        <strong>Response headers you MUST return:</strong>
+        <div class="code">X-RateLimit-Limit-Requests: 500        <span class="c"># max requests per minute</span>
+X-RateLimit-Limit-Tokens: 100000      <span class="c"># max tokens per minute</span>
+X-RateLimit-Remaining-Requests: 487   <span class="c"># requests left this window</span>
+X-RateLimit-Remaining-Tokens: 89450   <span class="c"># tokens left this window</span>
+X-RateLimit-Reset-Requests: 12        <span class="c"># seconds until request window resets</span>
+X-RateLimit-Reset-Tokens: 12          <span class="c"># seconds until token window resets</span>
+Retry-After: 12                       <span class="c"># on 429 — when to retry</span></div>
+        <strong>Algorithms:</strong><br><br>
+        <strong>Token Bucket (best for LLM APIs):</strong> Bucket holds max T tokens. Refills at rate R tokens/second. Each request consumes tokens equal to its token count. Allows short bursts up to bucket size. OpenAI, Anthropic use this.<br><br>
+        <strong>Sliding Window (precise):</strong> Count requests in a rolling window (last 60 seconds). More accurate than fixed window but more complex. No burst-then-silence pattern.<br><br>
+        <strong>Fixed Window (simple, avoid):</strong> Count resets every N seconds. Problem: 1000 requests at 11:59:59 + 1000 at 12:00:00 = 2000 in 1 second. "Window edge" attack.<br><br>
+        <strong>Implementation with Redis:</strong>
+        <div class="code"><span class="k">import</span> redis; <span class="k">import</span> time
+
+<span class="k">def</span> check_rate_limit(api_key: str, token_count: int) -> bool:
+    r = redis.Redis()
+    pipe = r.pipeline()
+    key = f<span class="s">"rl:{api_key}:{int(time.time()//60)}"</span>
+    pipe.incrby(key, token_count)
+    pipe.expire(key, <span class="v">120</span>)   <span class="c"># 2min TTL</span>
+    results = pipe.execute()
+    <span class="k">return</span> results[0] <= <span class="v">100_000</span>  <span class="c"># 100K TPM limit</span></div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-rest">REST</span> How do you paginate large API responses? Compare cursor vs offset pagination. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Offset pagination (simple, has problems):</strong>
+        <div class="code">GET /v1/models?offset=20&limit=10
+
+Response: {
+  "data": [...],
+  "total": 1847,
+  "offset": 20,
+  "limit": 10
+}</div>
+        ✅ Simple. Jump to any page directly. ❌ "Offset drift" — if a record is inserted while paginating, items shift: you skip one or see duplicates. Also expensive at high offsets (DB scans all skipped rows).<br><br>
+        <strong>Cursor pagination (production choice for large datasets):</strong>
+        <div class="code">GET /v1/training-jobs?limit=20
+
+Response: {
+  "data": [...20 jobs...],
+  "has_more": true,
+  "next_cursor": "eyJpZCI6IDEwMDV9"  <span class="c"># base64 encoded pointer</span>
+}
+
+<span class="c"># Next page:</span>
+GET /v1/training-jobs?cursor=eyJpZCI6IDEwMDV9&limit=20</div>
+        ✅ Stable — insertions don't break pagination. Fast — uses index seek not scan. Works for infinite scroll.<br>
+        ❌ Can't jump to arbitrary page. Can't show "page 5 of 92".<br><br>
+        <strong>Decision:</strong> Use cursor for feeds and lists in your ML dashboard (training jobs, experiments, predictions). Use offset for analytics dashboards where users need "go to page N" functionality.<br><br>
+        <strong>Cursor implementation:</strong> Cursor is typically base64(last_seen_id + timestamp). SQL: WHERE id > cursor_id ORDER BY id LIMIT 20. Uses primary key index — O(log n) not O(n).
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" disabled>← Prev</button>
+    <button class="nbtn primary" onclick="nextCh(0)">GraphQL →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 2 — GraphQL ══════════ -->
+<div class="chapter" id="ch1">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 02 / 09</div>
+    <div class="ch-title">GRAPH<br><span class="accent">QL</span></div>
+    <p class="ch-lead">GraphQL is a query language for APIs. Instead of multiple REST endpoints, one endpoint answers any query the client specifies. Powerful for complex UIs, but comes with real production challenges.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — GraphQL vs REST</div>
+    <div class="cmp-grid">
+      <div class="cmp-card">
+        <h4 style="color:var(--violet)">GraphQL</h4>
+        <ul>
+          <li>Single endpoint (/graphql)</li>
+          <li>Client specifies exactly what fields it needs</li>
+          <li>No over-fetching or under-fetching</li>
+          <li>Strongly typed schema (SDL)</li>
+          <li>Introspection — self-documenting</li>
+          <li>Real-time subscriptions built-in</li>
+          <li>Complex to cache (POST by default)</li>
+          <li>N+1 query problem requires DataLoader</li>
+        </ul>
+      </div>
+      <div class="cmp-card">
+        <h4 style="color:var(--lime)">REST</h4>
+        <ul>
+          <li>Multiple endpoints, one per resource</li>
+          <li>Server decides response shape</li>
+          <li>Over-fetching common</li>
+          <li>Weaker typing (OpenAPI helps)</li>
+          <li>HTTP caching works natively</li>
+          <li>Simpler to implement and understand</li>
+          <li>Harder for complex nested data</li>
+          <li>Versioning via URL (/v1, /v2)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-gql">GraphQL</span> Explain the N+1 problem in GraphQL and how DataLoader solves it. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>The N+1 problem:</strong> A GraphQL query requests a list of N items, each with a nested field. Without optimization, the resolver makes 1 query for the list + N queries for each nested field. At N=100: 101 database queries for one GraphQL request.
+        <div class="code"><span class="c"># GraphQL query:</span>
+{
+  experiments {            <span class="c"># Query 1: SELECT * FROM experiments LIMIT 100</span>
+    id
+    name
+    model {                <span class="c"># Query 2..101: SELECT * FROM models WHERE id = ?</span>
+      name                 <span class="c"># Called 100 times — one per experiment!</span>
+      parameters
+    }
+  }
+}
+
+<span class="c"># Without DataLoader: 1 + 100 = 101 queries</span>
+<span class="c"># With DataLoader: 1 + 1 = 2 queries</span></div>
+        <strong>DataLoader solution (batching + caching):</strong>
+        <div class="code"><span class="k">from</span> strawberry.dataloader <span class="k">import</span> DataLoader
+
+<span class="c"># Instead of fetching one model at a time:</span>
+<span class="k">async def</span> batch_load_models(model_ids: list[str]) -> list[Model]:
+    <span class="c"># ONE query for all IDs — batched by DataLoader</span>
+    models = <span class="k">await</span> db.execute(
+        <span class="s">"SELECT * FROM models WHERE id = ANY($1)"</span>, model_ids
+    )
+    id_map = {m.id: m <span class="k">for</span> m <span class="k">in</span> models}
+    <span class="k">return</span> [id_map.get(id) <span class="k">for</span> <span class="k">id</span> <span class="k">in</span> model_ids]
+
+model_loader = DataLoader(load_fn=batch_load_models)
+
+<span class="c"># In resolver:</span>
+<span class="k">async def</span> resolve_model(experiment, info):
+    <span class="k">return await</span> info.context.model_loader.load(experiment.model_id)
+    <span class="c"># DataLoader collects all loads for this tick, then batch-fetches</span></div>
+        <strong>DataLoader does two things:</strong><br>
+        1. <strong>Batching:</strong> Collects all load() calls within a single event loop tick. Executes as one batch query.<br>
+        2. <strong>Caching:</strong> Within a request, the same ID is only fetched once. 100 experiments sharing model_id "abc" → 1 fetch.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-gql">GraphQL</span> What are GraphQL subscriptions and how do they work? When would you use them for AI? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>GraphQL Subscriptions</strong> = real-time updates pushed from server to client over WebSocket. Client subscribes to events; server pushes updates as they happen.
+        <div class="code"><span class="c"># Client subscription (JS)</span>
+<span class="k">const</span> subscription = client.subscribe({
+  query: <span class="s">`subscription TrainingProgress($jobId: ID!) {
+    trainingProgress(jobId: $jobId) {
+      step
+      loss
+      accuracy
+      eta_seconds
+    }
+  }`</span>,
+  variables: { jobId: <span class="s">"job-abc"</span> }
+});
+
+subscription.subscribe(({ data }) => {
+  updateProgressBar(data.trainingProgress);
+});
+
+<span class="c"># Server (Python + Strawberry)</span>
+<span class="k">import</span> strawberry
+<span class="k">from</span> typing <span class="k">import</span> AsyncGenerator
+
+@strawberry.type
+<span class="k">class</span> Subscription:
+    @strawberry.subscription
+    <span class="k">async def</span> training_progress(job_id: str) -> AsyncGenerator[TrainingUpdate]:
+        <span class="k">async for</span> update <span class="k">in</span> redis_pubsub.subscribe(f<span class="s">"training:{job_id}"</span>):
+            <span class="k">yield</span> TrainingUpdate(**update)</div>
+        <strong>AI use cases for subscriptions:</strong><br>
+        • LLM streaming output — push each generated token to UI in real-time<br>
+        • Training job progress — loss, accuracy, ETA updated every few seconds<br>
+        • Model evaluation — live results as evaluation runs across test set<br>
+        • Experiment monitoring — metric updates pushed as they're logged<br>
+        • Alert notifications — push alert when model drift detected<br><br>
+        <strong>Note:</strong> For LLM token streaming, SSE (Server-Sent Events) is often simpler than GraphQL subscriptions — one-directional HTTP streaming without WebSocket overhead. OpenAI's streaming uses SSE.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-gql">GraphQL</span> When would you choose GraphQL over REST for an AI product? Give a concrete example. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>GraphQL shines when:</strong> Your frontend needs flexible, nested data from multiple resources in one request. Your product has a complex UI with many different views needing different data shapes.<br><br>
+        <strong>Concrete AI example — ML experiment dashboard:</strong><br>
+        The UI shows: experiment metadata + model config + training metrics + dataset info + evaluation results across multiple model versions. In REST, this is 5+ separate API calls. In GraphQL, one query gets exactly what each view needs:
+        <div class="code">{
+  experiment(id: "exp-123") {
+    name, status, created_at
+    model {
+      architecture, parameters
+      checkpoints { step, loss }
+    }
+    dataset {
+      name, size, features { name, importance }
+    }
+    evaluations(limit: 5) {
+      timestamp
+      metrics { accuracy, f1, auc }
+      slices { name, accuracy }  <span class="c"># per-segment metrics</span>
+    }
+    comparison {
+      baseline { metrics { accuracy } }
+      delta { accuracy }
+    }
+  }
+}
+<span class="c"># ONE request, exactly the data the UI needs. No over/under-fetching.</span></div>
+        <strong>When to stick with REST for AI:</strong><br>
+        • Model inference endpoints — REST with caching is simpler and more performant<br>
+        • Batch data pipelines — REST or message queues, not GraphQL<br>
+        • Public APIs — REST is more widely understood and easier for third parties<br>
+        • Simple CRUD — GraphQL overhead not justified<br><br>
+        <strong>Decision rule:</strong> GraphQL for complex internal dashboards and BFF (Backend-for-Frontend) patterns. REST for public APIs and data-intensive AI inference endpoints.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(1)">← REST</button>
+    <button class="nbtn primary" onclick="nextCh(1)">gRPC →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 3 — gRPC ══════════ -->
+<div class="chapter" id="ch2">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 03 / 09</div>
+    <div class="ch-title">gRPC<br><span class="accent">&amp;</span><br>PROTOCOL BUFFERS</div>
+    <p class="ch-lead">gRPC is what ML systems use internally for high-performance service-to-service communication. Triton Inference Server, TensorFlow Serving, and internal ML platforms all use gRPC. Know why.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — gRPC vs REST</div>
+    <div class="tbl">
+    <table>
+      <tr><th>Dimension</th><th>gRPC</th><th>REST/JSON</th></tr>
+      <tr><td>Protocol</td><td style="color:var(--cyan)">HTTP/2 (multiplexed, binary)</td><td>HTTP/1.1 or HTTP/2 (text)</td></tr>
+      <tr><td>Serialization</td><td style="color:var(--cyan)">Protocol Buffers (binary, typed)</td><td>JSON (text, weakly typed)</td></tr>
+      <tr><td>Speed</td><td style="color:var(--lime)">5-10× faster serialization</td><td>Baseline</td></tr>
+      <tr><td>Payload size</td><td style="color:var(--lime)">3-5× smaller</td><td>Baseline</td></tr>
+      <tr><td>Schema</td><td style="color:var(--lime)">Enforced (.proto file)</td><td>Optional (OpenAPI)</td></tr>
+      <tr><td>Code gen</td><td style="color:var(--lime)">Auto-generate client/server in 10+ languages</td><td>Manual or Swagger codegen</td></tr>
+      <tr><td>Streaming</td><td style="color:var(--lime)">Native 4 types (unary, server, client, bidirectional)</td><td>SSE for server-push only</td></tr>
+      <tr><td>Browser support</td><td style="color:var(--rose)">Requires grpc-web proxy</td><td>Native</td></tr>
+      <tr><td>Debugging</td><td style="color:var(--rose)">Harder (binary, need tools)</td><td>Easy (curl, browser)</td></tr>
+      <tr><td>Best for</td><td style="color:var(--cyan)">Internal microservices, ML serving</td><td>Public APIs, browser clients</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-grpc">gRPC</span> What are Protocol Buffers and why are they better than JSON for ML? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Protocol Buffers (protobuf)</strong> = Google's binary serialization format. Define data schema in .proto file. Compile to strongly-typed code in any language.
+        <div class="code"><span class="c">// prediction.proto — schema definition</span>
+<span class="k">syntax</span> = "proto3";
+
+<span class="k">service</span> PredictionService {
+  <span class="k">rpc</span> Predict (PredictRequest) <span class="k">returns</span> (PredictResponse);
+  <span class="k">rpc</span> PredictStream (PredictRequest) <span class="k">returns</span> (<span class="k">stream</span> TokenResponse);
+}
+
+<span class="k">message</span> PredictRequest {
+  <span class="k">string</span>  model_id    = 1;
+  <span class="k">string</span>  prompt      = 2;
+  <span class="k">int32</span>   max_tokens  = 3;
+  <span class="k">float</span>   temperature = 4;
+}
+
+<span class="k">message</span> PredictResponse {
+  <span class="k">string</span>  text           = 1;
+  <span class="k">int32</span>   tokens_used    = 2;
+  <span class="k">double</span>  latency_ms     = 3;
+  <span class="k">repeated</span> <span class="k">float</span> logprobs = 4;  <span class="c">// array of token log-probs</span>
+}
+
+<span class="c">// Then run: protoc --python_out=. prediction.proto</span>
+<span class="c">// Auto-generates type-safe Python client + server code</span></div>
+        <strong>Why protobuf beats JSON for ML inference:</strong><br>
+        • <strong>Embedding vectors:</strong> 1536 float32 values as JSON = ~11KB string. As protobuf = ~6KB binary. 45% smaller, much faster to parse.<br>
+        • <strong>Type safety:</strong> float vs int never confused. Schema enforced at compile time, not runtime.<br>
+        • <strong>Speed:</strong> Serializing/deserializing 1M inferences/day: JSON ≈ 2-4ms per call. Protobuf ≈ 0.2-0.4ms per call. 10× faster.<br>
+        • <strong>Schema evolution:</strong> Adding field = add field number. Old clients ignore unknown fields. Backwards compatible automatically.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-grpc">gRPC</span> Explain gRPC streaming — 4 types. Which do you use for LLM token streaming? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="code"><span class="c">// 1. Unary — single request, single response (like REST)</span>
+<span class="k">rpc</span> Predict (Request) <span class="k">returns</span> (Response);
+
+<span class="c">// 2. Server-side streaming — client sends one, server streams many</span>
+<span class="k">rpc</span> GenerateTokens (Request) <span class="k">returns</span> (<span class="k">stream</span> Token);
+<span class="c">// USE THIS for LLM token streaming! Client sends prompt once,</span>
+<span class="c">// server pushes each token as it's generated</span>
+
+<span class="c">// 3. Client-side streaming — client streams many, server responds once</span>
+<span class="k">rpc</span> TranscribeAudio (<span class="k">stream</span> AudioChunk) <span class="k">returns</span> (Transcript);
+<span class="c">// Good for: streaming audio chunks for speech-to-text</span>
+
+<span class="c">// 4. Bidirectional streaming — both sides stream simultaneously</span>
+<span class="k">rpc</span> VoiceChat (<span class="k">stream</span> AudioIn) <span class="k">returns</span> (<span class="k">stream</span> AudioOut);
+<span class="c">// Good for: real-time voice AI, live translation</span></div>
+        <strong>LLM token streaming with server-side streaming:</strong>
+        <div class="code"><span class="c"># Python gRPC server — streams tokens as they're generated</span>
+<span class="k">async def</span> GenerateTokens(request, context):
+    <span class="k">async for</span> token <span class="k">in</span> llm.generate_stream(request.prompt):
+        <span class="k">yield</span> TokenResponse(
+            token=token.text,
+            logprob=token.logprob,
+            is_final=token.is_last
+        )
+    <span class="c"># Client receives each token immediately as generated</span>
+    <span class="c"># Time to first token: ~200ms. Without streaming: wait 5-30s</span></div>
+        <strong>Why gRPC streaming for LLMs vs SSE:</strong> gRPC uses HTTP/2 — multiple streams multiplexed on one connection. SSE uses HTTP/1.1 — one connection per stream. Under high load (1000 concurrent users), gRPC is dramatically more efficient. For external/browser clients: SSE is still simpler (no grpc-web proxy needed).
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(2)">← GraphQL</button>
+    <button class="nbtn primary" onclick="nextCh(2)">FastAPI & WebSockets →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 4 — FastAPI & WS ══════════ -->
+<div class="chapter" id="ch3">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 04 / 09</div>
+    <div class="ch-title">FAST<span class="accent">API</span><br>&amp; WEB<br><span class="dim">SOCKETS</span></div>
+    <p class="ch-lead">FastAPI is the standard for Python ML APIs. WebSockets enable real-time bidirectional communication. Together they power modern AI applications — chatbots, streaming inference, live dashboards.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — FastAPI Deep Dive</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-rest">FastAPI</span> Build a production FastAPI endpoint for LLM inference with streaming, auth, and rate limiting. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="code"><span class="k">from</span> fastapi <span class="k">import</span> FastAPI, Depends, HTTPException, Request
+<span class="k">from</span> fastapi.responses <span class="k">import</span> StreamingResponse
+<span class="k">from</span> fastapi.middleware.cors <span class="k">import</span> CORSMiddleware
+<span class="k">from</span> pydantic <span class="k">import</span> BaseModel, Field
+<span class="k">import</span> asyncio, json, time
+
+app = FastAPI(title=<span class="s">"LLM Inference API"</span>, version=<span class="s">"1.0.0"</span>)
+
+<span class="c"># ── Request/Response schemas (Pydantic) ──────────────────────</span>
+<span class="k">class</span> CompletionRequest(BaseModel):
+    model: str = Field(default=<span class="s">"llama-3-8b"</span>)
+    prompt: str = Field(min_length=<span class="v">1</span>, max_length=<span class="v">100_000</span>)
+    max_tokens: int = Field(default=<span class="v">256</span>, ge=<span class="v">1</span>, le=<span class="v">4096</span>)
+    temperature: float = Field(default=<span class="v">0.7</span>, ge=<span class="v">0.0</span>, le=<span class="v">2.0</span>)
+    stream: bool = False
+
+<span class="c"># ── Dependencies ──────────────────────────────────────────────</span>
+<span class="k">async def</span> verify_api_key(request: Request):
+    key = request.headers.get(<span class="s">"Authorization"</span>, <span class="s">""</span>).removeprefix(<span class="s">"Bearer "</span>)
+    <span class="k">if not</span> await redis.get(f<span class="s">"apikey:{key}"</span>):
+        <span class="k">raise</span> HTTPException(<span class="v">401</span>, detail=<span class="s">"Invalid API key"</span>)
+    <span class="k">return</span> key
+
+<span class="k">async def</span> rate_limit(api_key: str = Depends(verify_api_key)):
+    current = <span class="k">await</span> redis.incr(f<span class="s">"rl:{api_key}:{int(time.time()//60)}"</span>)
+    <span class="k">if</span> current == <span class="v">1</span>:
+        <span class="k">await</span> redis.expire(f<span class="s">"rl:{api_key}:{int(time.time()//60)}"</span>, <span class="v">120</span>)
+    <span class="k">if</span> current > <span class="v">100</span>:
+        <span class="k">raise</span> HTTPException(<span class="v">429</span>, headers={<span class="s">"Retry-After"</span>: <span class="s">"60"</span>})
+    <span class="k">return</span> api_key
+
+<span class="c"># ── Streaming endpoint ────────────────────────────────────────</span>
+<span class="k">async def</span> token_generator(request: CompletionRequest):
+    <span class="k">async for</span> token <span class="k">in</span> llm.stream(request.prompt, request.max_tokens):
+        chunk = {<span class="s">"token"</span>: token.text, <span class="s">"done"</span>: <span class="k">False</span>}
+        <span class="k">yield</span> f<span class="s">"data: {json.dumps(chunk)}\n\n"</span>  <span class="c"># SSE format</span>
+    <span class="k">yield</span> <span class="s">"data: [DONE]\n\n"</span>
+
+@app.post(<span class="s">"/v1/completions"</span>)
+<span class="k">async def</span> completions(
+    request: CompletionRequest,
+    api_key: str = Depends(rate_limit)
+):
+    <span class="k">if</span> request.stream:
+        <span class="k">return</span> StreamingResponse(
+            token_generator(request),
+            media_type=<span class="s">"text/event-stream"</span>,
+            headers={<span class="s">"X-Accel-Buffering"</span>: <span class="s">"no"</span>}  <span class="c"># disable nginx buffering</span>
+        )
+    result = <span class="k">await</span> llm.generate(request.prompt, request.max_tokens)
+    <span class="k">return</span> {<span class="s">"text"</span>: result.text, <span class="s">"tokens"</span>: result.token_count}
+
+<span class="c"># ── Background tasks for async inference ─────────────────────</span>
+<span class="k">from</span> fastapi <span class="k">import</span> BackgroundTasks
+
+@app.post(<span class="s">"/v1/jobs"</span>, status_code=<span class="v">202</span>)
+<span class="k">async def</span> create_job(request: CompletionRequest, bg: BackgroundTasks):
+    job_id = generate_id()
+    <span class="k">await</span> redis.set(f<span class="s">"job:{job_id}"</span>, <span class="s">"pending"</span>)
+    bg.add_task(run_inference_job, job_id, request)  <span class="c"># non-blocking</span>
+    <span class="k">return</span> {<span class="s">"job_id"</span>: job_id, <span class="s">"status"</span>: <span class="s">"pending"</span>}</div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-rest">FastAPI</span> What is the difference between async and sync FastAPI endpoints? When does it matter for AI? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>FastAPI runs on Uvicorn (ASGI). It's async-first — but with important nuances:</strong><br><br>
+        <strong>async def endpoint:</strong> Runs in the event loop. Non-blocking. Can serve thousands of concurrent requests on one process as long as all I/O is awaited.
+        <div class="code"><span class="c"># GOOD: async endpoint with async I/O</span>
+@app.post(<span class="s">"/predict"</span>)
+<span class="k">async def</span> predict(request: PredictRequest):
+    features = <span class="k">await</span> db.fetch_features(request.user_id)  <span class="c"># non-blocking</span>
+    result = <span class="k">await</span> model_client.predict(features)         <span class="c"># non-blocking</span>
+    <span class="k">await</span> redis.set(f<span class="s">"cache:{request.user_id}"</span>, result)   <span class="c"># non-blocking</span>
+    <span class="k">return</span> result
+
+<span class="c"># BAD: async endpoint with blocking I/O — blocks the entire event loop!</span>
+@app.post(<span class="s">"/predict-wrong"</span>)
+<span class="k">async def</span> predict_wrong(request: PredictRequest):
+    result = model.predict(features)  <span class="c"># CPU-bound! Blocks event loop!</span>
+    <span class="k">return</span> result</div>
+        <strong>def endpoint (sync):</strong> FastAPI runs it in a threadpool. Doesn't block the event loop. Use when you can't make I/O async (synchronous ML libraries, blocking SDK calls).
+        <div class="code"><span class="c"># GOOD: sync endpoint for CPU-bound ML inference</span>
+@app.post(<span class="s">"/predict"</span>)
+<span class="k">def</span> predict(request: PredictRequest):
+    <span class="c"># Runs in threadpool — doesn't block event loop</span>
+    <span class="c"># Safe for CPU-bound PyTorch/sklearn inference</span>
+    result = model.predict(np.array(request.features))
+    <span class="k">return</span> result
+
+<span class="c"># For CPU-bound in async context: use run_in_executor</span>
+@app.post(<span class="s">"/predict-async"</span>)
+<span class="k">async def</span> predict_async(request: PredictRequest):
+    loop = asyncio.get_event_loop()
+    result = <span class="k">await</span> loop.run_in_executor(
+        thread_pool,  <span class="c"># your ThreadPoolExecutor</span>
+        model.predict, np.array(request.features)
+    )
+    <span class="k">return</span> result</div>
+        <strong>Rule for AI engineers:</strong> IO-bound work (DB queries, Redis, HTTP calls to other services) → async. CPU-bound work (PyTorch inference, numpy ops) → sync def or run_in_executor. Never block the event loop with CPU work in an async def.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-rest">WebSocket</span> Build a real-time AI chat API with WebSockets. Handle reconnection and authentication. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="code"><span class="k">from</span> fastapi <span class="k">import</span> WebSocket, WebSocketDisconnect
+<span class="k">import</span> asyncio
+
+<span class="k">class</span> ConnectionManager:
+    <span class="k">def</span> __init__(self):
+        self.connections: dict[str, WebSocket] = {}
+
+    <span class="k">async def</span> connect(self, session_id: str, ws: WebSocket):
+        <span class="k">await</span> ws.accept()
+        self.connections[session_id] = ws
+
+    <span class="k">def</span> disconnect(self, session_id: str):
+        self.connections.pop(session_id, None)
+
+    <span class="k">async def</span> stream_tokens(self, session_id: str, generator):
+        ws = self.connections.get(session_id)
+        <span class="k">if not</span> ws: <span class="k">return</span>
+        <span class="k">async for</span> token <span class="k">in</span> generator:
+            <span class="k">await</span> ws.send_json({<span class="s">"type"</span>: <span class="s">"token"</span>, <span class="s">"data"</span>: token})
+        <span class="k">await</span> ws.send_json({<span class="s">"type"</span>: <span class="s">"done"</span>})
+
+manager = ConnectionManager()
+
+@app.websocket(<span class="s">"/ws/chat/{session_id}"</span>)
+<span class="k">async def</span> chat_websocket(ws: WebSocket, session_id: str, token: str):
+    <span class="c"># Auth on connection — fail before accepting</span>
+    user = <span class="k">await</span> verify_token(token)
+    <span class="k">if not</span> user:
+        <span class="k">await</span> ws.close(code=<span class="v">4001</span>, reason=<span class="s">"Unauthorized"</span>)
+        <span class="k">return</span>
+
+    <span class="k">await</span> manager.connect(session_id, ws)
+    conversation_history = []
+
+    <span class="k">try</span>:
+        <span class="k">while True</span>:
+            data = <span class="k">await</span> ws.receive_json()
+
+            <span class="k">if</span> data[<span class="s">"type"</span>] == <span class="s">"message"</span>:
+                conversation_history.append({
+                    <span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: data[<span class="s">"content"</span>]
+                })
+                <span class="c"># Stream response tokens back</span>
+                response_text = <span class="s">""</span>
+                <span class="k">async for</span> token <span class="k">in</span> llm.stream(conversation_history):
+                    response_text += token
+                    <span class="k">await</span> ws.send_json({<span class="s">"type"</span>: <span class="s">"token"</span>, <span class="s">"data"</span>: token})
+
+                conversation_history.append({
+                    <span class="s">"role"</span>: <span class="s">"assistant"</span>, <span class="s">"content"</span>: response_text
+                })
+                <span class="k">await</span> ws.send_json({<span class="s">"type"</span>: <span class="s">"done"</span>})
+
+    <span class="k">except</span> WebSocketDisconnect:
+        manager.disconnect(session_id)
+        <span class="k">await</span> save_conversation(session_id, conversation_history)</div>
+        <strong>Client reconnection pattern:</strong>
+        <div class="code">let ws, reconnectDelay = 1000;
+<span class="k">const</span> connect = () => {
+  ws = <span class="k">new</span> WebSocket(<span class="s">`/ws/chat/${sessionId}?token=${apiKey}`</span>);
+  ws.onclose = (e) => {
+    <span class="k">if</span> (e.code !== 4001) {  <span class="c">// don't retry auth failures</span>
+      setTimeout(connect, reconnectDelay);
+      reconnectDelay = Math.min(reconnectDelay * 2, 30000); <span class="c">// exp backoff</span>
+    }
+  };
+  ws.onopen = () => { reconnectDelay = 1000; }; <span class="c">// reset on success</span>
+};</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(3)">← gRPC</button>
+    <button class="nbtn primary" onclick="nextCh(3)">API Optimization →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 5 — API OPT ══════════ -->
+<div class="chapter" id="ch4">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 05 / 09</div>
+    <div class="ch-title">API<br><span class="accent">OPTIM</span><br>IZATION</div>
+    <p class="ch-lead">Latency and throughput are everything in production AI APIs. These are the techniques that take a working endpoint to one that can handle 100K requests per minute reliably.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — Latency Stack</div>
+    <div class="perf-bar"><div class="perf-label">Network (same region)</div><div class="perf-track"><div class="perf-fill" style="width:5%"></div></div><div class="perf-val">1-5ms</div></div>
+    <div class="perf-bar"><div class="perf-label">API Gateway</div><div class="perf-track"><div class="perf-fill" style="width:5%"></div></div><div class="perf-val">1-10ms</div></div>
+    <div class="perf-bar"><div class="perf-label">Auth + Rate limit</div><div class="perf-track"><div class="perf-fill" style="width:5%"></div></div><div class="perf-val">2-5ms</div></div>
+    <div class="perf-bar"><div class="perf-label">Feature DB lookup</div><div class="perf-track"><div class="perf-fill" style="width:10%"></div></div><div class="perf-val">1-10ms</div></div>
+    <div class="perf-bar"><div class="perf-label">Small model (sklearn)</div><div class="perf-track"><div class="perf-fill" style="width:10%"></div></div><div class="perf-val">5-20ms</div></div>
+    <div class="perf-bar"><div class="perf-label">Deep learning (GPU)</div><div class="perf-track"><div class="perf-fill" style="width:30%"></div></div><div class="perf-val">20-100ms</div></div>
+    <div class="perf-bar"><div class="perf-label">LLM (7B, 256 tokens)</div><div class="perf-track"><div class="perf-fill" style="width:60%"></div></div><div class="perf-val">2-8s</div></div>
+    <div class="perf-bar"><div class="perf-label">LLM (70B, 1K tokens)</div><div class="perf-track"><div class="perf-fill" style="width:100%"></div></div><div class="perf-val">20-60s</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">02 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-perf">Perf</span> How do you implement caching for an ML inference API? What are the layers? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>4 caching layers from outermost to innermost:</strong><br><br>
+        <strong>Layer 1 — CDN (CloudFront, Fastly):</strong> Cache responses at edge PoPs. Deterministic requests (temperature=0, same prompt) return cached response in &lt;5ms globally. Only works for non-personalized, non-streaming responses.<br><br>
+        <strong>Layer 2 — Exact match cache (Redis):</strong> Cache responses for identical requests. Key = hash(model_id + prompt + params). Semantic cache for LLMs.
+        <div class="code"><span class="k">import</span> hashlib, json
+
+<span class="k">async def</span> cached_predict(request: PredictRequest) -> str:
+    <span class="c"># Exact cache key</span>
+    cache_key = hashlib.sha256(
+        json.dumps(request.dict(), sort_keys=<span class="k">True</span>).encode()
+    ).hexdigest()
+
+    cached = <span class="k">await</span> redis.get(f<span class="s">"cache:exact:{cache_key}"</span>)
+    <span class="k">if</span> cached:
+        metrics.increment(<span class="s">"cache_hit"</span>)
+        <span class="k">return</span> json.loads(cached)
+
+    result = <span class="k">await</span> model.predict(request)
+    <span class="k">await</span> redis.setex(
+        f<span class="s">"cache:exact:{cache_key}"</span>,
+        <span class="v">3600</span>,  <span class="c"># 1 hour TTL</span>
+        json.dumps(result)
+    )
+    <span class="k">return</span> result</div>
+        <strong>Layer 3 — Semantic cache (for LLMs):</strong> Embed the prompt with a fast embedding model. Find nearest cached embedding in vector store. If similarity > 0.97, return cached response. Handles paraphrases and near-duplicate prompts.
+        <div class="code"><span class="k">async def</span> semantic_cached_predict(prompt: str):
+    embedding = <span class="k">await</span> embed(prompt)  <span class="c"># fast embedding, ~5ms</span>
+
+    similar = <span class="k">await</span> vector_store.search(embedding, top_k=<span class="v">1</span>)
+    <span class="k">if</span> similar <span class="k">and</span> similar[<span class="v">0</span>].score > <span class="v">0.97</span>:
+        <span class="k">return</span> similar[<span class="v">0</span>].cached_response  <span class="c"># semantic cache hit</span>
+
+    response = <span class="k">await</span> llm.generate(prompt)
+    <span class="k">await</span> vector_store.insert(embedding, response)
+    <span class="k">return</span> response</div>
+        <strong>Layer 4 — KV cache (inside the model):</strong> Transformer's attention KV cache — reuse computed keys/values for the system prompt portion. All requests with the same system prompt share KV cache. Reduces TTFT (Time To First Token) by 30-70%.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-perf">Perf</span> What is request batching for ML inference and how do you implement it? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Problem:</strong> GPU inference is most efficient when processing multiple inputs simultaneously (batched). Serving one request at a time wastes 80-90% of GPU capacity. But clients send individual requests.<br><br>
+        <strong>Dynamic batching:</strong> Collect requests in a time window. Process as a batch. Return individual responses.
+        <div class="code"><span class="k">import</span> asyncio
+<span class="k">from</span> collections <span class="k">import</span> deque
+
+<span class="k">class</span> DynamicBatcher:
+    <span class="k">def</span> __init__(self, max_batch=<span class="v">32</span>, max_wait_ms=<span class="v">10</span>):
+        self.queue: deque = deque()
+        self.max_batch = max_batch
+        self.max_wait = max_wait_ms / <span class="v">1000</span>
+        asyncio.ensure_future(self._batch_loop())
+
+    <span class="k">async def</span> predict(self, input_data) -> any:
+        future = asyncio.get_event_loop().create_future()
+        self.queue.append((input_data, future))
+        <span class="k">return await</span> future  <span class="c"># caller waits here</span>
+
+    <span class="k">async def</span> _batch_loop(self):
+        <span class="k">while True</span>:
+            <span class="k">if not</span> self.queue:
+                <span class="k">await</span> asyncio.sleep(<span class="v">0.001</span>)
+                <span class="k">continue</span>
+
+            <span class="c"># Collect for max_wait OR until batch full</span>
+            deadline = asyncio.get_event_loop().time() + self.max_wait
+            batch = []
+            <span class="k">while</span> self.queue <span class="k">and</span> len(batch) < self.max_batch:
+                batch.append(self.queue.popleft())
+                <span class="k">if</span> asyncio.get_event_loop().time() > deadline:
+                    <span class="k">break</span>
+
+            inputs = [item[<span class="v">0</span>] <span class="k">for</span> item <span class="k">in</span> batch]
+            futures = [item[<span class="v">1</span>] <span class="k">for</span> item <span class="k">in</span> batch]
+
+            <span class="c"># ONE GPU call for entire batch</span>
+            results = model.predict_batch(inputs)
+
+            <span class="k">for</span> future, result <span class="k">in</span> zip(futures, results):
+                future.set_result(result)  <span class="c"># wake up each waiting caller</span></div>
+        <strong>Effect:</strong> 32× more GPU throughput. p50 latency +5ms (batch wait). p99 latency unchanged. Throughput: 200 req/s → 5,000 req/s with same hardware.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-perf">Perf</span> What is connection pooling and why is it critical for AI APIs with databases? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Problem:</strong> Opening a new database connection for every request takes 20-100ms (TCP handshake, auth, SSL). At 1000 requests/second, you'd need to open 1000 connections/second. Most databases can't handle this.<br><br>
+        <strong>Connection pool:</strong> Maintain N warm connections open permanently. Requests borrow a connection, use it, return it. No connection overhead per request.
+        <div class="code"><span class="c"># FastAPI + asyncpg connection pool (PostgreSQL)</span>
+<span class="k">import</span> asyncpg
+
+<span class="c"># Create pool once at startup</span>
+@app.on_event(<span class="s">"startup"</span>)
+<span class="k">async def</span> startup():
+    app.state.db = <span class="k">await</span> asyncpg.create_pool(
+        dsn=<span class="s">"postgresql://user:pass@localhost/db"</span>,
+        min_size=<span class="v">10</span>,      <span class="c"># always keep 10 connections warm</span>
+        max_size=<span class="v">50</span>,      <span class="c"># max 50 connections total</span>
+        max_inactive_connection_lifetime=<span class="v">300</span>,  <span class="c"># close idle after 5min</span>
+        command_timeout=<span class="v">10</span>   <span class="c"># query timeout 10s</span>
+    )
+
+<span class="c"># Use in endpoint — borrows connection, auto-returns</span>
+@app.get(<span class="s">"/users/{id}/features"</span>)
+<span class="k">async def</span> get_features(id: str):
+    <span class="k">async with</span> app.state.db.acquire() <span class="k">as</span> conn:  <span class="c"># ~0.1ms vs 50ms</span>
+        row = <span class="k">await</span> conn.fetchrow(
+            <span class="s">"SELECT * FROM user_features WHERE user_id = $1"</span>, id
+        )
+    <span class="k">return</span> dict(row)</div>
+        <strong>Pool sizing formula:</strong> max_connections ≈ (num_cores × 2) + effective_spindle_count. For a feature store serving ML inference: 20-50 connections. For a write-heavy training data pipeline: 10-20. More is not always better — too many connections increase memory pressure on the DB server.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(4)">← FastAPI</button>
+    <button class="nbtn primary" onclick="nextCh(4)">SQL Optimization →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 6 — SQL OPT ══════════ -->
+<div class="chapter" id="ch5">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 06 / 09</div>
+    <div class="ch-title">SQL<br><span class="accent">DATABASE</span><br>OPTIMIZATION</div>
+    <p class="ch-lead">Slow queries kill ML systems. Training data queries that take 5 minutes instead of 5 seconds. Feature lookups adding 200ms to inference. Database optimization is a core AI engineering skill.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-db">SQL</span> What is a database index? How do you decide what to index for an ML system? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>An index</strong> = a separate data structure (B-tree by default in PostgreSQL) that lets the DB find rows without scanning every row. Like a book's index — find "machine learning" → page 247 directly, don't read every page.<br><br>
+        <strong>Without index:</strong> SELECT * FROM events WHERE user_id = 'u-123' → full table scan. O(n). At 100M rows: 10-60 seconds.<br>
+        <strong>With index on user_id:</strong> B-tree lookup → O(log n). At 100M rows: 0.5-5ms.<br><br>
+        <strong>Index types:</strong>
+        <div class="code"><span class="c">-- B-tree (default): equality and range queries</span>
+<span class="k">CREATE INDEX</span> idx_user_events_user_id <span class="k">ON</span> events(user_id);
+<span class="k">CREATE INDEX</span> idx_events_time         <span class="k">ON</span> events(event_time DESC);
+
+<span class="c">-- Composite: multiple columns — order matters!</span>
+<span class="c">-- Use for: WHERE user_id = X AND event_time > Y</span>
+<span class="k">CREATE INDEX</span> idx_user_time <span class="k">ON</span> events(user_id, event_time DESC);
+
+<span class="c">-- Partial: index only a subset of rows (smaller, faster)</span>
+<span class="c">-- Only index recent events — old ones queried rarely</span>
+<span class="k">CREATE INDEX</span> idx_recent_events <span class="k">ON</span> events(user_id, event_time)
+  <span class="k">WHERE</span> event_time > NOW() - <span class="k">INTERVAL</span> <span class="s">'90 days'</span>;
+
+<span class="c">-- GIN: full-text search, JSONB, arrays</span>
+<span class="k">CREATE INDEX</span> idx_metadata_gin <span class="k">ON</span> experiments <span class="k">USING GIN</span>(metadata);
+<span class="c">-- SELECT * FROM experiments WHERE metadata @> '{"tags": ["llm"]}'</span>
+
+<span class="c">-- BRIN: huge tables sorted by time (IoT, logs) — tiny index</span>
+<span class="k">CREATE INDEX</span> idx_logs_time_brin <span class="k">ON</span> model_logs <span class="k">USING BRIN</span>(logged_at);</div>
+        <strong>Decision framework for ML:</strong><br>
+        Index: every column in WHERE/JOIN/ORDER BY in hot queries. Composite index for queries filtering on multiple columns (put the most selective column first).<br>
+        Don't index: columns with &lt;20 distinct values (gender, boolean flags). Write-heavy tables (inserts update all indexes). Columns never queried alone.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-db">SQL</span> How do you use EXPLAIN ANALYZE to find and fix a slow query? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="code"><span class="c">-- Run EXPLAIN ANALYZE to see the query plan + actual timings</span>
+<span class="k">EXPLAIN</span> (ANALYZE, BUFFERS, FORMAT TEXT)
+<span class="k">SELECT</span> u.user_id,
+       <span class="k">COUNT</span>(*) <span class="k">AS</span> event_count,
+       <span class="k">SUM</span>(purchase_amount) <span class="k">AS</span> total_spend
+<span class="k">FROM</span> user_events u
+<span class="k">JOIN</span> purchases p <span class="k">ON</span> u.user_id = p.user_id
+<span class="k">WHERE</span> u.event_time > NOW() - <span class="k">INTERVAL</span> <span class="s">'30 days'</span>
+<span class="k">GROUP BY</span> u.user_id
+<span class="k">HAVING COUNT</span>(*) > 5;
+
+<span class="c">-- What to look for in the output:</span>
+<span class="c">-- ❌ Seq Scan on large table  → missing index</span>
+<span class="c">-- ❌ Hash Join with high cost → check join columns are indexed</span>
+<span class="c">-- ❌ rows=1000 actual=1M     → stale statistics, run ANALYZE</span>
+<span class="c">-- ❌ Sort (cost=high)         → add index for ORDER BY column</span>
+<span class="c">-- ✅ Index Scan               → index being used</span>
+<span class="c">-- ✅ Bitmap Index Scan        → efficient range query with index</span></div>
+        <strong>EXPLAIN output interpretation:</strong>
+        <div class="code"><span class="c">-- BAD plan (before index):</span>
+Seq Scan on user_events  (cost=0.00..245000.00 rows=89234 width=32)
+  Filter: (event_time > '2024-01-01')
+  Rows Removed by Filter: 10000000  <span class="c">← scanning 10M rows!</span>
+Planning time: 2.3ms
+Execution time: 8247.5ms           <span class="c">← 8 seconds!!!</span>
+
+<span class="c">-- GOOD plan (after index):</span>
+Index Scan using idx_events_time on user_events
+  Index Cond: (event_time > '2024-01-01')
+Planning time: 0.8ms
+Execution time: 12.3ms             <span class="c">← 12ms ✅</span></div>
+        <strong>Common fixes after EXPLAIN:</strong><br>
+        Seq scan on large table → add index on filter/join column. Sort on non-indexed column → add index with ORDER BY direction. Nested Loop on large tables → increase work_mem for hash joins. Stale row estimates → ANALYZE table. Too many rows returned → check if WHERE clause is selective enough.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-db">SQL</span> What is database partitioning? How do you partition a 10-billion row ML training data table? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Partitioning</strong> = split a large table into smaller physical pieces based on a column's value. Queries that filter on the partition key only scan relevant partitions, not the full table.
+        <div class="code"><span class="c">-- Time-based partitioning for ML training data</span>
+<span class="c">-- Common for: event logs, training examples, prediction logs</span>
+
+<span class="k">CREATE TABLE</span> user_events (
+    event_id    UUID        <span class="k">NOT NULL</span>,
+    user_id     VARCHAR(36) <span class="k">NOT NULL</span>,
+    event_type  VARCHAR(50),
+    event_time  TIMESTAMPTZ <span class="k">NOT NULL</span>,
+    features    JSONB
+) <span class="k">PARTITION BY RANGE</span> (event_time);
+
+<span class="c">-- Monthly partitions</span>
+<span class="k">CREATE TABLE</span> user_events_2024_01
+  <span class="k">PARTITION OF</span> user_events
+  <span class="k">FOR VALUES FROM</span> (<span class="s">'2024-01-01'</span>) <span class="k">TO</span> (<span class="s">'2024-02-01'</span>);
+
+<span class="k">CREATE TABLE</span> user_events_2024_02
+  <span class="k">PARTITION OF</span> user_events
+  <span class="k">FOR VALUES FROM</span> (<span class="s">'2024-02-01'</span>) <span class="k">TO</span> (<span class="s">'2024-03-01'</span>);
+
+<span class="c">-- Query automatically scans only relevant partition</span>
+<span class="k">SELECT</span> user_id, <span class="k">COUNT</span>(*) <span class="k">FROM</span> user_events
+<span class="k">WHERE</span> event_time <span class="k">BETWEEN</span> <span class="s">'2024-01-01'</span> <span class="k">AND</span> <span class="s">'2024-01-31'</span>
+<span class="k">GROUP BY</span> user_id;
+<span class="c">-- Partition pruning: only scans user_events_2024_01</span>
+<span class="c">-- 10B rows → only scans ~800M rows for one month</span></div>
+        <strong>Partition strategies:</strong><br>
+        <strong>Range (time):</strong> Best for event/log data. Query recent data = only scan recent partition. Drop old data = DROP TABLE partition (instant). <br>
+        <strong>Hash (user_id):</strong> Distribute writes evenly. Good for write-heavy tables with no natural time dimension.<br>
+        <strong>List (category/region):</strong> "Give me all EU events" → only scan EU partition.<br><br>
+        <strong>Partition pruning for ML training:</strong> Building 30-day training dataset → only scans 30 partitions out of 365. Query time: proportional to selected range, not total table size.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-db">SQL</span> What are read replicas and how do you use them in ML systems? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Read replica</strong> = a copy of the primary database that receives writes via replication and serves read queries. Exact copy of primary, usually 10-100ms behind (replication lag).<br><br>
+        <strong>Why ML systems need read replicas:</strong><br>
+        Training data queries are HEAVY — full table scans, aggregations over hundreds of millions of rows. Running these on the primary DB would starve production serving queries.<br><br>
+        <div class="code"><span class="c">-- In your application: route by query type</span>
+<span class="k">class</span> DatabaseRouter:
+    <span class="k">def</span> __init__(self):
+        self.primary = create_pool(PRIMARY_DSN)   <span class="c"># writes + reads</span>
+        self.replica = create_pool(REPLICA_DSN)   <span class="c"># heavy reads only</span>
+
+    <span class="k">async def</span> get_features(self, user_id):
+        <span class="c"># Fast, latency-sensitive → primary (no replication lag)</span>
+        <span class="k">async with</span> self.primary.acquire() <span class="k">as</span> conn:
+            <span class="k">return await</span> conn.fetchrow(<span class="s">"SELECT * FROM features WHERE id=$1"</span>, user_id)
+
+    <span class="k">async def</span> build_training_dataset(self, date_from, date_to):
+        <span class="c"># Heavy analytical query → read replica</span>
+        <span class="c"># Replication lag acceptable here (using historical data)</span>
+        <span class="k">async with</span> self.replica.acquire() <span class="k">as</span> conn:
+            <span class="k">return await</span> conn.fetch(<span class="s">"""
+                SELECT user_id, SUM(amount), COUNT(*) ...
+                FROM purchases WHERE created_at BETWEEN $1 AND $2
+                GROUP BY user_id
+            """</span>, date_from, date_to)</div>
+        <strong>Rule:</strong> Production feature serving → primary (needs latest data, low latency). Training data generation, analytics, dashboards, experiments → read replicas (OK with slight staleness, needs throughput).
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(5)">← API Optimization</button>
+    <button class="nbtn primary" onclick="nextCh(5)">NoSQL & Vector DBs →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 7 — NoSQL ══════════ -->
+<div class="chapter" id="ch6">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 07 / 09</div>
+    <div class="ch-title">NO<span class="accent">SQL</span> &amp;<br>VECTOR<br><span class="dim">DATABASES</span></div>
+    <p class="ch-lead">Vector databases are the backbone of modern RAG systems. NoSQL databases power online feature stores. Know when each database type wins and when it loses.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — Database Type Decision Matrix</div>
+    <div class="tbl">
+    <table>
+      <tr><th>Database Type</th><th>Best For</th><th>Examples</th><th>AI Use Case</th></tr>
+      <tr><td>PostgreSQL (SQL)</td><td>Complex queries, joins, ACID, structured data</td><td>RDS, Supabase, Neon</td><td>Experiment metadata, user tables, feature config</td></tr>
+      <tr><td>Redis (Key-Value)</td><td>Sub-ms lookups, caching, counters, pub/sub</td><td>ElastiCache, Upstash</td><td>Online feature store, rate limiting, session data</td></tr>
+      <tr><td>DynamoDB (Document)</td><td>Massive scale, simple key lookups, serverless</td><td>DynamoDB, Firestore</td><td>User features at billion-user scale</td></tr>
+      <tr><td>MongoDB (Document)</td><td>Flexible schema, nested documents, rich queries</td><td>Atlas, self-hosted</td><td>Model configs, prompt templates, unstructured metadata</td></tr>
+      <tr><td>Cassandra (Wide Column)</td><td>Write-heavy, time-series, high availability</td><td>Keyspaces, DataStax</td><td>High-throughput event logging, time-series features</td></tr>
+      <tr><td>Pinecone / Qdrant / Weaviate (Vector)</td><td>Similarity search, ANN, embeddings</td><td>Pinecone, Qdrant, Weaviate, pgvector</td><td>RAG retrieval, semantic search, recommendation</td></tr>
+      <tr><td>Neo4j (Graph)</td><td>Relationship traversal, knowledge graphs</td><td>Neo4j, Amazon Neptune</td><td>Knowledge graphs for RAG, social graph features</td></tr>
+      <tr><td>ClickHouse (OLAP Column)</td><td>Analytics, aggregations over billions of rows</td><td>ClickHouse, BigQuery</td><td>Model monitoring dashboards, feature statistics</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">02 — Vector Database Deep Dive</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-ai">Vector DB</span> How does ANN (Approximate Nearest Neighbor) search work? Compare HNSW vs IVF. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Exact nearest neighbor search</strong> in 1536-dim space over 10M vectors: compute cosine similarity against all 10M → 10M dot products → sort → return top-K. O(n). At 10M vectors: ~2-10 seconds. Unusable for production.<br><br>
+        <strong>ANN (Approximate Nearest Neighbor):</strong> Trade a tiny bit of accuracy for 100-1000× speed. Find "good enough" neighbors in milliseconds.<br><br>
+        <strong>HNSW (Hierarchical Navigable Small World):</strong> Builds a multi-layer graph where each vector is connected to its neighbors. Search starts at top (few nodes) and greedily descends to finer layers.<br>
+        <div class="code"><span class="c"># HNSW in Qdrant — building the index</span>
+client.create_collection(
+    collection_name=<span class="s">"documents"</span>,
+    vectors_config=VectorParams(
+        size=<span class="v">1536</span>,                    <span class="c"># embedding dimension</span>
+        distance=Distance.COSINE
+    ),
+    hnsw_config=HnswConfigDiff(
+        m=<span class="v">16</span>,               <span class="c"># connections per node (16-64 typical)</span>
+        ef_construct=<span class="v">100</span>,   <span class="c"># search candidates during construction</span>
+    )
+)
+
+<span class="c"># Querying</span>
+results = client.search(
+    collection_name=<span class="s">"documents"</span>,
+    query_vector=query_embedding,
+    limit=<span class="v">10</span>,
+    with_payload=<span class="k">True</span>,
+    search_params=SearchParams(hnsw_ef=<span class="v">128</span>)  <span class="c"># higher = better recall</span>
+)</div>
+        ✅ Very fast search (1-10ms at millions of vectors). High recall (95-99%). ❌ High memory — entire graph in RAM. Slow to build initially.<br><br>
+        <strong>IVF (Inverted File Index):</strong> Cluster vectors into K clusters (k-means). At search time: find nearest K' clusters, search only those. More disk-friendly than HNSW.<br>
+        ✅ Works with disk (less RAM). Scales to billions of vectors. ❌ Lower recall than HNSW at same speed. Slower if cluster assignment is wrong.<br><br>
+        <strong>Which to use:</strong><br>
+        Small-medium corpus (&lt;50M vectors), latency-critical → HNSW (Qdrant, Pinecone default)<br>
+        Billion+ vectors, memory-constrained → IVF + PQ compression (FAISS, pgvector)<br>
+        Already on Postgres → pgvector with HNSW extension (simpler ops, good enough for &lt;5M vectors)
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-ai">Vector DB</span> Compare Pinecone vs Qdrant vs pgvector — when do you choose each? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <div class="tbl">
+        <table>
+          <tr><th>DB</th><th>Managed?</th><th>Scale</th><th>Filtering</th><th>Choose When</th></tr>
+          <tr><td>Pinecone</td><td>✅ Fully managed</td><td>Billions</td><td>Good (metadata)</td><td>Want zero ops, budget OK, fast to ship</td></tr>
+          <tr><td>Qdrant</td><td>✅ Self-host or cloud</td><td>Hundreds of millions</td><td>Excellent (rich filtering)</td><td>Complex filters, open source, cost control</td></tr>
+          <tr><td>Weaviate</td><td>✅ Self-host or cloud</td><td>Hundreds of millions</td><td>GraphQL queries</td><td>Complex queries, hybrid search</td></tr>
+          <tr><td>pgvector</td><td>✅ As Postgres extension</td><td>~5M vectors</td><td>Full SQL</td><td>Already using Postgres, simple RAG, fewer ops</td></tr>
+          <tr><td>FAISS</td><td>❌ Library (in-process)</td><td>Billions</td><td>None</td><td>Research, batch, no HTTP overhead needed</td></tr>
+        </table>
+        </div>
+        <strong>Production RAG setup with Qdrant:</strong>
+        <div class="code"><span class="c"># Hybrid search: dense (semantic) + sparse (keyword) combined</span>
+results = client.query_points(
+    collection_name=<span class="s">"knowledge_base"</span>,
+    prefetch=[
+        Prefetch(  <span class="c"># dense vector search</span>
+            query=dense_embedding,
+            using=<span class="s">"dense"</span>,
+            limit=<span class="v">20</span>
+        ),
+        Prefetch(  <span class="c"># sparse (BM25) for keyword matching</span>
+            query=sparse_vector,
+            using=<span class="s">"sparse"</span>,
+            limit=<span class="v">20</span>
+        )
+    ],
+    query=FusionQuery(fusion=Fusion.RRF),  <span class="c"># reciprocal rank fusion</span>
+    limit=<span class="v">5</span>,
+    <span class="c"># Metadata filtering happens BEFORE ANN search (pre-filtered)</span>
+    query_filter=Filter(
+        must=[
+            FieldCondition(key=<span class="s">"language"</span>, match=MatchValue(value=<span class="s">"en"</span>)),
+            FieldCondition(key=<span class="s">"date"</span>, range=Range(gte=<span class="v">20240101</span>))
+        ]
+    )
+)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(6)">← SQL Optimization</button>
+    <button class="nbtn primary" onclick="nextCh(6)">DB Design Patterns →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 8 — DB PATTERNS ══════════ -->
+<div class="chapter" id="ch7">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 08 / 09</div>
+    <div class="ch-title">DATABASE<br><span class="accent">DESIGN</span><br>PATTERNS</div>
+    <p class="ch-lead">These patterns solve recurring problems in ML systems — training/serving skew, write contention, data consistency, and the CAP theorem. Know them conceptually and by name.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — Interview Questions</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-db">Pattern</span> What is the CAP theorem? How does it affect database choices for AI systems? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>CAP Theorem:</strong> In a distributed system, you can guarantee at most 2 of 3 properties:<br><br>
+        <strong>C — Consistency:</strong> Every read returns the most recent write (or an error).<br>
+        <strong>A — Availability:</strong> Every request gets a response (not an error), even if not the most recent data.<br>
+        <strong>P — Partition Tolerance:</strong> System keeps working even if network partitions separate nodes.<br><br>
+        <strong>P is non-negotiable</strong> in distributed systems — networks DO partition. So the real choice is C vs A:<br><br>
+        <div class="tbl">
+        <table>
+          <tr><th>Choice</th><th>Behavior on partition</th><th>DB Examples</th><th>AI Use</th></tr>
+          <tr><td style="color:var(--cyan)">CP (Consistent)</td><td>Returns error if data might be stale</td><td>PostgreSQL, MongoDB w/ majority, HBase</td><td>Model registry, experiment configs — must be accurate</td></tr>
+          <tr><td style="color:var(--lime)">AP (Available)</td><td>Returns possibly stale data</td><td>DynamoDB, Cassandra, CouchDB</td><td>Online feature store — serving latency > perfect freshness</td></tr>
+        </table>
+        </div>
+        <strong>For ML systems specifically:</strong><br>
+        Model registry (which model is in production?) → CP. Must be consistent — serving wrong model version is dangerous.<br>
+        Online feature store → AP. A slightly stale feature value (user's purchase count from 5 seconds ago) is fine. Never failing is more important.<br>
+        Training data → CP. Must have all the data, no partial writes.<br><br>
+        <strong>PACELC extends CAP:</strong> Even without partitions, there's a tradeoff between Latency (fast but possibly stale) and Consistency (accurate but slower). DynamoDB: default AP, strongly consistent reads available (+latency).
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-db">Pattern</span> What is CQRS and Event Sourcing? How are they used in ML data pipelines? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>CQRS (Command Query Responsibility Segregation):</strong> Separate the "write" model from the "read" model. Commands change state. Queries read state. They can use different data stores optimized for each purpose.
+        <div class="code"><span class="c"># Write path (Command): optimized for ACID consistency</span>
+POST /api/predictions → validates → writes to PostgreSQL (primary)
+
+<span class="c"># Read path (Query): optimized for performance</span>
+GET  /api/predictions/analytics → reads from:
+  - Redis cache (last 5 min)
+  - ClickHouse replica (aggregations, dashboards)
+  - Elasticsearch (full-text search on prediction text)
+
+<span class="c"># Sync: PostgreSQL changes → Kafka → replicated to read stores</span></div>
+        <strong>Event Sourcing:</strong> Instead of storing current state, store every event that led to the current state. The current state is computed by replaying events.
+        <div class="code"><span class="c"># Traditional (mutable state):</span>
+UPDATE models SET status = 'production' WHERE id = 'model-123'
+<span class="c"># Problem: lost history — who changed it? When? Why?</span>
+
+<span class="c"># Event Sourcing (immutable events):</span>
+INSERT INTO model_events (model_id, event_type, data, timestamp)
+VALUES ('model-123', 'DEPLOYED_TO_PRODUCTION', '{"by": "alice", "canary_pct": 5}', NOW());
+INSERT INTO model_events VALUES ('model-123', 'CANARY_EXPANDED', '{"pct": 50}', NOW());
+INSERT INTO model_events VALUES ('model-123', 'FULLY_PROMOTED',  '{"pct": 100}', NOW());
+
+<span class="c"># Current state = replay all events</span>
+<span class="c"># Can time-travel: "what was the state 3 days ago?"</span>
+<span class="c"># Full audit trail — required for ML model governance</span></div>
+        <strong>Why event sourcing is valuable for ML:</strong> Full lineage of model lifecycle. Audit trail for compliance ("show me every change to this production model for the last 2 years"). Debug why a model was deployed with certain params. Replay to understand incidents.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-db">Pattern</span> What is database sharding? When does a single PostgreSQL instance stop being enough? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Single PostgreSQL instance limits (roughly):</strong><br>
+        Storage: ~100TB on large instances. Reads: ~100K simple queries/second. Writes: ~10K-50K writes/second. Active connections: 500-2000 (with PgBouncer). Beyond this: sharding.<br><br>
+        <strong>Sharding</strong> = split a single logical table across multiple physical database servers (shards). Each shard holds a subset of the data.
+        <div class="code"><span class="c"># Shard key determines which server each row goes to</span>
+<span class="c"># Example: shard by user_id across 8 PostgreSQL instances</span>
+
+shard_number = hash(user_id) % 8
+
+<span class="c"># user_id "u-12345" → hash → shard 3</span>
+<span class="c"># user_id "u-67890" → hash → shard 7</span>
+
+<span class="c"># Application-level sharding (your code routes queries)</span>
+<span class="k">def</span> get_db(user_id: str) -> Connection:
+    shard = hash(user_id) % 8
+    <span class="k">return</span> shard_pools[shard]
+
+<span class="c"># Cross-shard queries become complex:</span>
+<span class="c"># "Find all users with spend > $1000" → query all 8 shards, merge results</span></div>
+        <strong>Sharding strategies:</strong><br>
+        <strong>Hash sharding:</strong> Even distribution. Good for write-heavy. Bad for range queries (must query all shards).<br>
+        <strong>Range sharding:</strong> user_id 0-10M → shard 1, 10M-20M → shard 2. Good for range queries. Risk of "hot shard" if one range has disproportionate activity.<br>
+        <strong>Geographic sharding:</strong> EU users → EU shard (data residency compliance). US users → US shard.<br><br>
+        <strong>For ML systems:</strong> Most ML companies never need custom sharding — they use Cassandra (built-in sharding) or DynamoDB (fully managed sharding) for the tables that need it, and keep PostgreSQL for everything else.
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(7)">← NoSQL & Vector DBs</button>
+    <button class="nbtn primary" onclick="nextCh(7)">AI System APIs →</button>
+  </div>
+</div>
+
+<!-- ══════════ CH 9 — AI SYSTEM APIS ══════════ -->
+<div class="chapter" id="ch8">
+  <div class="ch-header">
+    <div class="ch-eyebrow">Chapter 09 / 09</div>
+    <div class="ch-title">AI<br><span class="accent">SYSTEM</span><br>APIS</div>
+    <p class="ch-lead">Everything comes together. How do the world's most used AI APIs actually work — OpenAI, Anthropic, LangChain? What patterns do they use? And how do you design your own?</p>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">01 — The Full Stack</div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-ai">AI API</span> Design a production AI API platform that serves 10M requests/day with streaming, caching, and fallbacks. <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>10M requests/day = ~115 requests/second average. Peak likely 5-10×: 500-1000 RPS.</strong><br><br>
+        <strong>Full architecture:</strong>
+        <div class="code"><span class="c">┌─────────────────────────────────────────────────────────┐</span>
+<span class="c">│                     CLIENT                              │</span>
+<span class="c">└──────────────────────────┬──────────────────────────────┘</span>
+                           ↓
+<span class="c">┌──────────────────────────────────────────────────────────┐</span>
+<span class="c">│  EDGE LAYER                                              │</span>
+<span class="c">│  CloudFront / Cloudflare → cache deterministic responses │</span>
+<span class="c">│  DDoS protection, geo-routing, SSL termination           │</span>
+<span class="c">└──────────────────────────┬───────────────────────────────┘</span>
+                           ↓
+<span class="c">┌──────────────────────────────────────────────────────────┐</span>
+<span class="c">│  API GATEWAY LAYER (FastAPI × 10 instances)              │</span>
+<span class="c">│  Auth (JWT → Redis lookup) → Rate limiting (Redis)       │</span>
+<span class="c">│  Request validation (Pydantic) → Semantic cache check    │</span>
+<span class="c">│  Request ID injection → Logging → Route to model router  │</span>
+<span class="c">└──────────────────────────┬───────────────────────────────┘</span>
+                           ↓
+<span class="c">┌──────────────────────────────────────────────────────────┐</span>
+<span class="c">│  MODEL ROUTER                                            │</span>
+<span class="c">│  Based on: model requested, user tier, request length    │</span>
+<span class="c">│  → Route to: Bedrock Claude / Self-hosted Llama / OpenAI │</span>
+<span class="c">│  → Fallback chain: primary → secondary → tertiary        │</span>
+<span class="c">│  → Circuit breaker per provider                          │</span>
+<span class="c">└──────────────────────────┬───────────────────────────────┘</span>
+                           ↓
+<span class="c">┌──────────────────────────────────────────────────────────┐</span>
+<span class="c">│  INFERENCE LAYER                                         │</span>
+<span class="c">│  vLLM fleet (g5.12xlarge × 8, Auto Scaling)              │</span>
+<span class="c">│  Continuous batching → speculative decoding              │</span>
+<span class="c">│  KV cache sharing for common system prompts              │</span>
+<span class="c">└──────────────────────────┬───────────────────────────────┘</span>
+                           ↓
+<span class="c">┌──────────────────────────────────────────────────────────┐</span>
+<span class="c">│  OBSERVABILITY                                           │</span>
+<span class="c">│  Every request logged: prompt hash, tokens, latency, cost│</span>
+<span class="c">│  CloudWatch → Grafana dashboards                         │</span>
+<span class="c">│  OpenTelemetry traces → Jaeger (end-to-end latency)      │</span>
+<span class="c">└──────────────────────────────────────────────────────────┘</span></div>
+        <strong>Fallback chain implementation:</strong>
+        <div class="code"><span class="k">async def</span> route_with_fallback(request):
+    providers = [<span class="s">"self-hosted-llama"</span>, <span class="s">"bedrock-claude"</span>, <span class="s">"openai"</span>]
+    last_error = None
+
+    <span class="k">for</span> provider <span class="k">in</span> providers:
+        <span class="k">if</span> circuit_breaker[provider].is_open():
+            <span class="k">continue</span>  <span class="c"># skip unhealthy provider</span>
+        <span class="k">try</span>:
+            result = <span class="k">await</span> call_provider(provider, request)
+            circuit_breaker[provider].record_success()
+            <span class="k">return</span> result
+        <span class="k">except</span> Exception <span class="k">as</span> e:
+            circuit_breaker[provider].record_failure()
+            last_error = e
+            metrics.increment(f<span class="s">"provider_failure.{provider}"</span>)
+
+    <span class="k">raise</span> ServiceUnavailable(<span class="s">"All providers unavailable"</span>)</div>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-ai">AI API</span> What is SSE (Server-Sent Events)? Implement LLM streaming with it. Why is it preferred over WebSockets for this? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>SSE (Server-Sent Events)</strong> = one-directional streaming over HTTP. Server pushes events to client. Unlike WebSockets, it's unidirectional and works over regular HTTP/1.1. No upgrade required.
+        <div class="code"><span class="c"># Server: stream LLM tokens via SSE</span>
+@app.post(<span class="s">"/v1/stream"</span>)
+<span class="k">async def</span> stream_completion(request: CompletionRequest):
+    <span class="k">async def</span> event_generator():
+        <span class="k">async for</span> chunk <span class="k">in</span> llm.generate_stream(request.prompt):
+            <span class="c"># SSE format: "data: {json}\n\n"</span>
+            payload = {
+                <span class="s">"id"</span>: chunk.id,
+                <span class="s">"choices"</span>: [{
+                    <span class="s">"delta"</span>: {<span class="s">"content"</span>: chunk.text},
+                    <span class="s">"finish_reason"</span>: <span class="k">None</span>
+                }]
+            }
+            <span class="k">yield</span> f<span class="s">"data: {json.dumps(payload)}\n\n"</span>
+
+        <span class="c"># Final message</span>
+        <span class="k">yield</span> <span class="s">'data: {"choices":[{"finish_reason":"stop"}]}\n\n'</span>
+        <span class="k">yield</span> <span class="s">"data: [DONE]\n\n"</span>
+
+    <span class="k">return</span> StreamingResponse(
+        event_generator(),
+        media_type=<span class="s">"text/event-stream"</span>,
+        headers={
+            <span class="s">"Cache-Control"</span>: <span class="s">"no-cache"</span>,
+            <span class="s">"X-Accel-Buffering"</span>: <span class="s">"no"</span>,   <span class="c"># prevent nginx buffering</span>
+            <span class="s">"Connection"</span>: <span class="s">"keep-alive"</span>
+        }
+    )
+
+<span class="c"># Client (JavaScript)</span>
+<span class="k">const</span> response = <span class="k">await</span> fetch(<span class="s">"/v1/stream"</span>, {
+  method: <span class="s">"POST"</span>,
+  headers: {<span class="s">"Content-Type"</span>: <span class="s">"application/json"</span>},
+  body: JSON.stringify({ prompt: <span class="s">"Hello"</span>, stream: <span class="k">true</span> })
+});
+
+<span class="k">const</span> reader = response.body.getReader();
+<span class="k">const</span> decoder = <span class="k">new</span> TextDecoder();
+
+<span class="k">while</span> (<span class="k">true</span>) {
+  <span class="k">const</span> { done, value } = <span class="k">await</span> reader.read();
+  <span class="k">if</span> (done) <span class="k">break</span>;
+  <span class="k">const</span> text = decoder.decode(value);
+  <span class="k">const</span> lines = text.split(<span class="s">"\n"</span>).filter(l => l.startsWith(<span class="s">"data: "</span>));
+  <span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> lines) {
+    <span class="k">const</span> data = line.slice(<span class="v">6</span>);
+    <span class="k">if</span> (data === <span class="s">"[DONE]"</span>) <span class="k">return</span>;
+    <span class="k">const</span> chunk = JSON.parse(data);
+    appendToken(chunk.choices[<span class="v">0</span>].delta.content);
+  }
+}</div>
+        <strong>SSE vs WebSocket for LLM streaming:</strong><br>
+        SSE wins for token streaming because: HTTP-native (CDN caching, load balancers work transparently), automatic reconnection built into browser EventSource API, no special proxy setup. WebSocket wins when: you need bidirectional streaming (user can interrupt mid-generation), very high frequency updates (&gt;100 messages/second), or you're already using WebSockets for chat history.
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q" onclick="toggle(this)"><span class="badge b-ai">AI API</span> What is idempotency? How do you implement idempotent API endpoints for ML training jobs? <span class="arrow">+</span></div>
+      <div class="qa-a">
+        <strong>Idempotency</strong> = calling the same operation multiple times has the same effect as calling it once. Critical for safe retries — if a request fails mid-flight, client retries without creating duplicate side effects.<br><br>
+        <strong>Why critical for ML systems:</strong> Training jobs cost money. Starting the same job twice = double cost. Inference requests charged per token — retrying a timed-out request that actually succeeded = double billing.<br><br>
+        <strong>Idempotency key pattern:</strong>
+        <div class="code"><span class="c"># Client generates a unique idempotency key per logical operation</span>
+POST /v1/training-jobs
+<span class="k">Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000</span>
+Body: { "model": "llama-3-8b", "dataset": "s3://..." }
+
+<span class="c"># Server implementation</span>
+@app.post(<span class="s">"/v1/training-jobs"</span>)
+<span class="k">async def</span> create_training_job(
+    request: TrainingJobRequest,
+    idempotency_key: str = Header(None)
+):
+    <span class="k">if</span> idempotency_key:
+        <span class="c"># Check if we've seen this key before</span>
+        cached = <span class="k">await</span> redis.get(f<span class="s">"idem:{idempotency_key}"</span>)
+        <span class="k">if</span> cached:
+            <span class="k">return</span> json.loads(cached)  <span class="c"># return same response as before</span>
+
+    <span class="c"># Process request</span>
+    job = <span class="k">await</span> create_job(request)
+    response = job.dict()
+
+    <span class="k">if</span> idempotency_key:
+        <span class="c"># Cache response for 24 hours</span>
+        <span class="k">await</span> redis.setex(
+            f<span class="s">"idem:{idempotency_key}"</span>, <span class="v">86400</span>, json.dumps(response)
+        )
+    <span class="k">return</span> response</div>
+        <strong>GET, PUT, DELETE are naturally idempotent.</strong> POST is not — which is why idempotency keys are needed. Stripe, OpenAI, Anthropic all support Idempotency-Key headers for their POST endpoints.
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-label">⚡ The One Mental Model</div>
+    <p>Every API design decision boils down to: <strong>who controls the data shape?</strong> REST: the server decides. GraphQL: the client decides. gRPC: a shared schema (.proto) decides. And every database decision: <strong>what do you optimize for?</strong> Consistency, latency, write throughput, query flexibility, or cost. Know the tradeoffs and you can justify any architecture decision in an interview.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="nbtn" onclick="prevCh(8)">← DB Design Patterns</button>
+    <button class="nbtn primary" onclick="alert('✅ APIs & Databases Complete!\n\nCovered:\n→ REST: verbs, versioning, rate limiting, pagination\n→ GraphQL: N+1 problem, subscriptions, when to use\n→ gRPC: Protocol Buffers, streaming types, performance\n→ FastAPI: async/sync, WebSockets, streaming\n→ API Optimization: caching, batching, connection pools\n→ SQL Optimization: indexes, EXPLAIN, partitioning, replicas\n→ NoSQL & Vector DBs: ANN, HNSW vs IVF, Qdrant, Pinecone\n→ DB Patterns: CAP theorem, CQRS, sharding\n→ AI System APIs: full platform design, SSE streaming, idempotency\n\nYour series is now 9 websites strong 🚀')">Complete ✓</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let cur = 0;
+const total = 9;
+
+function toggle(el) {
+  const ans = el.nextElementSibling;
+  const open = ans.style.display === 'block';
+  ans.style.display = open ? 'none' : 'block';
+  el.classList.toggle('open', !open);
+}
+
+function goTo(idx, el) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('ch' + idx).classList.add('active');
+  el.classList.add('active');
+  cur = idx;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextCh(c) {
+  if (c + 1 < total) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c + 1, items[c + 1]);
+  }
+}
+
+function prevCh(c) {
+  if (c - 1 >= 0) {
+    const items = document.querySelectorAll('.nav-item');
+    goTo(c - 1, items[c - 1]);
+  }
+}
+</script>
+</body>
+</html>
